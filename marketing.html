@@ -273,19 +273,10 @@
 
     /* ── 반응형 ── */
     @media (max-width: 768px) {
-      .sns-cards {
-        grid-template-columns: 1fr;
-      }
-      .feature-inner {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-      .landing-items {
-        grid-template-columns: 1fr;
-      }
-      .stat-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+      .sns-cards { grid-template-columns: 1fr; }
+      .feature-inner { grid-template-columns: 1fr; gap: 40px; }
+      .landing-items { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
       .header-inner { height: 72px !important; gap: 12px !important; }
@@ -293,6 +284,22 @@
       .nav-toggle { display: block !important; }
       .nav { display: none !important; }
       .btn-header { display: none !important; }
+      .mkt-hero { padding: 64px 0 52px; }
+      .mkt-hero h1 { font-size: clamp(22px, 5vw, 32px); }
+      .sns-section { padding: 56px 0; }
+      .feature-section { padding: 56px 0; }
+      .landing-section { padding: 56px 0; }
+      .cta-section { padding: 56px 0; }
+      .sns-card { padding: 28px 20px; }
+      .landing-item { padding: 24px 18px; }
+    }
+    @media (max-width: 480px) {
+      .service-tab-bar { padding: 12px 0; }
+      .service-tab-bar .container { gap: 8px; }
+      .stab { padding: 10px 16px; font-size: 13px; }
+    }
+    @media (max-width: 360px) {
+      .stab { padding: 9px 12px; font-size: 12px; }
     }  </style>
 </head>
 <body>

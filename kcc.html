@@ -240,7 +240,8 @@
     .admin-badge { background: #1bc47d; color: #fff; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 8px; white-space: nowrap; }
 
     /* 비교표 */
-    .compare-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .compare-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .compare-table { width: 100%; min-width: 540px; border-collapse: collapse; }
     .compare-table th, .compare-table td { padding: 16px 20px; text-align: center; font-size: 14px; }
     .compare-table thead tr { background: #0d2137; color: #fff; }
     .compare-table thead th { font-weight: 700; }
@@ -332,17 +333,39 @@
       .perf-stats { grid-template-columns: 1fr; }
       .insight-grid { grid-template-columns: 1fr; }
     }
-    @media (max-width: 540px) {
-      .features4 { grid-template-columns: 1fr; }
-      .process-steps { grid-template-columns: repeat(2, 1fr); }
-      .partner-stats { grid-template-columns: 1fr; }
-    }
     @media (max-width: 640px) {
       .header-inner { height: 72px !important; gap: 12px !important; }
       .logo img { height: 52px !important; }
       .nav-toggle { display: block !important; }
       .nav { display: none !important; }
       .btn-header { display: none !important; }
+      .kcc-hero { padding: 56px 0 48px; }
+      .kcc-hero .sub { font-size: 15px; margin-bottom: 28px; }
+      .hero-badge-item { padding: 12px 16px; gap: 10px; }
+      .hero-badge-item .icon { font-size: 20px; }
+      .hero-badge-item strong { font-size: 13px; }
+      .sec { padding: 60px 0; }
+      .cta-section { padding: 56px 0; }
+      .admin-notice { flex-direction: column; align-items: flex-start; gap: 14px; padding: 18px; }
+      .admin-badge { text-align: center; width: 100%; }
+      .sim-box { padding: 20px 16px; }
+      .sim-total strong { font-size: 22px; }
+    }
+    @media (max-width: 540px) {
+      .features4 { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: repeat(2, 1fr); }
+      .partner-stats { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .service-tab-bar { padding: 12px 0; }
+      .service-tab-bar .container { gap: 8px; }
+      .stab { padding: 10px 16px; font-size: 13px; }
+      .hero-badges { flex-direction: column; align-items: stretch; }
+      .perf-num { font-size: 40px; }
+      .cta-point { min-width: unset; width: 100%; }
+    }
+    @media (max-width: 360px) {
+      .stab { padding: 9px 12px; font-size: 12px; }
     }  </style>
 </head>
 <body>
@@ -634,6 +657,7 @@
     <div class="sec-label">Comparison</div>
     <h2 class="sec-title">왜 <span class="kcc-blue">KCC 구독</span>이어야 할까요?<br>기존 결제 방식과 비교해보세요!</h2>
     <p class="sec-desc">기간, 금리, 한도, 편의성 모든 면에서 압도적인 우위를 가집니다.</p>
+    <div class="compare-wrap">
     <table class="compare-table">
       <thead>
         <tr>
@@ -676,6 +700,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 </section>
 

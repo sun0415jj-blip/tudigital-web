@@ -98,10 +98,21 @@
 }
 
 @media (max-width: 600px) {
-  .sub-hero { padding: 60px 0 50px; }
-  .sub-cta { padding: 36px 24px; }
+  .sub-hero { padding: 56px 0 44px; }
+  .sub-hero h1 { font-size: clamp(24px, 6vw, 36px); }
+  .sub-hero p { font-size: 14px; }
+  .sub-cta { padding: 32px 20px; }
+  .sub-cta h3 { font-size: 20px; }
   .sub-features { gap: 16px; }
-  .sub-feature { flex-direction: column; gap: 12px; padding: 20px; }
-  .sub-img-wrap { margin-bottom: 36px; }
-  .sub-content { margin-bottom: 36px; }
+  .sub-feature { flex-direction: column; gap: 12px; padding: 18px; }
+  .sub-img-wrap { margin-bottom: 28px; }
+  .sub-content { margin-bottom: 28px; }
+  .sub-feature-num { font-size: 18px; }
+  .sub-feature h4 { font-size: 15px; }
+}
+
+@media (max-width: 400px) {
+  .sub-hero { padding: 44px 0 36px; }
+  .sub-cta { padding: 24px 16px; }
+  .sub-feature { padding: 14px; }
 }

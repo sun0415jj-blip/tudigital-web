@@ -197,7 +197,7 @@
     @media (max-width: 768px) {
       .sol-grid { grid-template-columns: 1fr; }
       .about-split { grid-template-columns: 1fr; gap: 36px; }
-      .process-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: 1fr 1fr; }
       .lg-cta { padding: 40px 24px; }
       .collab-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -207,6 +207,21 @@
       .nav-toggle { display: block !important; }
       .nav { display: none !important; }
       .btn-header { display: none !important; }
+      .lg-hero { padding: 60px 0 52px; }
+      .lg-hero p { font-size: 15px; margin-bottom: 32px; }
+      .lg-stat-item { padding: 14px 20px; }
+      .lg-stat-item strong { font-size: 18px; }
+      .sec { padding: 60px 0; }
+      .sol-card { padding: 24px 20px; }
+      .proc-card { padding: 24px 16px; }
+    }
+    @media (max-width: 480px) {
+      .process-grid { grid-template-columns: 1fr; }
+      .collab-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .collab-card { padding: 20px 10px 24px; }
+    }
+    @media (max-width: 360px) {
+      .collab-grid { grid-template-columns: 1fr; }
     }  </style>
 </head>
 <body>

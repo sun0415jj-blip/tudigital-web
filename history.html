@@ -216,16 +216,28 @@
       .hl-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.1); }
       .hl-item:nth-child(4) { border-top: 1px solid rgba(255,255,255,0.1); }
     }
-    @media (max-width: 540px) {
-      .hist-hero { padding: 70px 0 60px; }
-      .sec { padding: 64px 0; }
-    }
     @media (max-width: 640px) {
       .header-inner { height: 72px !important; gap: 12px !important; }
       .logo img { height: 52px !important; }
       .nav-toggle { display: block !important; }
       .nav { display: none !important; }
       .btn-header { display: none !important; }
+      .hist-hero { padding: 60px 0 52px; }
+      .hist-hero h1 { margin-bottom: 12px; }
+      .hist-hero p { font-size: 14px; }
+      .sec { padding: 60px 0; }
+      .sec-desc { margin-bottom: 40px; }
+      .hl-item { padding: 28px 16px; }
+      .tl-item, .tl-item.right { padding-left: 52px; }
+      .tl-card { padding: 14px 18px; }
+      .act-body { padding: 18px 16px; }
+    }
+    @media (max-width: 400px) {
+      .highlight-row { grid-template-columns: 1fr; }
+      .hl-item { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-top: none !important; }
+      .hl-item:last-child { border-bottom: none !important; }
+      .hist-hero::before { font-size: 80px; }
+      .tl-item, .tl-item.right { padding-left: 44px; }
     }  </style>
 </head>
 <body>

@@ -409,20 +409,25 @@
 
     /* ── 반응형 ── */
     @media (max-width: 640px) {
-      .form-card {
-        padding: 28px 20px;
-      }
-      .radio-group label {
-        padding: 8px 16px;
-        font-size: 13px;
-      }
-    }
-    @media (max-width: 640px) {
       .header-inner { height: 72px !important; gap: 12px !important; }
       .logo img { height: 52px !important; }
       .nav-toggle { display: block !important; }
       .nav { display: none !important; }
       .btn-header { display: none !important; }
+      .sub-hero { padding: 56px 0 48px; }
+      .sub-hero h1 { font-size: clamp(22px, 5vw, 32px); }
+      .form-card { padding: 28px 20px; }
+      .radio-group label { padding: 8px 16px; font-size: 13px; }
+      .step2-info-row { flex-direction: column; gap: 0; }
+    }
+    @media (max-width: 480px) {
+      .service-tab-bar { padding: 12px 0; }
+      .service-tab-bar .container { gap: 8px; }
+      .stab { padding: 10px 16px; font-size: 13px; }
+      .form-section { padding: 48px 0 60px; }
+    }
+    @media (max-width: 360px) {
+      .stab { padding: 9px 12px; font-size: 12px; }
     }  </style>
 </head>
 <body>
