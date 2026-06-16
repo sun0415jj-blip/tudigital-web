@@ -1,0 +1,510 @@
+﻿<!DOCTYPE html>
+<!-- Created: 2026-06-16 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회사 연혁 | 티유디지털</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+  <style>
+    /* ── 히어로 ── */
+    .hist-hero {
+      background: linear-gradient(135deg, #0a1e35 0%, #0d2e50 60%, #0a1e35 100%);
+      color: #fff;
+      padding: 90px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hist-hero::before {
+      content: '2005 — 2025';
+      position: absolute;
+      font-size: 120px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .hist-hero .badge {
+      display: inline-block;
+      border: 1px solid rgba(240,165,0,0.5);
+      color: #f0a500;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 0.12em;
+    }
+    .hist-hero h1 {
+      font-size: clamp(30px,5vw,52px);
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .hist-hero h1 span { color: #f0a500; }
+    .hist-hero p { font-size: 16px; color: rgba(255,255,255,0.65); }
+
+    /* ── 공통 섹션 ── */
+    .sec { padding: 90px 0; }
+    .sec.gray { background: #f5f7fa; }
+    .sec.dark { background: #0d2137; }
+    .sec-label { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; color: #f0a500; margin-bottom: 10px; text-transform: uppercase; }
+    .sec-title { font-size: clamp(24px,4vw,38px); font-weight: 900; line-height: 1.3; color: #0d2137; margin-bottom: 14px; word-break: keep-all; }
+    .sec-title.light { color: #fff; }
+    .sec-desc { font-size: 15px; color: #666; line-height: 1.85; margin-bottom: 56px; }
+
+    /* ── 타임라인 ── */
+    .timeline { position: relative; padding: 0 0 20px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #f0a500, #0d2137 80%);
+      transform: translateX(-50%);
+    }
+
+    /* 연도 그룹 */
+    .tl-era {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      margin: 48px 0 32px;
+    }
+    .tl-era-label {
+      display: inline-block;
+      background: #0d2137;
+      color: #f0a500;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 8px 24px;
+      border-radius: 24px;
+      letter-spacing: 0.08em;
+      border: 2px solid #f0a500;
+    }
+
+    /* 타임라인 아이템 */
+    .tl-item {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: calc(50% + 36px);
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .tl-item.right {
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: calc(50% + 36px);
+    }
+    .tl-item::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 14px;
+      height: 14px;
+      background: #f0a500;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px #f0a500;
+      z-index: 2;
+    }
+    .tl-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 22px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      max-width: 380px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tl-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.1); }
+    .tl-date {
+      font-size: 12px;
+      font-weight: 800;
+      color: #f0a500;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .tl-content {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d2137;
+      line-height: 1.5;
+    }
+
+    /* ── 활동 섹션 ── */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .act-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .act-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+    .act-img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+      background: #f0f4f8;
+    }
+    .act-body { padding: 24px 22px; }
+    .act-tag {
+      display: inline-block;
+      background: #f0f4f8;
+      color: #0d2137;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+    }
+    .act-body h3 { font-size: 18px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
+    .act-body p { font-size: 13px; color: #666; line-height: 1.7; }
+    .act-body ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+    .act-body ul li { font-size: 13px; color: #555; padding-left: 14px; position: relative; }
+    .act-body ul li::before { content: '·'; position: absolute; left: 0; color: #f0a500; font-weight: 900; }
+
+    /* ── 숫자 하이라이트 ── */
+    .highlight-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 56px;
+    }
+    .hl-item {
+      text-align: center;
+      padding: 36px 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .hl-item:last-child { border-right: none; }
+    .hl-num { font-size: clamp(28px,4vw,44px); font-weight: 900; color: #f0a500; margin-bottom: 6px; }
+    .hl-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* ── 반응형 ── */
+    @media (max-width: 900px) {
+      .timeline::before { left: 24px; }
+      .tl-era { text-align: left; padding-left: 52px; }
+      .tl-item, .tl-item.right {
+        justify-content: flex-start;
+        padding-left: 60px;
+        padding-right: 0;
+      }
+      .tl-item::after { left: 24px; }
+      .tl-card { max-width: 100%; }
+      .activity-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .highlight-row { grid-template-columns: repeat(2,1fr); }
+      .hl-item:nth-child(2) { border-right: none; }
+      .hl-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.1); }
+      .hl-item:nth-child(4) { border-top: 1px solid rgba(255,255,255,0.1); }
+    }
+    @media (max-width: 540px) {
+      .hist-hero { padding: 70px 0 60px; }
+      .sec { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#about">회사소개</a>
+      <a href="history.html" class="active">회사연혁</a>
+      <a href="index.html#services">사업영역</a>
+      <a href="index.html#partner">파트너모집</a>
+      <a href="index.html#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="index.html#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html" onclick="toggleNav()">홈으로</a>
+    <a href="index.html#about" onclick="toggleNav()">회사소개</a>
+    <a href="history.html" onclick="toggleNav()">회사연혁</a>
+    <a href="index.html#services" onclick="toggleNav()">사업영역</a>
+    <a href="index.html#partner" onclick="toggleNav()">파트너모집</a>
+    <a href="index.html#contact" onclick="toggleNav()">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 히어로 ══ -->
+<section class="hist-hero">
+  <div class="container">
+    <a href="index.html" style="display:inline-block;color:rgba(255,255,255,0.6);font-size:14px;font-weight:600;margin-bottom:20px;">← 돌아가기</a>
+    <div class="badge">COMPANY HISTORY</div>
+    <h1>20년의 경험,<br><span>끊임없는 도전</span>의 역사</h1>
+    <p>2005년 설립 이후 다양한 분야에서 비즈니스 기회를 개척해온 티유디지털의 발자취</p>
+  </div>
+</section>
+
+<!-- ══ 숫자로 보는 티유디지털 ══ -->
+<section class="sec dark">
+  <div class="container">
+    <div class="sec-label" style="text-align:center;">OVERVIEW</div>
+    <h2 class="sec-title light" style="text-align:center;">숫자로 보는 티유디지털</h2>
+    <div class="highlight-row">
+      <div class="hl-item">
+        <div class="hl-num">2005</div>
+        <div class="hl-label">설립연도</div>
+      </div>
+      <div class="hl-item">
+        <div class="hl-num">20+</div>
+        <div class="hl-label">업력 (년)</div>
+      </div>
+      <div class="hl-item">
+        <div class="hl-num">15+</div>
+        <div class="hl-label">주요 파트너사</div>
+      </div>
+      <div class="hl-item">
+        <div class="hl-num">3</div>
+        <div class="hl-label">핵심 사업영역</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 연혁 타임라인 ══ -->
+<section class="sec gray">
+  <div class="container">
+    <div class="sec-label" style="text-align:center;">TIMELINE</div>
+    <h2 class="sec-title" style="text-align:center;">회사 연혁</h2>
+    <p class="sec-desc" style="text-align:center;">2005년 창립 이후 다양한 산업 분야에서 파트너십을 구축하며 성장해왔습니다</p>
+
+    <div class="timeline">
+
+      <!-- 2005–2010 -->
+      <div class="tl-era"><span class="tl-era-label">2005 — 2010</span></div>
+
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2005년 9월</div>
+          <div class="tl-content">주식회사 티유디지털 설립</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2006년 2월</div>
+          <div class="tl-content">게이트아이 도어락<br>롯데홈쇼핑 케이블 방송 판매</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2007년 3월</div>
+          <div class="tl-content">이안컴퓨터 온라인 및 행망<br>단독 총판권 체결</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2008년 4월</div>
+          <div class="tl-content">성주컴퓨터 온라인<br>단독 총판권 체결</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2009년 6월</div>
+          <div class="tl-content">KT Wibro 및 Wibro 결합상품<br>온라인 판매</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2010년 11월</div>
+          <div class="tl-content">Acer, LG모니터<br>GSSHOP 판매 체결</div>
+        </div>
+      </div>
+
+      <!-- 2011–2016 -->
+      <div class="tl-era"><span class="tl-era-label">2011 — 2016</span></div>
+
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2011년 1월</div>
+          <div class="tl-content">GS홈쇼핑 오리온 TV 렌탈<br>방송 진행</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2012년 8월</div>
+          <div class="tl-content">에넥스텔레콤 결합상품<br>공급 계약 체결</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2013년 3월</div>
+          <div class="tl-content">현대홈쇼핑 36개월 무이자<br>할부방송 진행</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2014년 4월</div>
+          <div class="tl-content">에스케이 텔링크 결합상품<br>공급 계약 체결</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2016년 10월</div>
+          <div class="tl-content">교원라이프 다드림 상품<br>단독 판매</div>
+        </div>
+      </div>
+
+      <!-- 2017–2021 -->
+      <div class="tl-era"><span class="tl-era-label">2017 — 2021</span></div>
+
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2017년 3월</div>
+          <div class="tl-content">이조가구 현대홈쇼핑<br>판매 계약 체결</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2019년 11월</div>
+          <div class="tl-content">다우데이타 60개월 할부<br>계약 진행</div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2020년 3월</div>
+          <div class="tl-content">롯데렌탈 묘미<br>공급 계약</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card">
+          <div class="tl-date">2021년 4월</div>
+          <div class="tl-content">지바 캠핑카홈쇼핑<br>판매 계약</div>
+        </div>
+      </div>
+
+      <!-- 2022–현재 -->
+      <div class="tl-era"><span class="tl-era-label">2022 — 현재</span></div>
+
+      <div class="tl-item right">
+        <div class="tl-card">
+          <div class="tl-date">2024년 3월</div>
+          <div class="tl-content">파크골프채 홈쇼핑<br>판매 계약 체결</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-card" style="border-color:#f0a500; box-shadow: 0 4px 20px rgba(240,165,0,0.2);">
+          <div class="tl-date" style="color:#0d2137;">2025년 4월</div>
+          <div class="tl-content">KCC 인테리어 구독상품<br>— <span style="color:#f0a500;">현재 진행 중</span></div>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-card" style="border-color:#f0a500; box-shadow: 0 4px 20px rgba(240,165,0,0.2);">
+          <div class="tl-date" style="color:#0d2137;">2025년 10월</div>
+          <div class="tl-content">아정당 상조 가전 결합상품<br>— <span style="color:#f0a500;">현재 진행 중</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ 주요 활동 영역 ══ -->
+<section class="sec">
+  <div class="container">
+    <div class="sec-label">ACTIVITIES</div>
+    <h2 class="sec-title">주요 활동 영역</h2>
+    <p class="sec-desc">20년간 다양한 채널과 파트너사를 통해 쌓아온 비즈니스 역량</p>
+    <div class="activity-grid">
+
+      <div class="act-card">
+        <img class="act-img" src="https://cdn.imweb.me/thumbnail/20251104/85dac078bddc2.png" alt="홈쇼핑 & 온라인" onerror="this.style.background='#e8f0fe'" />
+        <div class="act-body">
+          <span class="act-tag">홈쇼핑 & 온라인</span>
+          <h3>TV홈쇼핑 · 메이져 쇼핑몰 · 오픈마켓</h3>
+          <p>GS·현대·롯데 홈쇼핑과 주요 온라인 쇼핑몰을 통한 다채널 판매 운영</p>
+          <ul>
+            <li>LG 가전 · LG PC (노트북, 일체형PC, G Pad)</li>
+            <li>중소기업 TV · 안마의자 등</li>
+            <li>다양한 카테고리 취급</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="act-card">
+        <img class="act-img" src="https://cdn.imweb.me/thumbnail/20251104/d66e1cc01c6f8.png" alt="홈쇼핑 방송대행" onerror="this.style.background='#e8f0fe'" />
+        <div class="act-body">
+          <span class="act-tag">홈쇼핑 방송대행</span>
+          <h3>기획부터 방송까지 원스톱</h3>
+          <p>상품 기획부터 방송 진행까지 전 과정을 대행하는 체계적인 홈쇼핑 방송 프로세스</p>
+          <ul>
+            <li>상품기획 → 상품제안 → 상품선정</li>
+            <li>홈쇼핑 사전미팅 → 판넬·소품 준비</li>
+            <li>방송 샘플 준비 → 방송 진행</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="act-card">
+        <img class="act-img" src="https://cdn.imweb.me/thumbnail/20260222/351bd547c31d7.png" alt="금융 및 기업특판" onerror="this.style.background='#e8f0fe'" />
+        <div class="act-body">
+          <span class="act-tag">금융 및 기업특판</span>
+          <h3>금융사 · 생명사 벤더 영업</h3>
+          <p>ING생명, NH농협생명, 프리드라이프 등 주요 금융·보험사 벤더사 등록 및 B2B 영업</p>
+          <ul>
+            <li>LG 가전 (TV, 냉장고 등)</li>
+            <li>LG PC 기업특판</li>
+            <li>금융사 맞춤형 결합상품 기획</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section style="background:#f0f4f8; padding:72px 0; text-align:center;">
+  <div class="container">
+    <p style="font-size:13px;font-weight:700;letter-spacing:0.15em;color:#f0a500;margin-bottom:12px;">PARTNERSHIP</p>
+    <h2 style="font-size:clamp(22px,4vw,36px);font-weight:900;color:#0d2137;margin-bottom:14px;">20년의 경험과 함께<br>새로운 비즈니스를 시작하세요</h2>
+    <p style="font-size:15px;color:#666;margin-bottom:36px;line-height:1.8;">티유디지털의 검증된 네트워크와 노하우로<br>파트너사의 성공을 함께 설계합니다.</p>
+    <a href="index.html#contact" style="display:inline-block;background:#0d2137;color:#fff;font-size:16px;font-weight:800;padding:16px 40px;border-radius:12px;transition:background 0.15s;">파트너 문의하기 →</a>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+</script>
+</body>
+</html>
+
+

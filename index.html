@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<!-- Created: 2026-06-16 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>티유디지털 | 보이지 않는 기회를 설계하다</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+
+<!-- ══ 네비게이션 ══ -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="#" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="#about">회사소개</a>
+      <a href="history.html">회사연혁</a>
+      <a href="#services">사업영역</a>
+      <a href="#partner">파트너모집</a>
+      <a href="#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#about" onclick="toggleNav()">회사소개</a>
+    <a href="history.html" onclick="toggleNav()">회사연혁</a>
+    <a href="#services" onclick="toggleNav()">사업영역</a>
+    <a href="#partner" onclick="toggleNav()">파트너모집</a>
+    <a href="#contact" onclick="toggleNav()">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 히어로 ══ -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://cdn.imweb.me/upload/S202510291e0cd01ddaddf/4cf2da48e2b1a.png" alt="메인 배너" />
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="container hero-inner">
+    <p class="hero-tag">주식회사 티유디지털</p>
+    <h1>보이지 않는 기회까지<br><span>사업의 디테일을 설계하다</span></h1>
+    <p class="hero-sub">기획부터 성장까지, 토털 비즈니스 솔루션</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="#partner">파트너 모집 보기</a>
+      <a class="btn-ghost" href="#services">사업영역 알아보기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 회사 소개 ══ -->
+<section class="section bg-navy-soft" id="about">
+  <div class="container">
+    <div class="section-label center">ABOUT US</div>
+    <h2 class="section-title center">2005년부터 이어온<br>비즈니스 설계의 전문가</h2>
+    <p class="section-desc center">티유디지털은 홈쇼핑, 상조가전결합, 인테리어 구독, 금융솔루션을 아우르는 토털 비즈니스 파트너입니다.<br>보이지 않는 기회를 발굴하고, 파트너의 성공을 함께 설계합니다.</p>
+    <div class="about-features">
+      <div class="about-feature">
+        <div class="about-feature-icon">🏢</div>
+        <h4>20년 이상의 업력</h4>
+        <p>2005년 설립 이후 꾸준한 성장으로 신뢰할 수 있는 비즈니스 파트너로 자리매김했습니다.</p>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🤝</div>
+        <h4>핵심사업</h4>
+        <p>KCC홈씨씨 창호구독, LG가전 B2B, 상조사 결합상품, 금융솔루션 등 전문적인 사업을 구축하고 있습니다.</p>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">💡</div>
+        <h4>토탈 솔루션 파트너</h4>
+        <p>상품기획, 마케팅, 운영, 금융까지 완전한 솔루션으로 파트너의 수익을 함께 만들어 갑니다.</p>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">💳</div>
+        <h4>공식 금융 네트워크</h4>
+        <p>캐피탈사·카드사와의 공식 파트너십으로 최대 60개월 맞춤형 금융 솔루션을 설계합니다.</p>
+      </div>
+    </div>
+    <div class="history-banner">
+      <div class="history-banner-text">
+        <p class="history-banner-eyebrow">2005 — 현재</p>
+        <h3>티유디지털의 연혁과 활동내용을 확인하세요</h3>
+        <p class="history-banner-desc">20년간의 도전과 성장, 그리고 파트너와 함께 써온 이야기</p>
+      </div>
+      <a href="history.html" class="history-banner-btn">티유디지털 History →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 사업영역 ══ -->
+<section class="section bg-gray" id="services">
+  <div class="container">
+    <div class="section-label center">BUSINESS</div>
+    <h2 class="section-title center">핵심사업 영역</h2>
+    <p class="section-desc center">각 분야 최고의 파트너사와 함께 차별화된 비즈니스 솔루션을 제공합니다</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-img">
+          <img src="https://cdn.imweb.me/thumbnail/20260222/8259e577ae171.png" alt="KCC홈씨씨 창호" />
+        </div>
+        <div class="card-body">
+          <div class="card-tag kcc">KCC홈씨씨</div>
+          <h3>창호 구독서비스</h3>
+          <p>창호 교체 마케팅 & DB 확보부터 60개월 구독 서비스, 시공/고객관리 시스템까지 원스톱으로 제공합니다.</p>
+          <ul>
+            <li>창호 교체 마케팅 &amp; DB</li>
+            <li>60개월 구독 서비스</li>
+            <li>시공 / 고객관리 시스템</li>
+          </ul>
+          <a class="btn-more" href="kcc.html">자세히 알아보기 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img">
+          <img src="https://cdn.imweb.me/thumbnail/20260222/351bd547c31d7.png" alt="LG가전 B2B" />
+        </div>
+        <div class="card-body">
+          <div class="card-tag lg">LG가전 B2B</div>
+          <h3>토털 솔루션</h3>
+          <p>결합상품 기획부터 단독 사은품 구성, LG가전 구독 제휴할인까지 B2B 맞춤형 솔루션을 제공합니다.</p>
+          <ul>
+            <li>결합상품 기획</li>
+            <li>단독 사은품 구성</li>
+            <li>LG가전 구독 제휴할인</li>
+          </ul>
+          <a class="btn-more" href="lg.html">자세히 알아보기 →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img">
+          <img src="https://cdn.imweb.me/thumbnail/20260222/025644c912ef1.png" alt="금융 솔루션" />
+        </div>
+        <div class="card-body">
+          <div class="card-tag fin">금융사 에이전시</div>
+          <h3>금융 솔루션</h3>
+          <p>캐피탈사·카드사 네트워크를 기반으로 최대 60개월 할부·구독, 맞춤형 금융 솔루션을 설계합니다.</p>
+          <ul>
+            <li>캐피탈사·카드사 네트워크</li>
+            <li>최대 60개월 할부·구독</li>
+            <li>맞춤형 금융 솔루션</li>
+          </ul>
+          <a class="btn-more" href="finance.html">자세히 알아보기 →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ 파트너 모집 ══ -->
+<section class="section" id="partner">
+  <div class="container">
+    <div class="section-label center">PARTNERSHIP</div>
+    <h2 class="section-title center">함께 성장할 파트너를<br>모집합니다</h2>
+    <div class="partner-cards">
+
+      <div class="partner-card">
+        <div class="partner-img">
+          <img src="https://cdn.imweb.me/thumbnail/20260222/ac1de9a0ec435.jpg" alt="KCC 파트너" />
+        </div>
+        <div class="partner-body">
+          <h3>60개월 공식 구독 파트너</h3>
+          <ul>
+            <li>초기 비용 부담 Zero</li>
+            <li>본사 직영 시공 &amp; 마케팅 지원</li>
+            <li>안정적인 추가 수익 모델 제공</li>
+          </ul>
+          <a class="btn-partner" href="#contact">파트너 문의하기 →</a>
+        </div>
+      </div>
+
+      <div class="partner-card">
+        <div class="partner-img">
+          <img src="https://cdn.imweb.me/thumbnail/20260222/6dd130c94cbf3.jpg" alt="LG가전 파트너" />
+        </div>
+        <div class="partner-body">
+          <h3>결합·구독 제휴 파트너</h3>
+          <ul>
+            <li>LG가전 공급 &amp; 맞춤형 결합상품 기획</li>
+            <li>단독 사은품 및 제휴 할인 지원</li>
+            <li>다양한 업종과의 협업 기회</li>
+          </ul>
+          <a class="btn-partner" href="#contact">파트너 문의하기 →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ 문의하기 ══ -->
+<section class="section bg-dark" id="contact">
+  <div class="container">
+    <div class="section-label light center">CONTACT</div>
+    <h2 class="section-title light center">비즈니스 문의</h2>
+    <p class="section-desc light center">파트너십 및 제휴 문의는 아래 채널로 연락해 주세요.</p>
+    <div class="contact-grid">
+      <a class="contact-item" href="tel:07071161149">
+        <div class="contact-icon">📞</div>
+        <div class="contact-label">전화</div>
+        <div class="contact-value">070-7116-1149</div>
+      </a>
+      <div class="contact-item">
+        <div class="contact-icon">📠</div>
+        <div class="contact-label">팩스</div>
+        <div class="contact-value">02-837-1206</div>
+      </div>
+      <a class="contact-item" href="mailto:kingsand80@naver.com">
+        <div class="contact-icon">✉️</div>
+        <div class="contact-label">이메일</div>
+        <div class="contact-value">kingsand80@naver.com</div>
+      </a>
+      <div class="contact-item kakao">
+        <img src="https://cdn.imweb.me/thumbnail/20260205/9986732698b7e.png" alt="카카오톡" class="contact-kakao-img" onerror="this.style.display='none'" />
+        <div class="contact-label">카카오톡</div>
+        <div class="contact-value">티유디지털</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 푸터 ══ -->
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)<br>
+      통신판매업신고번호: 제2008-서울금천00735 &nbsp;|&nbsp; 고객센터: 070-7116-1149
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
+
+

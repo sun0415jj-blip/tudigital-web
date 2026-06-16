@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!-- Created: 2026-06-16 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>금융 솔루션 | 티유디지털</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+  <style>
+    /* ── 히어로 ── */
+    .fin-hero {
+      background: linear-gradient(135deg, #0d3320 0%, #1b5e20 60%, #0d3320 100%);
+      color: #fff;
+      padding: 90px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .fin-hero::before {
+      content: 'FINANCE';
+      position: absolute;
+      font-size: 160px; font-weight: 900;
+      color: rgba(255,255,255,0.04);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap; pointer-events: none;
+    }
+    .fin-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 5px 18px; border-radius: 20px;
+      margin-bottom: 20px; letter-spacing: 0.1em;
+    }
+    .fin-hero h1 {
+      font-size: clamp(28px,5vw,50px);
+      font-weight: 900; line-height: 1.25; margin-bottom: 16px;
+    }
+    .fin-hero h1 em { color: #a5d6a7; font-style: normal; }
+    .fin-hero p { font-size: 17px; color: rgba(255,255,255,0.75); margin-bottom: 48px; }
+    .fin-hero-stats {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    }
+    .fin-stat-item {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px; padding: 18px 28px; text-align: center;
+    }
+    .fin-stat-item strong { display: block; font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .fin-stat-item span { font-size: 12px; color: rgba(255,255,255,0.65); }
+
+    /* ── 공통 섹션 ── */
+    .sec { padding: 88px 0; }
+    .sec.gray { background: #f5f7fa; }
+    .sec.dark { background: #0d2418; color: #fff; }
+    .sec-label { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; color: #2e7d32; margin-bottom: 10px; text-transform: uppercase; }
+    .sec-label.light { color: rgba(255,255,255,0.5); }
+    .sec-title { font-size: clamp(24px,4vw,38px); font-weight: 900; line-height: 1.3; color: #0d2418; margin-bottom: 14px; word-break: keep-all; }
+    .sec-title.light { color: #fff; }
+    .sec-desc { font-size: 15px; color: #666; line-height: 1.85; margin-bottom: 52px; word-break: keep-all; }
+    .sec-desc.light { color: rgba(255,255,255,0.7); }
+
+    /* ── 이미지 + 텍스트 ── */
+    .about-split {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .about-split img {
+      width: 100%; border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+    }
+    .about-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; }
+    .about-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 15px; color: #333; font-weight: 600;
+    }
+    .about-list li::before {
+      content: "✓"; color: #2e7d32; font-weight: 900;
+      font-size: 16px; flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── POINT 카드 ── */
+    .point-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+    }
+    .point-card {
+      background: #fff; border-radius: 20px; padding: 44px 36px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .point-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(46,125,50,0.12); }
+    .point-label {
+      display: inline-block;
+      background: #e8f5e9; color: #2e7d32;
+      font-size: 11px; font-weight: 800;
+      padding: 4px 14px; border-radius: 20px;
+      letter-spacing: 0.1em; margin-bottom: 18px;
+    }
+    .point-icon { font-size: 40px; margin-bottom: 18px; }
+    .point-card h3 { font-size: 20px; font-weight: 900; color: #0d2418; margin-bottom: 14px; line-height: 1.35; }
+    .point-card p { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 20px; }
+    .point-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .point-card ul li { font-size: 14px; color: #444; font-weight: 600; padding-left: 18px; position: relative; }
+    .point-card ul li::before { content: '·'; position: absolute; left: 0; color: #2e7d32; font-weight: 900; font-size: 18px; line-height: 1.2; }
+
+    /* ── 핵심 솔루션 3개 ── */
+    .sol-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .sol-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px; padding: 36px 28px;
+      text-align: center; transition: background 0.2s;
+    }
+    .sol-card:hover { background: rgba(255,255,255,0.13); }
+    .sol-num {
+      font-size: 36px; font-weight: 900; color: #a5d6a7;
+      margin-bottom: 16px; line-height: 1;
+    }
+    .sol-card h4 { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .sol-card p { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.75; }
+
+    /* ── CTA ── */
+    .fin-cta {
+      background: linear-gradient(135deg, #0d3320 0%, #2e7d32 100%);
+      border-radius: 20px; padding: 56px 48px;
+      text-align: center; color: #fff;
+    }
+    .fin-cta h3 { font-size: clamp(22px,3vw,32px); font-weight: 900; margin-bottom: 14px; }
+    .fin-cta p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 32px; line-height: 1.75; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .about-split { grid-template-columns: 1fr; gap: 36px; }
+      .point-grid { grid-template-columns: 1fr; }
+      .sol-grid { grid-template-columns: 1fr; }
+      .fin-cta { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#about">회사소개</a>
+      <a href="index.html#services">사업영역</a>
+      <a href="index.html#partner">파트너모집</a>
+      <a href="index.html#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="index.html#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html#about" onclick="toggleNav()">회사소개</a>
+    <a href="index.html#services" onclick="toggleNav()">사업영역</a>
+    <a href="index.html#partner" onclick="toggleNav()">파트너모집</a>
+    <a href="index.html#contact" onclick="toggleNav()">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 히어로 ══ -->
+<section class="fin-hero">
+  <div class="container">
+    <a href="index.html" class="back-link" style="color:rgba(255,255,255,0.7);display:inline-block;margin-bottom:24px;font-size:14px;font-weight:600;">← 돌아가기</a>
+    <div class="fin-badge">금융사 에이전시</div>
+    <h1>성공적인 비즈니스를 위한<br><em>차별화된 금융 시스템</em></h1>
+    <p>구독과 할부 팩토링을 결합한 비즈니스 통합 솔루션</p>
+    <div class="fin-hero-stats">
+      <div class="fin-stat-item">
+        <strong>최대 60개월</strong>
+        <span>할부·구독 프로그램</span>
+      </div>
+      <div class="fin-stat-item">
+        <strong>캐피탈·카드사</strong>
+        <span>공식 에이전시 계약</span>
+      </div>
+      <div class="fin-stat-item">
+        <strong>무담보</strong>
+        <span>특별 한도 제공</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 소개 ══ -->
+<section class="sec">
+  <div class="container">
+    <div class="about-split">
+      <img src="https://cdn.imweb.me/thumbnail/20260222/025644c912ef1.png" alt="금융 솔루션" />
+      <div>
+        <div class="sec-label">ABOUT</div>
+        <h2 class="sec-title">검증된 이력과 깊은 통찰로<br>곁을 지키는 성공 파트너</h2>
+        <p style="font-size:15px;color:#555;line-height:1.85;margin-bottom:0;">캐피탈사 및 카드사와의 공식 에이전시 계약을 기반으로 최대 60개월 할부·구독 프로그램을 파트너사에 맞게 설계합니다. 고객의 부담을 낮추고 파트너의 매출을 높이는 금융 구조를 만들어드립니다.</p>
+        <ul class="about-list">
+          <li>주요 캐피탈사·카드사 공식 에이전시</li>
+          <li>최대 60개월 할부·구독 설계</li>
+          <li>무담보 특별 한도 제공</li>
+          <li>파트너사 업종 맞춤형 금융 구조 개별 설계</li>
+          <li>초기 비용 부담 Zero 솔루션</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 핵심 포인트 ══ -->
+<section class="sec gray">
+  <div class="container">
+    <div class="sec-label">POINT</div>
+    <h2 class="sec-title">차별화된 2가지 핵심 포인트</h2>
+    <p class="sec-desc">티유디지털 금융 솔루션만의 강점으로 파트너의 비즈니스를 한 단계 높입니다</p>
+    <div class="point-grid">
+      <div class="point-card">
+        <div class="point-label">POINT 01</div>
+        <div class="point-icon">💳</div>
+        <h3>혁신적 금융 결합 마케팅</h3>
+        <p>초기 비용 부담을 없앤 구독 및 할부 팩토링 시스템으로 고객 진입 장벽을 낮추고 파트너의 매출 성장을 실현합니다.</p>
+        <ul>
+          <li>구독·할부 팩토링 결합 구조</li>
+          <li>고객 초기 비용 부담 Zero</li>
+          <li>계약 성사율 대폭 향상</li>
+          <li>안정적인 현금흐름 확보</li>
+        </ul>
+      </div>
+      <div class="point-card">
+        <div class="point-label">POINT 02</div>
+        <div class="point-icon">🖥️</div>
+        <h3>비즈니스 통합 운영 플랫폼</h3>
+        <p>디지털 운영 환경 제공으로 리스크를 최소화하고 운영 효율을 극대화합니다. 파트너 전용 어드민으로 실시간 관리가 가능합니다.</p>
+        <ul>
+          <li>파트너 전용 어드민 시스템</li>
+          <li>실시간 계약·정산 현황 확인</li>
+          <li>리스크 최소화 운영 환경</li>
+          <li>빠른 정산 및 지원 체계</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 핵심 솔루션 ══ -->
+<section class="sec dark">
+  <div class="container">
+    <div class="sec-label light">SOLUTION</div>
+    <h2 class="sec-title light" style="margin-bottom:14px;">3가지 핵심 금융 솔루션</h2>
+    <p class="sec-desc light">파트너사 업종과 상품 특성에 최적화된 금융 구조를 설계합니다</p>
+    <div class="sol-grid">
+      <div class="sol-card">
+        <div class="sol-num">01</div>
+        <h4>캐피탈사·카드사 네트워크</h4>
+        <p>주요 금융사와의 공식 파트너십으로 안정적이고 검증된 금융 채널을 제공합니다. 한국캐피탈 등 주요 금융사와 직접 연결됩니다.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">02</div>
+        <h4>최대 60개월 할부·구독</h4>
+        <p>고객 부담을 최소화하는 장기 할부·구독 프로그램으로 계약 성사율을 높이고 파트너의 안정적인 수익 구조를 만듭니다.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">03</div>
+        <h4>맞춤형 금융 솔루션 설계</h4>
+        <p>파트너사 업종과 상품 특성에 맞는 최적의 금융 구조를 개별 설계합니다. 창호·가전·상조 등 다양한 업종에 적용 가능합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sec">
+  <div class="container">
+    <div class="fin-cta">
+      <h3>금융 솔루션이 필요하신가요?</h3>
+      <p>파트너사에 최적화된 금융 구조 설계를<br>티유디지털이 함께 만들어드립니다.</p>
+      <a class="btn-primary" href="index.html#contact">문의하기 →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)<br>
+      고객센터: 070-7116-1149 &nbsp;|&nbsp; 팩스: 02-837-1206 &nbsp;|&nbsp; 이메일: kingsand80@naver.com
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

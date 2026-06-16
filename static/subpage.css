@@ -1,0 +1,103 @@
+/* Created: 2026-06-16 */
+
+/* ── 서브 히어로 ── */
+.sub-hero {
+  padding: 80px 0 70px;
+  color: #fff;
+}
+.back-link {
+  display: inline-block;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: #fff; }
+.sub-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.06em;
+}
+.kcc-tag { background: rgba(255,255,255,0.2); color: #fff; }
+.lg-tag  { background: rgba(255,255,255,0.2); color: #fff; }
+.fin-tag { background: rgba(255,255,255,0.2); color: #fff; }
+.sub-hero h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.sub-hero p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ── 서브 본문 ── */
+.sub-img-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 60px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+}
+.sub-img-wrap img { width: 100%; display: block; }
+
+.sub-content { margin-bottom: 60px; }
+.sub-content .section-desc { margin-bottom: 40px; }
+
+.sub-features { display: flex; flex-direction: column; gap: 24px; }
+.sub-feature {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px;
+  background: #f5f7fa;
+  border-radius: 12px;
+  border-left: 4px solid var(--gold);
+}
+.sub-feature-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 2px;
+}
+.sub-feature h4 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.sub-feature p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ── CTA ── */
+.sub-cta {
+  background: var(--navy);
+  border-radius: 16px;
+  padding: 48px 40px;
+  text-align: center;
+  color: #fff;
+}
+.sub-cta h3 {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.sub-cta p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 28px;
+}
+
+@media (max-width: 600px) {
+  .sub-hero { padding: 60px 0 50px; }
+  .sub-cta { padding: 36px 24px; }
+}

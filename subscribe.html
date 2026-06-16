@@ -1,0 +1,727 @@
+﻿<!-- Created: 2026-06-16 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구독 신청 | KCC홈씨씨 창호</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+  <style>
+    /* ── 서비스 탭 바 ── */
+    .service-tab-bar {
+      background: #0d2137;
+      padding: 16px 0;
+      box-shadow: 0 4px 16px rgba(13,33,55,0.25);
+    }
+    .service-tab-bar .container {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+    .stab {
+      display: inline-block;
+      padding: 13px 32px;
+      font-size: 15px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      transition: all 0.18s;
+    }
+    .stab:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .stab.active { background: #fff; color: #0d2137; border-color: #fff; }
+    .stab-mkt { background: #4fc3f7; color: #0a1e35 !important; border-color: #4fc3f7; }
+    .stab-mkt:hover { background: #81d4fa; border-color: #81d4fa; }
+    .stab-cta { background: #f0a500; color: #0d2137 !important; border-color: #f0a500; }
+    .stab-cta:hover { background: #ffc107; border-color: #ffc107; }
+
+    /* ── 히어로 ── */
+    .sub-hero {
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      color: #fff;
+      padding: 80px 0 72px;
+      text-align: center;
+    }
+    .sub-hero h1 {
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
+    .sub-hero p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.75;
+    }
+
+    /* ── 폼 영역 ── */
+    .form-section {
+      background: #f5f7fa;
+      padding: 64px 0 80px;
+    }
+    .form-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── 스텝 뱃지 ── */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d2137;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 24px;
+      margin-bottom: 24px;
+    }
+    .step-badge span {
+      background: #f0a500;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── 폼 카드 ── */
+    .form-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: 0 4px 24px rgba(13,33,55,0.09);
+      margin-bottom: 24px;
+    }
+    .form-card h2 {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0d2137;
+      margin-bottom: 28px;
+    }
+
+    /* ── 폼 필드 ── */
+    .form-group {
+      margin-bottom: 22px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .form-group label .req {
+      color: #e53e3e;
+      margin-left: 3px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #222;
+      background: #fafbfc;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: #0d2137;
+      box-shadow: 0 0 0 3px rgba(13,33,55,0.08);
+      background: #fff;
+    }
+    .form-input::placeholder { color: #aaa; }
+
+    /* ── 라디오 그룹 ── */
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .radio-group input[type="radio"] {
+      display: none;
+    }
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 22px;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 0;
+      background: #fafbfc;
+    }
+    .radio-group input[type="radio"]:checked + label {
+      background: #0d2137;
+      border-color: #0d2137;
+      color: #fff;
+    }
+    .radio-group label:hover {
+      border-color: #0d2137;
+      color: #0d2137;
+    }
+
+    /* ── 동의 체크박스 ── */
+    .agree-box {
+      background: #f5f7fa;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+    .agree-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .agree-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: #0d2137;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .agree-check span {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+    .credit-notice {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #7a5a00;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    /* ── 버튼 ── */
+    .btn-next {
+      width: 100%;
+      padding: 16px;
+      background: #0d2137;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn-next:hover {
+      background: #1a3a5c;
+      transform: translateY(-1px);
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: #f0a500;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn-submit:hover {
+      background: #d4920a;
+      transform: translateY(-1px);
+    }
+
+    /* ── 파일 업로드 ── */
+    .upload-group { margin-bottom: 20px; }
+    .upload-group .upload-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .upload-group .upload-label .req { color: #e53e3e; margin-left: 3px; }
+    .upload-sub-label {
+      font-size: 12px; color: #888; margin-bottom: 8px; line-height: 1.5;
+    }
+    .upload-group input[type="file"] { display: none; }
+    .upload-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .btn-file-upload {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 11px 18px;
+      background: #f0f4f8;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d2137;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-file-upload:hover { background: #e2e8f0; border-color: #0d2137; }
+    .file-name-display {
+      flex: 1;
+      font-size: 13px;
+      color: #888;
+      background: #fafbfc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-name-display.has-file { color: #0d2137; font-weight: 600; border-color: #0d2137; }
+    .btn-file-remove {
+      display: none;
+      background: none;
+      border: none;
+      color: #e53e3e;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 6px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .btn-file-remove.visible { display: inline-flex; }
+    .upload-hint { font-size: 12px; color: #bbb; margin-top: 5px; }
+
+    /* ── 업로드 안내 문구 ── */
+    .upload-guide {
+      background: #e8f0fe;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 14px;
+      color: #1a3a5c;
+      font-weight: 600;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .upload-guide ul {
+      margin: 8px 0 0 18px;
+      font-size: 13px;
+      font-weight: 400;
+      color: #3a5a8c;
+    }
+    .upload-guide ul li { margin-bottom: 3px; }
+
+    /* ── Step2 이름/핸드폰 확인 ── */
+    .step2-info-row {
+      display: flex; gap: 12px; margin-bottom: 22px;
+    }
+    .step2-info-row .form-group { flex: 1; margin-bottom: 0; }
+
+    /* ── 완료 메시지 ── */
+    .complete-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 56px 36px;
+      box-shadow: 0 4px 24px rgba(13,33,55,0.09);
+      text-align: center;
+    }
+    .complete-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    .complete-card h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: #0d2137;
+      margin-bottom: 12px;
+    }
+    .complete-card p {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .btn-home {
+      display: inline-block;
+      background: #0d2137;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 14px 36px;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+    .btn-home:hover { background: #1a3a5c; }
+
+    /* ── 판매사/공급사 정보 ── */
+    .company-info-box {
+      max-width: 640px;
+      margin: 0 auto 0;
+      padding: 0 20px;
+    }
+    .company-info-inner {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-top: 24px;
+    }
+    .company-info-inner p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.8;
+    }
+    .company-info-inner strong {
+      color: #333;
+      font-weight: 700;
+    }
+    .company-divider {
+      border: none;
+      border-top: 1px solid #e8ecf0;
+      margin: 12px 0;
+    }
+
+    /* ── hidden ── */
+    .hidden { display: none !important; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 640px) {
+      .form-card {
+        padding: 28px 20px;
+      }
+      .radio-group label {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ 헤더 ══ -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#about">회사소개</a>
+      <a href="index.html#services">사업영역</a>
+      <a href="index.html#partner">파트너모집</a>
+      <a href="index.html#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="index.html#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">홈으로</a>
+    <a href="kcc.html">구독서비스</a>
+    <a href="index.html#contact">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 서비스 탭 바 ══ -->
+<div class="service-tab-bar">
+  <div class="container">
+    <a href="marketing.html" class="stab stab-mkt">📣 마케팅 서비스</a>
+    <a href="subscribe.html" class="stab stab-cta active" style="color:#0d2137!important;">✍️ 구독 신청</a>
+  </div>
+</div>
+
+<!-- ══ 히어로 ══ -->
+<section class="sub-hero">
+  <div class="container">
+    <h1>KCC홈씨씨 창호<br>구독 신청</h1>
+    <p>부담은 줄이고, 창호의 기준은 높이다<br>목돈 걱정 없이 시작하는 KCC 창호</p>
+  </div>
+</section>
+
+<!-- ══ 폼 섹션 ══ -->
+<section class="form-section">
+
+  <!-- STEP 1 -->
+  <div class="form-wrap" id="step1">
+    <div class="step-badge"><span>1</span> STEP 1 · 기본정보 입력</div>
+    <div class="form-card">
+      <h2>기본정보를 입력해 주세요</h2>
+
+      <div class="form-group">
+        <label for="name">이름 <span class="req">*</span></label>
+        <input type="text" id="name" class="form-input" placeholder="홍길동" />
+      </div>
+
+      <div class="form-group">
+        <label for="birth">생년월일 <span class="req">*</span></label>
+        <input type="text" id="birth" class="form-input" placeholder="830214 (6자리)" maxlength="6" />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">핸드폰 번호 <span class="req">*</span></label>
+        <input type="tel" id="phone" class="form-input" placeholder="010-0000-0000" />
+      </div>
+
+      <div class="form-group">
+        <label>구독기간 선택 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="period" id="p24" value="24" />
+          <label for="p24">24개월</label>
+          <input type="radio" name="period" id="p36" value="36" />
+          <label for="p36">36개월</label>
+          <input type="radio" name="period" id="p48" value="48" />
+          <label for="p48">48개월</label>
+          <input type="radio" name="period" id="p60" value="60" checked />
+          <label for="p60">60개월</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>자동이체일 선택 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="debit" id="d10" value="10" />
+          <label for="d10">10일</label>
+          <input type="radio" name="debit" id="d15" value="15" />
+          <label for="d15">15일</label>
+          <input type="radio" name="debit" id="d20" value="20" />
+          <label for="d20">20일</label>
+          <input type="radio" name="debit" id="d25" value="25" />
+          <label for="d25">25일</label>
+          <input type="radio" name="debit" id="dlast" value="말일" />
+          <label for="dlast">말일</label>
+        </div>
+      </div>
+
+      <div class="agree-box">
+        <label class="agree-check">
+          <input type="checkbox" id="agreePrivacy" />
+          <span>개인정보 수집·이용에 동의합니다. (필수)<br><small style="font-weight:400;color:#888;">수집항목: 이름, 생년월일, 연락처 / 목적: 구독 서비스 신청 및 본인 확인</small></span>
+        </label>
+      </div>
+
+      <div class="credit-notice">
+        <span>⚠️</span>
+        본 신청은 한국캐피탈 신용조회 동의가 필요합니다.
+      </div>
+
+      <button class="btn-next" onclick="goStep2()">다음 단계로 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="form-wrap hidden" id="step2">
+    <div class="step-badge"><span>2</span> STEP 2 · 추가서류 업로드</div>
+    <div class="form-card">
+      <h2>■ 2단계 : 추가서류 업로드</h2>
+
+      <!-- 이름 / 핸드폰 확인 -->
+      <div class="step2-info-row">
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" id="name2" class="form-input" readonly style="background:#f5f7fa;color:#666;" />
+        </div>
+        <div class="form-group">
+          <label>핸드폰</label>
+          <input type="text" id="phone2" class="form-input" readonly style="background:#f5f7fa;color:#666;" />
+        </div>
+      </div>
+
+      <div class="upload-guide">
+        📎 &lt;신용 조회 동의&gt; 완료 후, 필요 서류를 업로드 해주세요.
+        <ul>
+          <li>(거주 주택일 경우) 본인 소유 등기부등본</li>
+          <li>(신규 매매일 경우) 부동산 매매계약서</li>
+          <li>신분증 사본</li>
+          <li>(자동이체) 통장 사본</li>
+        </ul>
+      </div>
+
+      <!-- 등기부등본 / 매매계약서 -->
+      <div class="upload-group">
+        <span class="upload-label">등기부등본 첨부 (또는 매매계약서) <span class="req">*</span></span>
+        <p class="upload-sub-label">거주 주택 → 본인 소유 등기부등본 &nbsp;|&nbsp; 신규 매매 → 부동산 매매계약서</p>
+        <input type="file" id="doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc1','name-doc1','remove-doc1')" />
+        <div class="upload-row">
+          <label for="doc1" class="btn-file-upload">📂 파일 올리기</label>
+          <span class="file-name-display" id="name-doc1">선택된 파일 없음</span>
+          <button type="button" class="btn-file-remove" id="remove-doc1" onclick="removeFile('doc1','name-doc1','remove-doc1')">✕</button>
+        </div>
+        <p class="upload-hint">JPG, PNG, PDF 업로드 가능</p>
+      </div>
+
+      <!-- 신분증 -->
+      <div class="upload-group">
+        <span class="upload-label">주민등록증 첨부 <span class="req">*</span></span>
+        <p class="upload-sub-label">주민등록증 또는 운전면허증 앞면</p>
+        <input type="file" id="doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc2','name-doc2','remove-doc2')" />
+        <div class="upload-row">
+          <label for="doc2" class="btn-file-upload">📂 파일 올리기</label>
+          <span class="file-name-display" id="name-doc2">선택된 파일 없음</span>
+          <button type="button" class="btn-file-remove" id="remove-doc2" onclick="removeFile('doc2','name-doc2','remove-doc2')">✕</button>
+        </div>
+        <p class="upload-hint">JPG, PNG, PDF 업로드 가능</p>
+      </div>
+
+      <!-- 통장 사본 -->
+      <div class="upload-group">
+        <span class="upload-label">통장사본 첨부 <span class="req">*</span></span>
+        <p class="upload-sub-label">자동이체 출금 계좌 통장 앞면</p>
+        <input type="file" id="doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc3','name-doc3','remove-doc3')" />
+        <div class="upload-row">
+          <label for="doc3" class="btn-file-upload">📂 파일 올리기</label>
+          <span class="file-name-display" id="name-doc3">선택된 파일 없음</span>
+          <button type="button" class="btn-file-remove" id="remove-doc3" onclick="removeFile('doc3','name-doc3','remove-doc3')">✕</button>
+        </div>
+        <p class="upload-hint">JPG, PNG, PDF 업로드 가능</p>
+      </div>
+
+      <button class="btn-submit" onclick="submitForm()">제출하기</button>
+    </div>
+  </div>
+
+  <!-- 완료 메시지 -->
+  <div class="form-wrap hidden" id="complete">
+    <div class="complete-card">
+      <div class="complete-icon">✅</div>
+      <h2>신청이 완료되었습니다!</h2>
+      <p>담당자가 검토 후 빠르게 연락드리겠습니다.<br>영업일 기준 1~2일 내 연락드리니 잠시 기다려 주세요.</p>
+      <a class="btn-home" href="index.html">홈으로 돌아가기</a>
+    </div>
+  </div>
+
+  <!-- 판매사/공급사 정보 -->
+  <div class="company-info-box">
+    <div class="company-info-inner">
+      <p><strong>판매사:</strong> (주)티유디지털 &nbsp;|&nbsp; 대표: 김정열 &nbsp;|&nbsp; 사업자번호: 220-87-15092 &nbsp;|&nbsp; 고객센터: 1588-0883</p>
+      <hr class="company-divider" />
+      <p><strong>금융사:</strong> (주)한국캐피탈</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══ 푸터 ══ -->
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('open');
+  }
+
+  function goStep2() {
+    const name = document.getElementById('name').value.trim();
+    const birth = document.getElementById('birth').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const agreed = document.getElementById('agreePrivacy').checked;
+    const debitSelected = document.querySelector('input[name="debit"]:checked');
+
+    if (!name) {
+      alert('이름을 입력해 주세요.');
+      document.getElementById('name').focus();
+      return;
+    }
+    if (!birth || birth.length !== 6 || !/^\d{6}$/.test(birth)) {
+      alert('생년월일 6자리를 정확히 입력해 주세요. (예: 830214)');
+      document.getElementById('birth').focus();
+      return;
+    }
+    if (!phone) {
+      alert('핸드폰 번호를 입력해 주세요.');
+      document.getElementById('phone').focus();
+      return;
+    }
+    if (!debitSelected) {
+      alert('자동이체일을 선택해 주세요.');
+      return;
+    }
+    if (!agreed) {
+      alert('개인정보 수집·이용 동의가 필요합니다.');
+      return;
+    }
+
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    // step2에 이름·핸드폰 자동 채움
+    document.getElementById('name2').value = name;
+    document.getElementById('phone2').value = phone;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function handleFile(inputId, nameId, removeId) {
+    const file = document.getElementById(inputId).files[0];
+    const nameEl = document.getElementById(nameId);
+    const removeEl = document.getElementById(removeId);
+    if (file) {
+      nameEl.textContent = file.name;
+      nameEl.classList.add('has-file');
+      removeEl.classList.add('visible');
+    }
+  }
+
+  function removeFile(inputId, nameId, removeId) {
+    document.getElementById(inputId).value = '';
+    const nameEl = document.getElementById(nameId);
+    const removeEl = document.getElementById(removeId);
+    nameEl.textContent = '선택된 파일 없음';
+    nameEl.classList.remove('has-file');
+    removeEl.classList.remove('visible');
+  }
+
+  function submitForm() {
+    const doc1 = document.getElementById('doc1').files.length;
+    const doc2 = document.getElementById('doc2').files.length;
+    const doc3 = document.getElementById('doc3').files.length;
+
+    if (!doc1) {
+      alert('등기부등본 또는 부동산 매매계약서를 업로드해 주세요.');
+      return;
+    }
+    if (!doc2) {
+      alert('신분증 사본을 업로드해 주세요.');
+      return;
+    }
+    if (!doc3) {
+      alert('통장 사본을 업로드해 주세요.');
+      return;
+    }
+
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('complete').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
+
+

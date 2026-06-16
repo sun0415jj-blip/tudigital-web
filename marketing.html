@@ -1,0 +1,443 @@
+﻿<!-- Created: 2026-06-16 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마케팅 서비스 | 티유디지털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+  <style>
+    /* ── 서비스 탭 바 ── */
+    .service-tab-bar {
+      background: #0d2137;
+      padding: 16px 0;
+      box-shadow: 0 4px 16px rgba(13,33,55,0.25);
+    }
+    .service-tab-bar .container {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+    .stab {
+      display: inline-block;
+      padding: 13px 32px;
+      font-size: 15px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      transition: all 0.18s;
+    }
+    .stab:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .stab.active { background: #fff; color: #0d2137; border-color: #fff; }
+    .stab-mkt { background: #4fc3f7; color: #0a1e35 !important; border-color: #4fc3f7; }
+    .stab-mkt:hover { background: #81d4fa; border-color: #81d4fa; }
+    .stab-cta { background: #f0a500; color: #0d2137 !important; border-color: #f0a500; }
+    .stab-cta:hover { background: #ffc107; border-color: #ffc107; }
+
+    /* ── 히어로 ── */
+    .mkt-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 96px 0 80px;
+      text-align: center;
+    }
+    .mkt-badge {
+      display: inline-block;
+      background: rgba(240,165,0,0.18);
+      color: #f0a500;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(240,165,0,0.35);
+      margin-bottom: 24px;
+    }
+    .mkt-hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+    .mkt-hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.75);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── SNS 채널 섹션 ── */
+    .sns-section {
+      background: #f5f7fa;
+      padding: 80px 0;
+    }
+    .section-label-sm {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #f0a500;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sns-section h2 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 900;
+      color: #0d2137;
+      margin-bottom: 48px;
+    }
+    .sns-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .sns-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 28px;
+      box-shadow: 0 2px 16px rgba(13,33,55,0.07);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .sns-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(13,33,55,0.12);
+    }
+    .sns-icon {
+      font-size: 40px;
+      margin-bottom: 18px;
+    }
+    .sns-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0d2137;
+      margin-bottom: 12px;
+    }
+    .sns-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    /* ── 서비스 특징 섹션 ── */
+    .feature-section {
+      background: #fff;
+      padding: 88px 0;
+    }
+    .feature-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .feature-text h2 {
+      font-size: clamp(20px, 2.8vw, 30px);
+      font-weight: 900;
+      color: #0d2137;
+      line-height: 1.35;
+      margin-bottom: 18px;
+    }
+    .feature-text > p {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.75;
+      margin-bottom: 32px;
+    }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: #333;
+      font-weight: 600;
+    }
+    .feature-list li::before {
+      content: "✓";
+      color: #f0a500;
+      font-weight: 900;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .stat-card {
+      background: #f5f7fa;
+      border-radius: 14px;
+      padding: 28px 22px;
+      text-align: center;
+      border: 1px solid #e8ecf0;
+      transition: background 0.2s;
+    }
+    .stat-card:hover { background: #edf0f5; }
+    .stat-card-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .stat-card p {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d2137;
+    }
+
+    /* ── 랜딩페이지 제작 섹션 ── */
+    .landing-section {
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      color: #fff;
+      padding: 88px 0;
+    }
+    .landing-section h2 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+    .landing-section > .container > p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.75;
+      margin-bottom: 56px;
+      max-width: 600px;
+    }
+    .landing-items {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .landing-item {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px;
+      padding: 32px 24px;
+      transition: background 0.2s;
+    }
+    .landing-item:hover { background: rgba(255,255,255,0.14); }
+    .landing-item-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .landing-item h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #f0c040;
+    }
+    .landing-item p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: #0d2137;
+      padding: 80px 0;
+      text-align: center;
+      color: #fff;
+    }
+    .cta-section h2 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+    .cta-section p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 36px;
+    }
+    .btn-cta {
+      display: inline-block;
+      background: #f0a500;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px 40px;
+      border-radius: 10px;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .btn-cta:hover {
+      background: #d4920a;
+      transform: translateY(-2px);
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .sns-cards {
+        grid-template-columns: 1fr;
+      }
+      .feature-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .landing-items {
+        grid-template-columns: 1fr;
+      }
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ 헤더 ══ -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#about">회사소개</a>
+      <a href="index.html#services">사업영역</a>
+      <a href="index.html#partner">파트너모집</a>
+      <a href="index.html#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="index.html#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">홈으로</a>
+    <a href="kcc.html">구독서비스</a>
+    <a href="index.html#contact">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 히어로 ══ -->
+<section class="mkt-hero">
+  <div class="container">
+    <div class="mkt-badge">MARKETING SERVICE</div>
+    <h1>양질의 DB와 전문 마케팅으로<br>계약률을 높이세요</h1>
+    <p class="mkt-hero-sub">유튜브·인스타그램·블로그 등 다양한 SNS와 광고 플랫폼을 활용한<br>맞춤형 마케팅 솔루션</p>
+  </div>
+</section>
+
+<!-- ══ SNS 마케팅 채널 ══ -->
+<section class="sns-section">
+  <div class="container">
+    <div class="section-label-sm">SNS MARKETING</div>
+    <h2>다양한 채널에서 잠재 고객을 찾습니다</h2>
+    <div class="sns-cards">
+      <div class="sns-card">
+        <div class="sns-icon">📺</div>
+        <h3>유튜브 광고</h3>
+        <p>타겟 고객층에 최적화된 유튜브 영상 광고로<br>브랜드 인지도와 DB를 동시에 확보합니다.</p>
+      </div>
+      <div class="sns-card">
+        <div class="sns-icon">📸</div>
+        <h3>인스타그램·페이스북</h3>
+        <p>비주얼 중심의 인스타그램·페이스북 광고로<br>창호 교체 관심 고객을 정밀 타겟팅합니다.</p>
+      </div>
+      <div class="sns-card">
+        <div class="sns-icon">📝</div>
+        <h3>블로그·카페</h3>
+        <p>네이버 블로그·카페 상위 노출로<br>검색 유입 고객을 꾸준히 확보합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 서비스 특징 ══ -->
+<section class="feature-section">
+  <div class="container">
+    <div class="feature-inner">
+      <div class="feature-text">
+        <div class="section-label-sm">WHY US</div>
+        <h2>합리적인 가격의 오랜 경험,<br>전문가와 함께합니다</h2>
+        <p>단순한 광고 집행이 아닙니다.<br>창호 구독 업종에 특화된 마케팅 전략과<br>실제 계약으로 이어지는 양질의 DB를 제공합니다.</p>
+        <ul class="feature-list">
+          <li>창호 업종 특화 마케팅 전략 수립</li>
+          <li>실전 경험 기반 광고 소재 제작</li>
+          <li>전환율 높은 양질의 DB 공급</li>
+          <li>합리적인 비용 구조 (성과 기반 협의)</li>
+        </ul>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon">📡</div>
+          <p>다양한 플랫폼</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">👨‍💼</div>
+          <p>전문 마케터</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">📋</div>
+          <p>양질 DB 공급</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">💰</div>
+          <p>합리적 가격</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 랜딩페이지 제작 ══ -->
+<section class="landing-section">
+  <div class="container">
+    <div class="section-label-sm" style="color:#f0c040;">LANDING PAGE & DB</div>
+    <h2>전환율 높은 랜딩페이지를 제작합니다</h2>
+    <p>광고 효과를 극대화하는 맞춤형 랜딩페이지 제작부터 DB 공급 제휴까지. 마케팅 전 과정을 원스톱으로 지원합니다.</p>
+    <div class="landing-items">
+      <div class="landing-item">
+        <div class="landing-item-icon">🎯</div>
+        <h3>맞춤형 랜딩페이지 제작</h3>
+        <p>창호 구독 전문 랜딩페이지로 광고 유입 대비 상담 신청률을 극대화합니다.</p>
+      </div>
+      <div class="landing-item">
+        <div class="landing-item-icon">🔗</div>
+        <h3>DB 공급 제휴</h3>
+        <p>자체 운영 채널 및 제휴 네트워크를 통해 검증된 잠재 고객 DB를 안정적으로 공급합니다.</p>
+      </div>
+      <div class="landing-item">
+        <div class="landing-item-icon">📊</div>
+        <h3>성과 분석 &amp; 최적화</h3>
+        <p>광고 성과를 실시간으로 분석하고 전환율 향상을 위해 지속적으로 최적화합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section">
+  <div class="container">
+    <h2>마케팅 서비스 도입 문의</h2>
+    <p>파트너사 상황에 맞는 맞춤형 마케팅 플랜을 제안드립니다.</p>
+    <a class="btn-cta" href="index.html#contact">문의하기 →</a>
+  </div>
+</section>
+
+<!-- ══ 푸터 ══ -->
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
+
+

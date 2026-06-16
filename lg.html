@@ -1,0 +1,431 @@
+﻿<!DOCTYPE html>
+<!-- Created: 2026-06-16 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LG가전 B2B 솔루션 | 티유디지털</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/style.css" />
+  <style>
+    /* ── 히어로 ── */
+    .lg-hero {
+      background: linear-gradient(135deg, #6d0025 0%, #a50034 60%, #6d0025 100%);
+      color: #fff;
+      padding: 90px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .lg-hero::before {
+      content: 'LG B2B';
+      position: absolute;
+      font-size: 160px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.04);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .lg-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 12px; font-weight: 700;
+      padding: 5px 18px; border-radius: 20px;
+      margin-bottom: 20px; letter-spacing: 0.1em;
+    }
+    .lg-hero h1 {
+      font-size: clamp(30px,5vw,52px);
+      font-weight: 900; line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .lg-hero h1 em { color: #ffcdd2; font-style: normal; }
+    .lg-hero p { font-size: 17px; color: rgba(255,255,255,0.75); margin-bottom: 48px; }
+    .lg-hero-stats {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    }
+    .lg-stat-item {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px; padding: 18px 28px; text-align: center;
+    }
+    .lg-stat-item strong { display: block; font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .lg-stat-item span { font-size: 12px; color: rgba(255,255,255,0.65); }
+
+    /* ── 공통 섹션 ── */
+    .sec { padding: 88px 0; }
+    .sec.gray { background: #f5f7fa; }
+    .sec.dark { background: #1a0010; color: #fff; }
+    .sec-label { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; color: #a50034; margin-bottom: 10px; text-transform: uppercase; }
+    .sec-label.light { color: rgba(255,255,255,0.5); }
+    .sec-title { font-size: clamp(24px,4vw,38px); font-weight: 900; line-height: 1.3; color: #1a0010; margin-bottom: 14px; word-break: keep-all; }
+    .sec-title.light { color: #fff; }
+    .sec-desc { font-size: 15px; color: #666; line-height: 1.85; margin-bottom: 52px; word-break: keep-all; }
+    .sec-desc.light { color: rgba(255,255,255,0.7); }
+
+    /* ── 핵심 솔루션 4개 ── */
+    .sol-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .sol-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 32px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      display: flex; gap: 20px; align-items: flex-start;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .sol-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(165,0,52,0.1); }
+    .sol-num {
+      font-size: 32px; font-weight: 900;
+      color: #a50034; flex-shrink: 0;
+      line-height: 1; min-width: 44px;
+    }
+    .sol-card h4 { font-size: 18px; font-weight: 800; color: #1a0010; margin-bottom: 10px; }
+    .sol-card p { font-size: 14px; color: #666; line-height: 1.75; }
+
+    /* ── 이미지 + 텍스트 ── */
+    .about-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .about-split img {
+      width: 100%; border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+    }
+    .about-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; }
+    .about-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 15px; color: #333; font-weight: 600;
+    }
+    .about-list li::before {
+      content: "✓"; color: #a50034; font-weight: 900;
+      font-size: 16px; flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── 프로세스 ── */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .proc-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px; padding: 32px 24px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .proc-card:hover { background: rgba(255,255,255,0.12); }
+    .proc-step {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: #a50034; color: #fff;
+      font-size: 16px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .proc-card h4 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .proc-card p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.65; }
+    .proc-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.3); font-size: 20px;
+    }
+
+    /* ── CTA ── */
+    .lg-cta {
+      background: linear-gradient(135deg, #6d0025 0%, #a50034 100%);
+      border-radius: 20px; padding: 56px 48px;
+      text-align: center; color: #fff;
+    }
+    .lg-cta h3 { font-size: clamp(22px,3vw,32px); font-weight: 900; margin-bottom: 14px; }
+    .lg-cta p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 32px; line-height: 1.75; }
+
+    /* ── 협업 사례 ── */
+    .collab-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+    .collab-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 16px 32px;
+      text-align: center;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .collab-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 36px rgba(165,0,52,0.12);
+      border-color: #a50034;
+    }
+    .collab-lg {
+      background: #a50034;
+      color: #fff;
+      font-size: 11px; font-weight: 900;
+      padding: 4px 14px; border-radius: 20px;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .collab-plus {
+      font-size: 22px; font-weight: 900;
+      color: #ccc; margin-bottom: 10px; line-height: 1;
+    }
+    .collab-icon { font-size: 34px; margin-bottom: 12px; }
+    .collab-name {
+      font-size: 15px; font-weight: 900;
+      color: #1a0010; margin-bottom: 8px;
+    }
+    .collab-type {
+      font-size: 11px; font-weight: 700;
+      color: #a50034;
+      background: #fce4ec;
+      display: inline-block;
+      padding: 3px 12px; border-radius: 20px;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .sol-grid { grid-template-columns: 1fr; }
+      .about-split { grid-template-columns: 1fr; gap: 36px; }
+      .process-grid { grid-template-columns: 1fr; }
+      .lg-cta { padding: 40px 24px; }
+      .collab-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="static/logo.png" alt="티유디지털 로고" onerror="this.style.display='none'" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#about">회사소개</a>
+      <a href="index.html#services">사업영역</a>
+      <a href="index.html#partner">파트너모집</a>
+      <a href="index.html#contact">문의하기</a>
+    </nav>
+    <a class="btn-header" href="index.html#contact">상담 문의</a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html#about" onclick="toggleNav()">회사소개</a>
+    <a href="index.html#services" onclick="toggleNav()">사업영역</a>
+    <a href="index.html#partner" onclick="toggleNav()">파트너모집</a>
+    <a href="index.html#contact" onclick="toggleNav()">문의하기</a>
+  </div>
+</header>
+
+<!-- ══ 히어로 ══ -->
+<section class="lg-hero">
+  <div class="container">
+    <a href="index.html" class="back-link" style="color:rgba(255,255,255,0.7);display:inline-block;margin-bottom:24px;font-size:14px;font-weight:600;">← 돌아가기</a>
+    <div class="lg-badge">LG가전 B2B</div>
+    <h1>LG가전 B2B<br><em>토털 솔루션</em></h1>
+    <p>다양한 업종과의 결합으로 차별화된 가치를 만듭니다</p>
+    <div class="lg-hero-stats">
+      <div class="lg-stat-item">
+        <strong>4가지</strong>
+        <span>핵심 솔루션</span>
+      </div>
+      <div class="lg-stat-item">
+        <strong>6단계</strong>
+        <span>체계적 협업 프로세스</span>
+      </div>
+      <div class="lg-stat-item">
+        <strong>전 품목</strong>
+        <span>LG가전 제휴할인</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 소개 ══ -->
+<section class="sec">
+  <div class="container">
+    <div class="about-split">
+      <img src="https://cdn.imweb.me/thumbnail/20260222/351bd547c31d7.png" alt="LG가전 B2B 솔루션" />
+      <div>
+        <div class="sec-label">ABOUT</div>
+        <h2 class="sec-title">LG가전 공식 파트너십 기반<br>B2B 특화 비즈니스</h2>
+        <p style="font-size:15px;color:#555;line-height:1.85;margin-bottom:0;">티유디지털은 LG가전과의 공식 파트너십을 기반으로 결합상품 기획, 단독 사은품 구성, 구독 제휴할인, B2B 특판 공급까지 다양한 업종에 맞는 맞춤형 솔루션을 제공합니다.</p>
+        <ul class="about-list">
+          <li>업종별 맞춤 결합상품 기획 및 운영</li>
+          <li>파트너 전용 단독 사은품 구성</li>
+          <li>LG가전 전 품목 제휴 할인 혜택</li>
+          <li>대량 공급 및 특별 가격 조건 지원</li>
+          <li>물류·배송·A/S 사후관리 일괄 지원</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 핵심 솔루션 ══ -->
+<section class="sec gray">
+  <div class="container">
+    <div class="sec-label">SOLUTION</div>
+    <h2 class="sec-title">4가지 핵심 솔루션</h2>
+    <p class="sec-desc">파트너사의 업종과 니즈에 맞춰 최적의 LG가전 B2B 솔루션을 제공합니다</p>
+    <div class="sol-grid">
+      <div class="sol-card">
+        <div class="sol-num">01</div>
+        <div>
+          <h4>결합상품 맞춤 기획</h4>
+          <p>업종별 특성에 맞는 최적의 LG가전 결합상품을 기획합니다. 파트너사의 고객층과 판매 채널을 분석하여 경쟁력 있는 상품 구성을 설계합니다.</p>
+        </div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">02</div>
+        <div>
+          <h4>단독 사은품 구성</h4>
+          <p>차별화된 단독 사은품으로 경쟁력을 높입니다. 파트너사 전용 구성으로 고객에게 특별한 혜택을 제공하고 계약률을 끌어올립니다.</p>
+        </div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">03</div>
+        <div>
+          <h4>LG가전 구독 제휴할인</h4>
+          <p>LG가전 전 품목에 대한 제휴 할인 혜택을 제공합니다. 구독 서비스와 연계하여 고객 유입과 재계약율을 높입니다.</p>
+        </div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-num">04</div>
+        <div>
+          <h4>B2B 특판 공급</h4>
+          <p>대량 공급 및 특별 가격 조건을 지원합니다. 기업 고객 대상 특판 채널을 통해 안정적인 물량 확보와 마진 구조를 설계합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 협업 프로세스 ══ -->
+<section class="sec dark">
+  <div class="container">
+    <div class="sec-label light">PROCESS</div>
+    <h2 class="sec-title light" style="margin-bottom:14px;">협업 프로세스 6단계</h2>
+    <p class="sec-desc light">체계적인 프로세스로 파트너사의 비즈니스 성공을 함께 만들어갑니다</p>
+    <div class="process-grid">
+      <div class="proc-card">
+        <div class="proc-step">1</div>
+        <h4>업종 및 니즈 분석</h4>
+        <p>파트너사의 업종, 타깃 고객, 판매 채널을 분석하여 최적의 솔루션 방향을 설정합니다</p>
+      </div>
+      <div class="proc-card">
+        <div class="proc-step">2</div>
+        <h4>맞춤형 결합상품 기획</h4>
+        <p>분석 결과를 바탕으로 파트너사 전용 LG가전 결합상품과 사은품 구성을 기획합니다</p>
+      </div>
+      <div class="proc-card">
+        <div class="proc-step">3</div>
+        <h4>가격 및 조건 협의</h4>
+        <p>공급 가격, 마진 구조, 할인 조건 등을 협의하여 파트너사에 최적화된 조건을 확정합니다</p>
+      </div>
+      <div class="proc-card">
+        <div class="proc-step">4</div>
+        <h4>공급 계약 체결</h4>
+        <p>협의된 조건을 바탕으로 공식 공급 계약을 체결하고 운영 일정을 수립합니다</p>
+      </div>
+      <div class="proc-card">
+        <div class="proc-step">5</div>
+        <h4>물류 및 배송 지원</h4>
+        <p>안정적인 재고 확보와 물류 운영으로 고객에게 신속한 배송 서비스를 제공합니다</p>
+      </div>
+      <div class="proc-card">
+        <div class="proc-step">6</div>
+        <h4>사후관리 및 A/S</h4>
+        <p>납품 이후 고객 만족도 관리와 A/S 지원까지 책임지는 원스톱 사후 서비스를 제공합니다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 협업 사례 ══ -->
+<section class="sec gray">
+  <div class="container">
+    <div class="sec-label">CASE STUDY</div>
+    <h2 class="sec-title">협업 사례</h2>
+    <p class="sec-desc">티유디지털이 다양한 업종의 파트너사와 함께 만들어온 LG가전 B2B 협업 성과입니다</p>
+    <div class="collab-grid">
+      <div class="collab-card">
+        <div class="collab-lg">LG가전</div>
+        <div class="collab-plus">+</div>
+        <div class="collab-icon">🏢</div>
+        <div class="collab-name">아정당</div>
+        <div class="collab-type">상조 결합상품</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-lg">LG가전</div>
+        <div class="collab-plus">+</div>
+        <div class="collab-icon">🎓</div>
+        <div class="collab-name">교원상조</div>
+        <div class="collab-type">상조 결합상품</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-lg">LG가전</div>
+        <div class="collab-plus">+</div>
+        <div class="collab-icon">🌸</div>
+        <div class="collab-name">효원상조</div>
+        <div class="collab-type">상조 결합상품</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-lg">LG가전</div>
+        <div class="collab-plus">+</div>
+        <div class="collab-icon">🪟</div>
+        <div class="collab-name">KCC홈씨씨</div>
+        <div class="collab-type">인테리어 결합상품</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-lg">LG가전</div>
+        <div class="collab-plus">+</div>
+        <div class="collab-icon">🛡️</div>
+        <div class="collab-name">세스코</div>
+        <div class="collab-type">환경서비스 결합상품</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sec">
+  <div class="container">
+    <div class="lg-cta">
+      <h3>LG가전 B2B 파트너를 원하시나요?</h3>
+      <p>결합상품 기획부터 공급, 물류, 사후관리까지<br>티유디지털이 함께합니다.</p>
+      <a class="btn-primary" href="index.html#contact">파트너 문의하기 →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
+    <div class="footer-info">
+      주식회사 티유디지털 &nbsp;|&nbsp; 대표이사: 김정열 &nbsp;|&nbsp; 사업자등록번호: 220-87-15092<br>
+      주소: 서울특별시 금천구 가산디지털1로 83, 802호 (가산동, 파트너스타워1)<br>
+      고객센터: 070-7116-1149 &nbsp;|&nbsp; 이메일: kingsand80@naver.com
+    </div>
+    <div class="footer-copy">© 2025 TU Digital. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  function toggleNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+</script>
+</body>
+</html>
+
