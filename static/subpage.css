@@ -100,4 +100,8 @@
 @media (max-width: 600px) {
   .sub-hero { padding: 60px 0 50px; }
   .sub-cta { padding: 36px 24px; }
+  .sub-features { gap: 16px; }
+  .sub-feature { flex-direction: column; gap: 12px; padding: 20px; }
+  .sub-img-wrap { margin-bottom: 36px; }
+  .sub-content { margin-bottom: 36px; }
 }

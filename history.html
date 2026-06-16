@@ -220,7 +220,13 @@
       .hist-hero { padding: 70px 0 60px; }
       .sec { padding: 64px 0; }
     }
-  </style>
+    @media (max-width: 640px) {
+      .header-inner { height: 72px !important; gap: 12px !important; }
+      .logo img { height: 52px !important; }
+      .nav-toggle { display: block !important; }
+      .nav { display: none !important; }
+      .btn-header { display: none !important; }
+    }  </style>
 </head>
 <body>
 
@@ -506,5 +512,6 @@
 </script>
 </body>
 </html>
+
 
 

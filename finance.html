@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- Created: 2026-06-16 -->
 <html lang="ko">
 <head>
@@ -140,7 +140,13 @@
       .sol-grid { grid-template-columns: 1fr; }
       .fin-cta { padding: 40px 24px; }
     }
-  </style>
+    @media (max-width: 640px) {
+      .header-inner { height: 72px !important; gap: 12px !important; }
+      .logo img { height: 52px !important; }
+      .nav-toggle { display: block !important; }
+      .nav { display: none !important; }
+      .btn-header { display: none !important; }
+    }  </style>
 </head>
 <body>
 
@@ -302,3 +308,4 @@
 </script>
 </body>
 </html>
+

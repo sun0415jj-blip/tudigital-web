@@ -417,7 +417,13 @@
         font-size: 13px;
       }
     }
-  </style>
+    @media (max-width: 640px) {
+      .header-inner { height: 72px !important; gap: 12px !important; }
+      .logo img { height: 52px !important; }
+      .nav-toggle { display: block !important; }
+      .nav { display: none !important; }
+      .btn-header { display: none !important; }
+    }  </style>
 </head>
 <body>
 
@@ -723,5 +729,6 @@
 </script>
 </body>
 </html>
+
 
 

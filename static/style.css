@@ -514,7 +514,7 @@ a.contact-item:hover, .contact-item.kakao:hover {
 /* ── 반응형 ── */
 @media (max-width: 960px) {
   .about-features { grid-template-columns: repeat(2, 1fr); }
-  .cards { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+  .cards { grid-template-columns: 1fr 1fr; }
   .partner-cards { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: repeat(2, 1fr); }
   .nav { display: none; }
@@ -522,10 +522,49 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .nav-toggle { display: block; }
 }
 
-@media (max-width: 540px) {
-  .about-features { grid-template-columns: 1fr 1fr; }
-  .contact-grid { grid-template-columns: 1fr 1fr; }
-  .hero { min-height: 480px; }
-  .hero-inner { padding: 70px 20px; }
-  .section { padding: 70px 0; }
+@media (max-width: 720px) {
+  .cards { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+}
+
+@media (max-width: 640px) {
+  /* 헤더 */
+  .header-inner { height: 72px; gap: 12px; }
+  .logo img { height: 52px; }
+
+  /* 히어로 */
+  .hero { min-height: 420px; }
+  .hero-inner { padding: 60px 20px; }
+  .hero-btns { flex-direction: column; }
+  .btn-primary, .btn-ghost { width: 100%; text-align: center; }
+
+  /* 섹션 */
+  .section { padding: 60px 0; }
+  .container { padding: 0 18px; }
+
+  /* 소개 */
+  .about-features { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .about-feature { padding: 22px 16px; }
+  .about-feature-icon { font-size: 28px; }
+
+  /* 히스토리 배너 */
+  .history-banner { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+  .history-banner-btn { width: 100%; text-align: center; }
+
+  /* 연락처 */
+  .contact-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .contact-item { padding: 22px 12px; }
+
+  /* 파트너 */
+  .partner-body { padding: 20px; }
+
+  /* 푸터 */
+  .footer-logo-img { height: 60px; }
+  .footer-info { font-size: 11px; }
+}
+
+@media (max-width: 400px) {
+  .about-features { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .logo img { height: 42px; }
+  .header-inner { height: 60px; }
 }
