@@ -19,7 +19,7 @@
     </a>
     <nav class="nav">
       <a href="#about">회사소개</a>
-      <a href="history.html">회사연혁</a>
+      <a href="history.html">히스토리</a>
       <a href="#services">사업영역</a>
       <a href="#partner">파트너모집</a>
       <a href="#contact">문의하기</a>
@@ -29,7 +29,7 @@
   </div>
   <div class="mobile-nav" id="mobileNav">
     <a href="#about" onclick="toggleNav()">회사소개</a>
-    <a href="history.html" onclick="toggleNav()">회사연혁</a>
+    <a href="history.html" onclick="toggleNav()">히스토리</a>
     <a href="#services" onclick="toggleNav()">사업영역</a>
     <a href="#partner" onclick="toggleNav()">파트너모집</a>
     <a href="#contact" onclick="toggleNav()">문의하기</a>
@@ -39,12 +39,15 @@
 <!-- ══ 히어로 ══ -->
 <section class="hero">
   <div class="hero-bg">
-    <img src="https://cdn.imweb.me/upload/S202510291e0cd01ddaddf/4cf2da48e2b1a.png" alt="메인 배너" />
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="static/hero-video.mp4" type="video/mp4" />
+    </video>
     <div class="hero-overlay"></div>
   </div>
   <div class="container hero-inner">
     <p class="hero-tag">주식회사 티유디지털</p>
-    <h1>보이지 않는 기회까지<br><span>사업의 디테일을 설계하다</span></h1>
+    <h1 class="desktop-only">보이지 않는 기회까지<br><span>비지니스의 디테일을 설계하다</span></h1>
+    <h1 class="mobile-only"><span>비지니스의 디테일을</span><br>함께 설계합니다</h1>
     <p class="hero-sub">기획부터 성장까지, 토털 비즈니스 솔루션</p>
     <div class="hero-btns">
       <a class="btn-primary" href="#partner">파트너 모집 보기</a>
@@ -58,7 +61,8 @@
   <div class="container">
     <div class="section-label center">ABOUT US</div>
     <h2 class="section-title center">2005년부터 이어온<br>비즈니스 설계의 전문가</h2>
-    <p class="section-desc center">티유디지털은 홈쇼핑, 상조가전결합, 인테리어 구독, 금융솔루션을 아우르는 토털 비즈니스 파트너입니다.<br>보이지 않는 기회를 발굴하고, 파트너의 성공을 함께 설계합니다.</p>
+    <p class="section-desc center">티유디지털은 홈쇼핑, 상조가전결합, 인테리어 구독, 금융솔루션을 아우르는 토털 비즈니스 파트너입니다.<span class="desktop-only"><br>보이지 않는 기회를 발굴하고, 파트너의 성공을 함께 설계합니다.</span></p>
+
     <div class="about-features">
       <div class="about-feature">
         <div class="about-feature-icon">🏢</div>
@@ -67,8 +71,8 @@
       </div>
       <div class="about-feature">
         <div class="about-feature-icon">🤝</div>
-        <h4>핵심사업</h4>
-        <p>KCC홈씨씨 창호구독, LG가전 B2B, 상조사 결합상품, 금융솔루션 등 전문적인 사업을 구축하고 있습니다.</p>
+        <h4>다양한 결합비지니스</h4>
+        <p>KCC홈씨씨 창호구독, LG전자 B2B, 상조사 결합상품 등 전문적인 사업을 구축하고 있습니다.</p>
       </div>
       <div class="about-feature">
         <div class="about-feature-icon">💡</div>
@@ -85,10 +89,11 @@
       <div class="history-banner-text">
         <p class="history-banner-eyebrow">2005 — 현재</p>
         <h3>티유디지털의 연혁과 활동내용을 확인하세요</h3>
-        <p class="history-banner-desc">20년간의 도전과 성장, 그리고 파트너와 함께 써온 이야기</p>
+        <p class="history-banner-desc">20년간의 도전과 성장</p>
       </div>
       <a href="history.html" class="history-banner-btn">티유디지털 History →</a>
     </div>
+
   </div>
 </section>
 
@@ -97,7 +102,7 @@
   <div class="container">
     <div class="section-label center">BUSINESS</div>
     <h2 class="section-title center">핵심사업 영역</h2>
-    <p class="section-desc center">각 분야 최고의 파트너사와 함께 차별화된 비즈니스 솔루션을 제공합니다</p>
+    <p class="section-desc center">각 분야 최고의 파트너사와 함께<br class="mobile-only"> 차별화된 비즈니스 솔루션을 제공합니다</p>
     <div class="cards">
 
       <div class="card">
@@ -105,9 +110,7 @@
           <img src="https://cdn.imweb.me/thumbnail/20260222/8259e577ae171.png" alt="KCC홈씨씨 창호" />
         </div>
         <div class="card-body">
-          <div class="card-tag kcc">KCC홈씨씨</div>
-          <h3>창호 구독서비스</h3>
-          <p>창호 교체 마케팅 & DB 확보부터 60개월 구독 서비스, 시공/고객관리 시스템까지 원스톱으로 제공합니다.</p>
+          <h3>인테리어 구독서비스</h3>
           <ul>
             <li>창호 교체 마케팅 &amp; DB</li>
             <li>60개월 구독 서비스</li>
@@ -119,12 +122,13 @@
 
       <div class="card">
         <div class="card-img">
-          <img src="https://cdn.imweb.me/thumbnail/20260222/351bd547c31d7.png" alt="LG가전 B2B" />
+          <img src="https://cdn.imweb.me/thumbnail/20260222/351bd547c31d7.png" alt="LG전자 B2B" />
         </div>
         <div class="card-body">
-          <div class="card-tag lg">LG가전 B2B</div>
-          <h3>토털 솔루션</h3>
-          <p>결합상품 기획부터 단독 사은품 구성, LG가전 구독 제휴할인까지 B2B 맞춤형 솔루션을 제공합니다.</p>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div class="card-tag lg" style="margin-bottom:0;">LG전자 B2B</div>
+            <h3 style="margin-bottom:0;">공식인증 전문점</h3>
+          </div>
           <ul>
             <li>결합상품 기획</li>
             <li>단독 사은품 구성</li>
@@ -139,9 +143,7 @@
           <img src="https://cdn.imweb.me/thumbnail/20260222/025644c912ef1.png" alt="금융 솔루션" />
         </div>
         <div class="card-body">
-          <div class="card-tag fin">금융사 에이전시</div>
-          <h3>금융 솔루션</h3>
-          <p>캐피탈사·카드사 네트워크를 기반으로 최대 60개월 할부·구독, 맞춤형 금융 솔루션을 설계합니다.</p>
+          <h3>금융사 에이전시</h3>
           <ul>
             <li>캐피탈사·카드사 네트워크</li>
             <li>최대 60개월 할부·구독</li>

@@ -97,22 +97,35 @@
   margin-bottom: 28px;
 }
 
-@media (max-width: 600px) {
-  .sub-hero { padding: 56px 0 44px; }
-  .sub-hero h1 { font-size: clamp(24px, 6vw, 36px); }
-  .sub-hero p { font-size: 14px; }
-  .sub-cta { padding: 32px 20px; }
-  .sub-cta h3 { font-size: 20px; }
-  .sub-features { gap: 16px; }
-  .sub-feature { flex-direction: column; gap: 12px; padding: 18px; }
-  .sub-img-wrap { margin-bottom: 28px; }
-  .sub-content { margin-bottom: 28px; }
+@media (max-width: 640px) {
+  /* 서브 히어로 - 설명 텍스트 숨김 */
+  .sub-hero { padding: 44px 0 36px; }
+  .sub-hero h1 { font-size: clamp(22px, 6vw, 32px); margin-bottom: 8px; }
+  .sub-hero p { display: none; }
+  .back-link { margin-bottom: 16px; font-size: 13px; }
+  .sub-tag { margin-bottom: 12px; }
+
+  /* 서브 이미지/콘텐츠 간격 축소 */
+  .sub-img-wrap { margin-bottom: 24px; border-radius: 10px; }
+  .sub-content { margin-bottom: 24px; }
+  .sub-content .section-desc { font-size: 14px; margin-bottom: 24px; }
+
+  /* 서브 특징 리스트 */
+  .sub-features { gap: 12px; }
+  .sub-feature { flex-direction: row; gap: 14px; padding: 16px; align-items: flex-start; }
   .sub-feature-num { font-size: 18px; }
-  .sub-feature h4 { font-size: 15px; }
+  .sub-feature h4 { font-size: 14px; margin-bottom: 4px; }
+  .sub-feature p { font-size: 13px; line-height: 1.6; }
+
+  /* CTA 버튼 */
+  .sub-cta { padding: 28px 18px; border-radius: 10px; }
+  .sub-cta h3 { font-size: 18px; margin-bottom: 8px; }
+  .sub-cta p { font-size: 13px; margin-bottom: 20px; display: none; }
+  .sub-cta .btn-primary { width: 100%; display: block; text-align: center; padding: 15px; font-size: 15px; }
 }
 
 @media (max-width: 400px) {
-  .sub-hero { padding: 44px 0 36px; }
-  .sub-cta { padding: 24px 16px; }
+  .sub-hero { padding: 36px 0 28px; }
+  .sub-cta { padding: 22px 14px; }
   .sub-feature { padding: 14px; }
 }
