@@ -430,7 +430,7 @@ img { display: block; }
 /* ── 서비스 카드 ── */
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 .card {
@@ -458,6 +458,7 @@ img { display: block; }
 .card-tag.kcc { background: #e8f4ff; color: #0d5fa0; }
 .card-tag.lg  { background: #fce4ec; color: #a50034; }
 .card-tag.fin { background: #e8f5e9; color: #1b5e20; }
+.card-tag.biz { background: #ede9fe; color: #5b21b6; }
 .card-body h3 {
   font-size: 20px;
   font-weight: 800;
