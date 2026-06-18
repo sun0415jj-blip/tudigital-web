@@ -169,13 +169,13 @@ img { display: block; }
 }
 .btn-primary:hover { background: var(--gold-dark); transform: translateY(-2px); }
 .btn-ghost {
-  background: transparent;
-  color: var(--white);
+  background: var(--white);
+  color: #111;
   font-size: 15px;
   font-weight: 700;
   padding: 15px 32px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.45);
+  border: 1.5px solid #111;
   transition: border-color 0.15s, background 0.15s;
 }
 .btn-ghost:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
