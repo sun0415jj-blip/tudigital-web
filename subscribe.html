@@ -486,7 +486,7 @@
 
       <div class="form-group">
         <label for="birth">생년월일 <span class="req">*</span></label>
-        <input type="text" id="birth" class="form-input" placeholder="19830214 또는 830214" maxlength="8" />
+        <input type="text" id="birth" class="form-input" placeholder="19830214 또는 830214" maxlength="8" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
       </div>
 
       <div class="form-group">
@@ -663,7 +663,7 @@
       return;
     }
     if (!birth) {
-      alert('생년월일 오류\n입력값: "' + document.getElementById('birth').value + '"\n길이: ' + document.getElementById('birth').value.length + '자');
+      alert('생년월일을 입력해 주세요.');
       document.getElementById('birth').focus();
       return;
     }
