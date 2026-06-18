@@ -660,8 +660,8 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .mobile-only { display: block !important; }
 
   /* 헤더 */
-  .header-inner { height: 72px; gap: 12px; }
-  .logo img { height: 62px; }
+  .header-inner { height: 90px; gap: 12px; }
+  .logo img { height: 110px; }
 
   /* 히어로 - 태그/서브 숨기고 버튼 최적화 */
   .hero { min-height: 300px; }
@@ -719,8 +719,8 @@ a.contact-item:hover, .contact-item.kakao:hover {
 @media (max-width: 400px) {
   .about-features { grid-template-columns: 1fr 1fr; }
   .contact-grid { grid-template-columns: 1fr 1fr; }
-  .logo img { height: 50px; }
-  .header-inner { height: 60px; }
+  .logo img { height: 100px; }
+  .header-inner { height: 80px; }
   .hero h1 { font-size: 28px; }
 }
 
