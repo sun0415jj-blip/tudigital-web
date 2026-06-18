@@ -436,6 +436,16 @@
     .company-info-inner strong { color: #333; font-weight: 700; }
     .company-divider { border: none; border-top: 1px solid #e8ecf0; margin: 12px 0; }
 
+    .status-submitted { background: #ebf8ff; color: #2b6cb0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #0d2137;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
     .hidden { display: none !important; }
 
     /* ── 서류 미리보기 모달 ── */
@@ -805,6 +815,9 @@
           <button class="filter-btn" data-filter="확인완료" onclick="setFilter(this,'확인완료')">확인완료</button>
         </div>
       </div>
+      <div id="list-loading" style="display:none;justify-content:center;align-items:center;padding:40px;gap:12px;color:#888;font-size:14px;font-weight:600;">
+        <div class="spinner"></div> 데이터 불러오는 중...
+      </div>
       <div class="customer-table-wrap">
         <div id="customer-table-body"></div>
       </div>
@@ -930,18 +943,57 @@
 </div>
 
 <script>
+  /* ══════════════════════════════════════
+     Google Apps Script 배포 URL을 아래에 입력하세요
+  ══════════════════════════════════════ */
+  const SCRIPT_URL = 'YOUR_SCRIPT_URL_HERE';
+
   let currentCustomerId = null;
   const sessionFileStore = {};
   let searchQuery = '';
   let statusFilter = 'all';
+  let customersCache = [];
 
+  /* ── 네비게이션 ── */
   function toggleNav() {
     document.getElementById('mobileNav').classList.toggle('open');
   }
 
-  /* ── localStorage 헬퍼 ── */
+  /* ── API: 전체 고객 불러오기 ── */
+  async function loadCustomers() {
+    showLoading(true);
+    try {
+      const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
+      const json = await res.json();
+      customersCache = (json.data || []).map(c => ({
+        ...c,
+        id: Number(c.id),
+        confirmed: c.confirmed === 'true' || c.confirmed === true,
+        docs: c.docs && typeof c.docs === 'object' ? c.docs : null
+      }));
+    } catch(e) {
+      console.error('데이터 로드 실패:', e);
+    }
+    showLoading(false);
+  }
+
+  /* ── API: 쓰기 (no-cors fire & forget) ── */
+  function apiPost(payload) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload)
+    }).catch(e => console.error('저장 오류:', e));
+  }
+
+  function showLoading(show) {
+    const el = document.getElementById('list-loading');
+    if (el) el.style.display = show ? 'flex' : 'none';
+  }
+
+  /* ── 하위 호환: getCustomers() ── */
   function getCustomers() {
-    return JSON.parse(localStorage.getItem('kcc_customers') || '[]');
+    return customersCache;
   }
   function saveCustomers(list) {
     localStorage.setItem('kcc_customers', JSON.stringify(list));
@@ -996,9 +1048,8 @@
       createdAt: new Date().toLocaleString('ko-KR')
     };
 
-    const list = getCustomers();
-    list.push(customer);
-    saveCustomers(list);
+    customersCache.push(customer);
+    apiPost({ action: 'save', customer });
 
     /* 폼 초기화 */
     document.getElementById('name').value = '';
@@ -1111,10 +1162,10 @@
   /* ── 고객 삭제 ── */
   function deleteCustomer(id) {
     if (!confirm('해당 고객 정보를 삭제하시겠습니까?')) return;
-    let list = getCustomers().filter(c => c.id !== id);
-    saveCustomers(list);
+    customersCache = customersCache.filter(c => c.id !== id);
+    apiPost({ action: 'delete', id });
     renderCustomerList();
-    if (list.length === 0) {
+    if (customersCache.length === 0) {
       document.getElementById('section-list').classList.add('hidden');
     }
   }
@@ -1141,12 +1192,11 @@
 
   /* ── 서류 확인 체크박스 ── */
   function toggleConfirm(id, checked) {
-    let list = getCustomers();
-    const idx = list.findIndex(c => c.id === id);
+    const idx = customersCache.findIndex(c => c.id === id);
     if (idx !== -1) {
-      list[idx].confirmed = checked;
-      list[idx].status = checked ? '확인완료' : '제출완료';
-      saveCustomers(list);
+      customersCache[idx].confirmed = checked;
+      customersCache[idx].status = checked ? '확인완료' : '제출완료';
+      apiPost({ action: 'update', customer: customersCache[idx] });
       renderCustomerList();
     }
   }
@@ -1169,13 +1219,12 @@
     if (!doc2) { alert('신분증 사본을 업로드해 주세요.'); return; }
     if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
 
-    let list = getCustomers();
-    const idx = list.findIndex(c => c.id === currentCustomerId);
+    const idx = customersCache.findIndex(c => c.id === currentCustomerId);
     if (idx !== -1) {
-      list[idx].docs = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
-      list[idx].status = '제출완료';
-      list[idx].confirmed = false;
-      saveCustomers(list);
+      customersCache[idx].docs = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
+      customersCache[idx].status = '제출완료';
+      customersCache[idx].confirmed = false;
+      apiPost({ action: 'update', customer: customersCache[idx] });
       sessionFileStore['customer_' + currentCustomerId] = {
         doc1: sessionFileStore['doc1'] || null,
         doc2: sessionFileStore['doc2'] || null,
@@ -1215,7 +1264,7 @@
 
   /* ── 서류 미리보기 모달 ── */
   function viewDocs(id) {
-    const c = getCustomers().find(c => c.id === id);
+    const c = customersCache.find(c => c.id === id);
     if (!c || !c.docs) return;
 
     const files = sessionFileStore['customer_' + id] || {};
@@ -1261,10 +1310,10 @@
     window.open(src, '_blank');
   }
 
-  /* ── 페이지 로드 시 저장된 목록 복원 ── */
-  window.addEventListener('DOMContentLoaded', function () {
-    const list = getCustomers();
-    if (list.length > 0) {
+  /* ── 페이지 로드: Google Sheets에서 데이터 불러오기 ── */
+  window.addEventListener('DOMContentLoaded', async function () {
+    await loadCustomers();
+    if (customersCache.length > 0) {
       renderCustomerList();
       document.getElementById('section-list').classList.remove('hidden');
     }
