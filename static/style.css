@@ -45,7 +45,7 @@ img { display: block; }
   height: 120px;
   gap: 48px;
 }
-.logo img { height: 110px; width: auto; filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.7)); }
+.logo img { height: 110px; width: auto; filter: drop-shadow(0.8px 0 0 rgba(0,0,0,0.45)) drop-shadow(-0.8px 0 0 rgba(0,0,0,0.45)) drop-shadow(0 0.8px 0 rgba(0,0,0,0.45)) drop-shadow(0 -0.8px 0 rgba(0,0,0,0.45)); }
 .header-mobile-text { display: none; flex-direction: column; gap: 2px; flex: 1; }
 .header-company { font-size: 13px; font-weight: 800; color: var(--navy); }
 .header-tagline { font-size: 11px; color: #666; line-height: 1.4; }
