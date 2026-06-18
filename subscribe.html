@@ -1,4 +1,4 @@
-﻿<!-- Created: 2026-06-16 -->
+<!-- Created: 2026-06-16 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="static/style.css" />
   <style>
-    /* ── 서비스 탭 바 ── */
     .service-tab-bar {
       background: #0d2137;
       padding: 16px 0;
@@ -38,7 +37,6 @@
     .stab-cta { background: #f0a500; color: #0d2137 !important; border-color: #f0a500; }
     .stab-cta:hover { background: #ffc107; border-color: #ffc107; }
 
-    /* ── 히어로 ── */
     .sub-hero {
       background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
       color: #fff;
@@ -57,18 +55,16 @@
       line-height: 1.75;
     }
 
-    /* ── 폼 영역 ── */
     .form-section {
       background: #f5f7fa;
       padding: 64px 0 80px;
     }
     .form-wrap {
-      max-width: 640px;
-      margin: 0 auto;
+      max-width: 720px;
+      margin: 0 auto 32px;
       padding: 0 20px;
     }
 
-    /* ── 스텝 뱃지 ── */
     .step-badge {
       display: inline-flex;
       align-items: center;
@@ -95,13 +91,11 @@
       flex-shrink: 0;
     }
 
-    /* ── 폼 카드 ── */
     .form-card {
       background: #fff;
       border-radius: 20px;
       padding: 40px 36px;
       box-shadow: 0 4px 24px rgba(13,33,55,0.09);
-      margin-bottom: 24px;
     }
     .form-card h2 {
       font-size: 20px;
@@ -110,10 +104,7 @@
       margin-bottom: 28px;
     }
 
-    /* ── 폼 필드 ── */
-    .form-group {
-      margin-bottom: 22px;
-    }
+    .form-group { margin-bottom: 22px; }
     .form-group label {
       display: block;
       font-size: 14px;
@@ -121,10 +112,7 @@
       color: #333;
       margin-bottom: 8px;
     }
-    .form-group label .req {
-      color: #e53e3e;
-      margin-left: 3px;
-    }
+    .form-group label .req { color: #e53e3e; margin-left: 3px; }
     .form-input {
       width: 100%;
       padding: 13px 16px;
@@ -136,6 +124,7 @@
       background: #fafbfc;
       transition: border-color 0.15s, box-shadow 0.15s;
       outline: none;
+      box-sizing: border-box;
     }
     .form-input:focus {
       border-color: #0d2137;
@@ -144,15 +133,8 @@
     }
     .form-input::placeholder { color: #aaa; }
 
-    /* ── 라디오 그룹 ── */
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .radio-group input[type="radio"] {
-      display: none;
-    }
+    .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .radio-group input[type="radio"] { display: none; }
     .radio-group label {
       display: inline-flex;
       align-items: center;
@@ -173,18 +155,14 @@
       border-color: #0d2137;
       color: #fff;
     }
-    .radio-group label:hover {
-      border-color: #0d2137;
-      color: #0d2137;
-    }
+    .radio-group label:hover { border-color: #0d2137; color: #0d2137; }
 
-    /* ── 동의 체크박스 ── */
     .agree-box {
       background: #f5f7fa;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
       padding: 16px 18px;
-      margin-bottom: 18px;
+      margin-bottom: 24px;
     }
     .agree-check {
       display: flex;
@@ -206,22 +184,8 @@
       line-height: 1.55;
       font-weight: 600;
     }
-    .credit-notice {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #7a5a00;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 28px;
-    }
 
-    /* ── 버튼 ── */
-    .btn-next {
+    .btn-save {
       width: 100%;
       padding: 16px;
       background: #0d2137;
@@ -234,10 +198,8 @@
       transition: background 0.15s, transform 0.15s;
       font-family: inherit;
     }
-    .btn-next:hover {
-      background: #1a3a5c;
-      transform: translateY(-1px);
-    }
+    .btn-save:hover { background: #1a3a5c; transform: translateY(-1px); }
+
     .btn-submit {
       width: 100%;
       padding: 16px;
@@ -251,12 +213,135 @@
       transition: background 0.15s, transform 0.15s;
       font-family: inherit;
     }
-    .btn-submit:hover {
-      background: #d4920a;
-      transform: translateY(-1px);
+    .btn-submit:hover { background: #d4920a; transform: translateY(-1px); }
+
+    .btn-back {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      color: #0d2137;
+      font-size: 15px;
+      font-weight: 700;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+    .btn-back:hover { background: #f5f7fa; }
+
+    /* 고객 목록 테이블 */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .list-header h2 { margin-bottom: 0; }
+    .list-count {
+      font-size: 13px;
+      color: #888;
+      font-weight: 600;
+    }
+    .customer-table-wrap { overflow-x: auto; }
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 600px;
+    }
+    .customer-table th {
+      padding: 11px 10px;
+      text-align: left;
+      background: #f0f4f8;
+      border-bottom: 2px solid #e2e8f0;
+      font-weight: 800;
+      color: #333;
+      white-space: nowrap;
+    }
+    .customer-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0f4f8;
+      vertical-align: middle;
+    }
+    .customer-table tr:last-child td { border-bottom: none; }
+    .customer-table tr:hover td { background: #fafbfc; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status-pending { background: #fff8e1; color: #b7791f; }
+    .status-done { background: #f0fff4; color: #276749; }
+
+    .btn-upload-docs {
+      background: #0d2137;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-upload-docs:hover { background: #1a3a5c; }
+
+    .btn-delete-row {
+      background: #fff0f0;
+      color: #e53e3e;
+      border: 1px solid #fed7d7;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 6px;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-delete-row:hover { background: #ffe4e4; }
+
+    .empty-list {
+      text-align: center;
+      padding: 40px 20px;
+      color: #aaa;
+      font-size: 14px;
     }
 
-    /* ── 파일 업로드 ── */
+    /* Step2 고객 정보 요약 */
+    .customer-summary {
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .summary-item label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .summary-item span {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d2137;
+    }
+
+    /* 파일 업로드 */
     .upload-group { margin-bottom: 20px; }
     .upload-group .upload-label {
       display: block;
@@ -266,15 +351,13 @@
       margin-bottom: 4px;
     }
     .upload-group .upload-label .req { color: #e53e3e; margin-left: 3px; }
-    .upload-sub-label {
-      font-size: 12px; color: #888; margin-bottom: 8px; line-height: 1.5;
-    }
+    .upload-sub-label { font-size: 12px; color: #888; margin-bottom: 8px; line-height: 1.5; }
     .upload-group input[type="file"] { display: none; }
-    .upload-row {
-      display: flex; gap: 10px; align-items: center;
-    }
+    .upload-row { display: flex; gap: 10px; align-items: center; }
     .btn-file-upload {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 11px 18px;
       background: #f0f4f8;
       border: 1.5px solid #d1d9e0;
@@ -315,7 +398,6 @@
     .btn-file-remove.visible { display: inline-flex; }
     .upload-hint { font-size: 12px; color: #bbb; margin-top: 5px; }
 
-    /* ── 업로드 안내 문구 ── */
     .upload-guide {
       background: #e8f0fe;
       border-radius: 10px;
@@ -334,52 +416,9 @@
     }
     .upload-guide ul li { margin-bottom: 3px; }
 
-    /* ── Step2 이름/핸드폰 확인 ── */
-    .step2-info-row {
-      display: flex; gap: 12px; margin-bottom: 22px;
-    }
-    .step2-info-row .form-group { flex: 1; margin-bottom: 0; }
-
-    /* ── 완료 메시지 ── */
-    .complete-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 56px 36px;
-      box-shadow: 0 4px 24px rgba(13,33,55,0.09);
-      text-align: center;
-    }
-    .complete-icon {
-      font-size: 60px;
-      margin-bottom: 20px;
-    }
-    .complete-card h2 {
-      font-size: 24px;
-      font-weight: 900;
-      color: #0d2137;
-      margin-bottom: 12px;
-    }
-    .complete-card p {
-      font-size: 15px;
-      color: #666;
-      line-height: 1.7;
-      margin-bottom: 32px;
-    }
-    .btn-home {
-      display: inline-block;
-      background: #0d2137;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 800;
-      padding: 14px 36px;
-      border-radius: 10px;
-      transition: background 0.15s;
-    }
-    .btn-home:hover { background: #1a3a5c; }
-
-    /* ── 판매사/공급사 정보 ── */
     .company-info-box {
-      max-width: 640px;
-      margin: 0 auto 0;
+      max-width: 720px;
+      margin: 0 auto;
       padding: 0 20px;
     }
     .company-info-inner {
@@ -387,27 +426,240 @@
       border: 1px solid #e2e8f0;
       border-radius: 14px;
       padding: 22px 24px;
-      margin-top: 24px;
+      margin-top: 8px;
     }
     .company-info-inner p {
       font-size: 13px;
       color: #666;
       line-height: 1.8;
     }
-    .company-info-inner strong {
-      color: #333;
-      font-weight: 700;
-    }
-    .company-divider {
-      border: none;
-      border-top: 1px solid #e8ecf0;
-      margin: 12px 0;
-    }
+    .company-info-inner strong { color: #333; font-weight: 700; }
+    .company-divider { border: none; border-top: 1px solid #e8ecf0; margin: 12px 0; }
 
-    /* ── hidden ── */
     .hidden { display: none !important; }
 
-    /* ── 반응형 ── */
+    /* ── 서류 미리보기 모달 ── */
+    .doc-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .doc-modal-overlay.open { display: flex; }
+    .doc-modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .doc-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .doc-modal-header h3 {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0d2137;
+    }
+    .doc-modal-close {
+      background: #f0f4f8;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .doc-modal-close:hover { background: #e2e8f0; }
+    .doc-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .doc-preview-item {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .doc-preview-label {
+      background: #f0f4f8;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #0d2137;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .doc-preview-body {
+      padding: 12px;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafbfc;
+    }
+    .doc-preview-body img {
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 6px;
+      cursor: zoom-in;
+    }
+    .doc-preview-body iframe {
+      width: 100%;
+      height: 260px;
+      border: none;
+    }
+    .doc-preview-filename {
+      padding: 8px 14px;
+      font-size: 11px;
+      color: #888;
+      border-top: 1px solid #e2e8f0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .doc-no-preview {
+      text-align: center;
+      color: #bbb;
+      font-size: 13px;
+    }
+    .doc-no-preview .doc-icon { font-size: 40px; margin-bottom: 8px; }
+    /* ── 검색 바 ── */
+    .search-bar-wrap {
+      margin-bottom: 16px;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f5f7fa;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+    .search-bar:focus-within {
+      border-color: #0d2137;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(13,33,55,0.07);
+    }
+    .search-icon { font-size: 16px; flex-shrink: 0; }
+    .search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: inherit;
+      color: #222;
+      outline: none;
+    }
+    .search-input::placeholder { color: #aaa; }
+    .search-clear {
+      background: none;
+      border: none;
+      color: #bbb;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 2px 4px;
+      display: none;
+      line-height: 1;
+    }
+    .search-clear:hover { color: #e53e3e; }
+    .search-clear.visible { display: block; }
+    .search-filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #d1d9e0;
+      background: #fff;
+      color: #666;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: #0d2137; color: #0d2137; }
+    .filter-btn.active { background: #0d2137; border-color: #0d2137; color: #fff; }
+    .search-empty {
+      text-align: center;
+      padding: 32px 20px;
+      color: #aaa;
+      font-size: 14px;
+    }
+    .search-empty .search-empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    .btn-view-docs {
+      background: #e8f0fe;
+      color: #1a3a5c;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-view-docs:hover { background: #c7d9fc; }
+    .btn-reupload {
+      background: #f5f7fa;
+      color: #555;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-right: 4px;
+    }
+    .btn-reupload:hover { background: #e2e8f0; border-color: #0d2137; color: #0d2137; }
+    .confirm-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #276749;
+      cursor: pointer;
+      margin-right: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1.5px solid #9ae6b4;
+      background: #f0fff4;
+      vertical-align: middle;
+    }
+    .confirm-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #276749;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
     @media (max-width: 640px) {
       .header-inner { height: 72px !important; gap: 12px !important; }
       .logo img { height: 52px !important; }
@@ -415,10 +667,8 @@
       .nav { display: none !important; }
       .btn-header { display: none !important; }
       .sub-hero { padding: 56px 0 48px; }
-      .sub-hero h1 { font-size: clamp(22px, 5vw, 32px); }
       .form-card { padding: 28px 20px; }
       .radio-group label { padding: 8px 16px; font-size: 13px; }
-      .step2-info-row { flex-direction: column; gap: 0; }
     }
     @media (max-width: 480px) {
       .service-tab-bar { padding: 12px 0; }
@@ -426,13 +676,11 @@
       .stab { padding: 10px 16px; font-size: 13px; }
       .form-section { padding: 48px 0 60px; }
     }
-    @media (max-width: 360px) {
-      .stab { padding: 9px 12px; font-size: 12px; }
-    }  </style>
+  </style>
 </head>
 <body>
 
-<!-- ══ 헤더 ══ -->
+<!-- 헤더 -->
 <header class="header">
   <div class="container header-inner">
     <a href="index.html" class="logo">
@@ -454,7 +702,7 @@
   </div>
 </header>
 
-<!-- ══ 서비스 탭 바 ══ -->
+<!-- 서비스 탭 바 -->
 <div class="service-tab-bar">
   <div class="container">
     <a href="marketing.html" class="stab stab-mkt">📣 마케팅 서비스</a>
@@ -462,7 +710,7 @@
   </div>
 </div>
 
-<!-- ══ 히어로 ══ -->
+<!-- 히어로 -->
 <section class="sub-hero">
   <div class="container">
     <h1>KCC홈씨씨 창호<br>구독 신청</h1>
@@ -470,11 +718,11 @@
   </div>
 </section>
 
-<!-- ══ 폼 섹션 ══ -->
+<!-- 폼 섹션 -->
 <section class="form-section">
 
-  <!-- STEP 1 -->
-  <div class="form-wrap" id="step1">
+  <!-- STEP 1 : 기본정보 입력 -->
+  <div class="form-wrap" id="section-step1">
     <div class="step-badge"><span>1</span> STEP 1 · 기본정보 입력</div>
     <div class="form-card">
       <h2>기본정보를 입력해 주세요</h2>
@@ -486,7 +734,8 @@
 
       <div class="form-group">
         <label for="birth">생년월일 <span class="req">*</span></label>
-        <input type="text" id="birth" class="form-input" placeholder="19830214 또는 830214" maxlength="8" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+        <input type="text" id="birth" class="form-input" placeholder="예) 19830214 또는 830214" maxlength="8" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" />
+        <small style="color:#888;font-size:12px;margin-top:4px;display:block;">8자리(YYYYMMDD) 또는 6자리(YYMMDD)로 입력해 주세요.</small>
       </div>
 
       <div class="form-group">
@@ -511,13 +760,13 @@
       <div class="form-group">
         <label>자동이체일 선택 <span class="req">*</span></label>
         <div class="radio-group">
-          <input type="radio" name="debit" id="d10" value="10" />
+          <input type="radio" name="debit" id="d10" value="10일" />
           <label for="d10">10일</label>
-          <input type="radio" name="debit" id="d15" value="15" />
+          <input type="radio" name="debit" id="d15" value="15일" />
           <label for="d15">15일</label>
-          <input type="radio" name="debit" id="d20" value="20" />
+          <input type="radio" name="debit" id="d20" value="20일" />
           <label for="d20">20일</label>
-          <input type="radio" name="debit" id="d25" value="25" />
+          <input type="radio" name="debit" id="d25" value="25일" />
           <label for="d25">25일</label>
           <input type="radio" name="debit" id="dlast" value="말일" />
           <label for="dlast">말일</label>
@@ -531,35 +780,69 @@
         </label>
       </div>
 
-      <div class="credit-notice">
-        <span>⚠️</span>
-        본 신청은 한국캐피탈 신용조회 동의가 필요합니다.
-      </div>
-
-      <button class="btn-next" onclick="goStep2()">다음 단계로 →</button>
+      <button class="btn-save" onclick="saveCustomer()">저장하기</button>
     </div>
   </div>
 
-  <!-- STEP 2 -->
-  <div class="form-wrap hidden" id="step2">
-    <div class="step-badge"><span>2</span> STEP 2 · 추가서류 업로드</div>
+  <!-- 고객 목록 -->
+  <div class="form-wrap hidden" id="section-list">
+    <div class="step-badge"><span>📋</span> 고객 신청 목록</div>
     <div class="form-card">
-      <h2>■ 2단계 : 추가서류 업로드</h2>
-
-      <!-- 이름 / 핸드폰 확인 -->
-      <div class="step2-info-row">
-        <div class="form-group">
-          <label>이름</label>
-          <input type="text" id="name2" class="form-input" readonly style="background:#f5f7fa;color:#666;" />
+      <div class="list-header">
+        <h2>입력된 고객 정보</h2>
+        <span class="list-count" id="list-count"></span>
+      </div>
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="이름, 연락처, 생년월일, 상태로 검색..." oninput="filterList(this.value)" />
+          <button class="search-clear" id="search-clear" onclick="clearSearch()" title="검색 초기화">✕</button>
         </div>
-        <div class="form-group">
-          <label>핸드폰</label>
-          <input type="text" id="phone2" class="form-input" readonly style="background:#f5f7fa;color:#666;" />
+        <div class="search-filter-row">
+          <button class="filter-btn active" data-filter="all" onclick="setFilter(this,'all')">전체</button>
+          <button class="filter-btn" data-filter="서류대기" onclick="setFilter(this,'서류대기')">서류대기</button>
+          <button class="filter-btn" data-filter="제출완료" onclick="setFilter(this,'제출완료')">제출완료</button>
+          <button class="filter-btn" data-filter="확인완료" onclick="setFilter(this,'확인완료')">확인완료</button>
+        </div>
+      </div>
+      <div class="customer-table-wrap">
+        <div id="customer-table-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 : 서류 업로드 -->
+  <div class="form-wrap hidden" id="section-step2">
+    <div class="step-badge"><span>2</span> STEP 2 · 서류 업로드</div>
+    <div class="form-card">
+      <h2>서류를 업로드해 주세요</h2>
+
+      <!-- 고객 정보 요약 -->
+      <div class="customer-summary">
+        <div class="summary-item">
+          <label>이름</label>
+          <span id="s2-name">-</span>
+        </div>
+        <div class="summary-item">
+          <label>생년월일</label>
+          <span id="s2-birth">-</span>
+        </div>
+        <div class="summary-item">
+          <label>연락처</label>
+          <span id="s2-phone">-</span>
+        </div>
+        <div class="summary-item">
+          <label>구독기간</label>
+          <span id="s2-period">-</span>
+        </div>
+        <div class="summary-item">
+          <label>자동이체일</label>
+          <span id="s2-debit">-</span>
         </div>
       </div>
 
       <div class="upload-guide">
-        📎 &lt;신용 조회 동의&gt; 완료 후, 필요 서류를 업로드 해주세요.
+        📎 아래 필요 서류를 업로드 해주세요.
         <ul>
           <li>(거주 주택일 경우) 본인 소유 등기부등본</li>
           <li>(신규 매매일 경우) 부동산 매매계약서</li>
@@ -607,17 +890,8 @@
         <p class="upload-hint">JPG, PNG, PDF 업로드 가능</p>
       </div>
 
-      <button class="btn-submit" onclick="submitForm()">제출하기</button>
-    </div>
-  </div>
-
-  <!-- 완료 메시지 -->
-  <div class="form-wrap hidden" id="complete">
-    <div class="complete-card">
-      <div class="complete-icon">✅</div>
-      <h2>신청이 완료되었습니다!</h2>
-      <p>담당자가 검토 후 빠르게 연락드리겠습니다.<br>영업일 기준 1~2일 내 연락드리니 잠시 기다려 주세요.</p>
-      <a class="btn-home" href="index.html">홈으로 돌아가기</a>
+      <button class="btn-back" onclick="backToList()">← 목록으로 돌아가기</button>
+      <button class="btn-submit" onclick="submitDocs()">제출하기</button>
     </div>
   </div>
 
@@ -632,7 +906,7 @@
 
 </section>
 
-<!-- ══ 푸터 ══ -->
+<!-- 푸터 -->
 <footer class="footer">
   <div class="container">
     <img src="static/logo.png" alt="티유디지털 로고" class="footer-logo-img" onerror="this.style.display='none'" />
@@ -644,26 +918,51 @@
   </div>
 </footer>
 
+<!-- 서류 미리보기 모달 -->
+<div class="doc-modal-overlay" id="doc-modal-overlay" onclick="if(event.target===this)closeDocModal()">
+  <div class="doc-modal">
+    <div class="doc-modal-header">
+      <h3 id="doc-modal-customer-name">첨부 서류 확인</h3>
+      <button class="doc-modal-close" onclick="closeDocModal()">✕</button>
+    </div>
+    <div class="doc-preview-grid" id="doc-preview-grid"></div>
+  </div>
+</div>
+
 <script>
+  let currentCustomerId = null;
+  const sessionFileStore = {};
+  let searchQuery = '';
+  let statusFilter = 'all';
+
   function toggleNav() {
-    const nav = document.getElementById('mobileNav');
-    nav.classList.toggle('open');
+    document.getElementById('mobileNav').classList.toggle('open');
   }
 
-  function goStep2() {
+  /* ── localStorage 헬퍼 ── */
+  function getCustomers() {
+    return JSON.parse(localStorage.getItem('kcc_customers') || '[]');
+  }
+  function saveCustomers(list) {
+    localStorage.setItem('kcc_customers', JSON.stringify(list));
+  }
+
+  /* ── STEP 1 저장 ── */
+  function saveCustomer() {
     const name = document.getElementById('name').value.trim();
-    const birth = document.getElementById('birth').value.replace(/[^0-9]/g, '');
+    const birth = document.getElementById('birth').value.replace(/\D/g, '');
     const phone = document.getElementById('phone').value.trim();
+    const periodEl = document.querySelector('input[name="period"]:checked');
+    const debitEl = document.querySelector('input[name="debit"]:checked');
     const agreed = document.getElementById('agreePrivacy').checked;
-    const debitSelected = document.querySelector('input[name="debit"]:checked');
 
     if (!name) {
       alert('이름을 입력해 주세요.');
       document.getElementById('name').focus();
       return;
     }
-    if (!birth) {
-      alert('생년월일을 입력해 주세요.');
+    if (birth.length !== 6 && birth.length !== 8) {
+      alert('생년월일을 6자리(830214) 또는 8자리(19830214)로 입력해 주세요.');
       document.getElementById('birth').focus();
       return;
     }
@@ -672,7 +971,11 @@
       document.getElementById('phone').focus();
       return;
     }
-    if (!debitSelected) {
+    if (!periodEl) {
+      alert('구독기간을 선택해 주세요.');
+      return;
+    }
+    if (!debitEl) {
       alert('자동이체일을 선택해 주세요.');
       return;
     }
@@ -681,20 +984,220 @@
       return;
     }
 
-    window.open('https://www.hankookcapital.co.kr/ib20/mnu/HKCFTM020000', '_blank');
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-    // step2에 이름·핸드폰 자동 채움
-    document.getElementById('name2').value = name;
-    document.getElementById('phone2').value = phone;
+    const customer = {
+      id: Date.now(),
+      name,
+      birth,
+      phone,
+      period: periodEl.value,
+      debit: debitEl.value,
+      docs: null,
+      status: '서류대기',
+      createdAt: new Date().toLocaleString('ko-KR')
+    };
+
+    const list = getCustomers();
+    list.push(customer);
+    saveCustomers(list);
+
+    /* 폼 초기화 */
+    document.getElementById('name').value = '';
+    document.getElementById('birth').value = '';
+    document.getElementById('phone').value = '';
+    document.querySelectorAll('input[name="period"]').forEach(r => r.checked = false);
+    document.getElementById('p60').checked = true;
+    document.querySelectorAll('input[name="debit"]').forEach(r => r.checked = false);
+    document.getElementById('agreePrivacy').checked = false;
+
+    renderCustomerList();
+    document.getElementById('section-list').classList.remove('hidden');
+    document.getElementById('section-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── 검색 / 필터 ── */
+  function filterList(q) {
+    searchQuery = q.trim();
+    document.getElementById('search-clear').classList.toggle('visible', searchQuery.length > 0);
+    renderCustomerList();
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    filterList('');
+  }
+
+  function setFilter(btn, filter) {
+    statusFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCustomerList();
+  }
+
+  /* ── 고객 목록 렌더링 ── */
+  function renderCustomerList() {
+    const allList = getCustomers();
+    const wrap = document.getElementById('customer-table-body');
+    const countEl = document.getElementById('list-count');
+
+    const q = searchQuery.toLowerCase();
+    const list = allList.filter(c => {
+      const matchStatus = statusFilter === 'all' || c.status === statusFilter;
+      const matchQuery = !q
+        || c.name.toLowerCase().includes(q)
+        || c.phone.replace(/-/g, '').includes(q.replace(/-/g, ''))
+        || c.birth.includes(q)
+        || c.status.includes(q)
+        || c.period.includes(q);
+      return matchStatus && matchQuery;
+    });
+
+    countEl.textContent = q || statusFilter !== 'all'
+      ? '검색결과 ' + list.length + ' / 전체 ' + allList.length + '건'
+      : '총 ' + allList.length + '건';
+
+    if (allList.length === 0) {
+      wrap.innerHTML = '<div class="empty-list">등록된 고객이 없습니다.</div>';
+      return;
+    }
+
+    if (list.length === 0) {
+      wrap.innerHTML = '<div class="search-empty"><div class="search-empty-icon">🔍</div>검색 결과가 없습니다.</div>';
+      return;
+    }
+
+    let rows = list.map(c => {
+      const isDone = c.status === '제출완료';
+      const statusClass = isDone ? 'status-done' : 'status-pending';
+
+      let docsCell, actionCell;
+
+      if (!c.docs) {
+        docsCell = '<span style="color:#bbb;font-size:12px;">미첨부</span>';
+        actionCell = '<button class="btn-upload-docs" onclick="openStep2(' + c.id + ')">서류 업로드</button>'
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      } else {
+        const checked = c.confirmed ? 'checked' : '';
+        docsCell = '<button class="btn-view-docs" onclick="viewDocs(' + c.id + ')">📄 서류 보기</button>';
+        actionCell = '<button class="btn-reupload" onclick="openStep2(' + c.id + ')">재업로드</button>'
+          + '<label class="confirm-label">'
+          + '<input type="checkbox" ' + checked + ' onchange="toggleConfirm(' + c.id + ',this.checked)" />'
+          + '서류확인</label>'
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      }
+
+      return '<tr>'
+        + '<td><strong>' + c.name + '</strong></td>'
+        + '<td>' + c.birth + '</td>'
+        + '<td>' + c.phone + '</td>'
+        + '<td>' + c.period + '</td>'
+        + '<td>' + c.debit + '</td>'
+        + '<td style="font-size:11px;color:#999;">' + c.createdAt + '</td>'
+        + '<td style="text-align:center;">' + docsCell + '</td>'
+        + '<td><span class="status-badge ' + statusClass + '">' + c.status + '</span></td>'
+        + '<td style="white-space:nowrap;vertical-align:middle;">'
+          + actionCell
+        + '</td>'
+        + '</tr>';
+    }).join('');
+
+    wrap.innerHTML = '<table class="customer-table">'
+      + '<thead><tr>'
+      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>구독기간</th><th>이체일</th><th>신청일시</th><th>첨부서류</th><th>상태</th><th style="min-width:180px;">관리</th>'
+      + '</tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '</table>';
+  }
+
+  /* ── 고객 삭제 ── */
+  function deleteCustomer(id) {
+    if (!confirm('해당 고객 정보를 삭제하시겠습니까?')) return;
+    let list = getCustomers().filter(c => c.id !== id);
+    saveCustomers(list);
+    renderCustomerList();
+    if (list.length === 0) {
+      document.getElementById('section-list').classList.add('hidden');
+    }
+  }
+
+  /* ── STEP 2 열기 ── */
+  function openStep2(id) {
+    currentCustomerId = id;
+    const c = getCustomers().find(c => c.id === id);
+    if (!c) return;
+
+    document.getElementById('s2-name').textContent = c.name;
+    document.getElementById('s2-birth').textContent = c.birth;
+    document.getElementById('s2-phone').textContent = c.phone;
+    document.getElementById('s2-period').textContent = c.period;
+    document.getElementById('s2-debit').textContent = c.debit;
+
+    ['doc1', 'doc2', 'doc3'].forEach(d => removeFile(d, 'name-' + d, 'remove-' + d));
+
+    document.getElementById('section-step1').classList.add('hidden');
+    document.getElementById('section-list').classList.add('hidden');
+    document.getElementById('section-step2').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /* ── 서류 확인 체크박스 ── */
+  function toggleConfirm(id, checked) {
+    let list = getCustomers();
+    const idx = list.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      list[idx].confirmed = checked;
+      list[idx].status = checked ? '확인완료' : '제출완료';
+      saveCustomers(list);
+      renderCustomerList();
+    }
+  }
+
+  /* ── 목록으로 돌아가기 ── */
+  function backToList() {
+    document.getElementById('section-step2').classList.add('hidden');
+    document.getElementById('section-step1').classList.remove('hidden');
+    document.getElementById('section-list').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── 서류 제출 ── */
+  function submitDocs() {
+    const doc1 = document.getElementById('doc1').files[0];
+    const doc2 = document.getElementById('doc2').files[0];
+    const doc3 = document.getElementById('doc3').files[0];
+
+    if (!doc1) { alert('등기부등본 또는 매매계약서를 업로드해 주세요.'); return; }
+    if (!doc2) { alert('신분증 사본을 업로드해 주세요.'); return; }
+    if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
+
+    let list = getCustomers();
+    const idx = list.findIndex(c => c.id === currentCustomerId);
+    if (idx !== -1) {
+      list[idx].docs = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
+      list[idx].status = '제출완료';
+      list[idx].confirmed = false;
+      saveCustomers(list);
+      sessionFileStore['customer_' + currentCustomerId] = {
+        doc1: sessionFileStore['doc1'] || null,
+        doc2: sessionFileStore['doc2'] || null,
+        doc3: sessionFileStore['doc3'] || null
+      };
+    }
+
+    renderCustomerList();
+    document.getElementById('section-step2').classList.add('hidden');
+    document.getElementById('section-step1').classList.remove('hidden');
+    document.getElementById('section-list').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    alert('서류 제출이 완료되었습니다!');
+  }
+
+  /* ── 파일 핸들러 ── */
   function handleFile(inputId, nameId, removeId) {
     const file = document.getElementById(inputId).files[0];
     const nameEl = document.getElementById(nameId);
     const removeEl = document.getElementById(removeId);
     if (file) {
+      sessionFileStore[inputId] = file;
       nameEl.textContent = file.name;
       nameEl.classList.add('has-file');
       removeEl.classList.add('visible');
@@ -710,31 +1213,62 @@
     removeEl.classList.remove('visible');
   }
 
-  function submitForm() {
-    const doc1 = document.getElementById('doc1').files.length;
-    const doc2 = document.getElementById('doc2').files.length;
-    const doc3 = document.getElementById('doc3').files.length;
+  /* ── 서류 미리보기 모달 ── */
+  function viewDocs(id) {
+    const c = getCustomers().find(c => c.id === id);
+    if (!c || !c.docs) return;
 
-    if (!doc1) {
-      alert('등기부등본 또는 부동산 매매계약서를 업로드해 주세요.');
-      return;
-    }
-    if (!doc2) {
-      alert('신분증 사본을 업로드해 주세요.');
-      return;
-    }
-    if (!doc3) {
-      alert('통장 사본을 업로드해 주세요.');
-      return;
-    }
+    const files = sessionFileStore['customer_' + id] || {};
+    const labels = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
+    const keys = ['doc1', 'doc2', 'doc3'];
 
-    document.getElementById('step2').classList.add('hidden');
-    document.getElementById('complete').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('doc-modal-customer-name').textContent = c.name + ' 고객 서류';
+
+    const grid = document.getElementById('doc-preview-grid');
+    grid.innerHTML = keys.map((key, i) => {
+      const fileName = c.docs[key] || '-';
+      const file = files[key];
+      let previewHtml;
+
+      if (file) {
+        const url = URL.createObjectURL(file);
+        if (file.type === 'application/pdf') {
+          previewHtml = '<iframe src="' + url + '#toolbar=0" title="' + fileName + '"></iframe>';
+        } else {
+          previewHtml = '<img src="' + url + '" alt="' + fileName + '" onclick="openFullImg(this.src)" />';
+        }
+      } else {
+        previewHtml = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><div style="font-size:11px;margin-top:6px;color:#ccc;">새로고침 후 재업로드 시 미리보기 가능</div></div>';
+      }
+
+      return '<div class="doc-preview-item">'
+        + '<div class="doc-preview-label">' + labels[i] + '</div>'
+        + '<div class="doc-preview-body">' + previewHtml + '</div>'
+        + '<div class="doc-preview-filename">' + fileName + '</div>'
+        + '</div>';
+    }).join('');
+
+    document.getElementById('doc-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
+
+  function closeDocModal() {
+    document.getElementById('doc-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function openFullImg(src) {
+    window.open(src, '_blank');
+  }
+
+  /* ── 페이지 로드 시 저장된 목록 복원 ── */
+  window.addEventListener('DOMContentLoaded', function () {
+    const list = getCustomers();
+    if (list.length > 0) {
+      renderCustomerList();
+      document.getElementById('section-list').classList.remove('hidden');
+    }
+  });
 </script>
 </body>
 </html>
-
-
-
