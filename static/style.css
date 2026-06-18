@@ -46,6 +46,9 @@ img { display: block; }
   gap: 48px;
 }
 .logo img { height: 110px; width: auto; }
+.header-mobile-text { display: none; flex-direction: column; gap: 2px; flex: 1; }
+.header-company { font-size: 13px; font-weight: 800; color: var(--navy); }
+.header-tagline { font-size: 11px; color: #666; line-height: 1.4; }
 .nav {
   display: flex;
   gap: 36px;
@@ -662,6 +665,7 @@ a.contact-item:hover, .contact-item.kakao:hover {
   /* 헤더 */
   .header-inner { height: 90px; gap: 12px; }
   .logo img { height: 110px; }
+  .header-mobile-text { display: flex; }
 
   /* 히어로 - 태그/서브 숨기고 버튼 최적화 */
   .hero { min-height: 300px; }
