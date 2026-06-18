@@ -79,13 +79,14 @@
     .kcc-hero h1 em { color: #0099e0; font-style: normal; }
     .kcc-hero .sub { font-size: 17px; color: rgba(255,255,255,0.7); margin-bottom: 48px; }
     .hero-badges {
-      display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+      display: flex; gap: 16px; justify-content: center; flex-wrap: nowrap;
     }
     .hero-badge-item {
       display: flex; align-items: center; gap: 10px;
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 12px; padding: 16px 22px;
+      border-radius: 12px; padding: 16px 16px;
+      flex: 1; min-width: 0;
     }
     .hero-badge-item .icon { font-size: 24px; }
     .hero-badge-item strong { display: block; font-size: 14px; font-weight: 800; color: #fff; }
