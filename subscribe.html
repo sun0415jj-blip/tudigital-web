@@ -652,7 +652,7 @@
 
   function goStep2() {
     const name = document.getElementById('name').value.trim();
-    const birth = document.getElementById('birth').value.replace(/\D/g, '');
+    const birth = document.getElementById('birth').value.replace(/[^0-9]/g, '');
     const phone = document.getElementById('phone').value.trim();
     const agreed = document.getElementById('agreePrivacy').checked;
     const debitSelected = document.querySelector('input[name="debit"]:checked');
@@ -662,8 +662,8 @@
       document.getElementById('name').focus();
       return;
     }
-    if (!birth || (birth.length !== 6 && birth.length !== 8)) {
-      alert('생년월일을 입력해 주세요. (예: 19830214 또는 830214)');
+    if (!birth || birth.length < 6) {
+      alert('생년월일 6자리 이상 입력해 주세요.');
       document.getElementById('birth').focus();
       return;
     }
