@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구독신청 관리자 | 티유디지털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: #222; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── 로그인 화면 ── */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      padding: 20px;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .login-logo { font-size: 32px; margin-bottom: 8px; }
+    .login-card h1 { font-size: 20px; font-weight: 900; color: #0d2137; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: #888; margin-bottom: 32px; }
+    .login-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #d1d9e0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color .15s;
+    }
+    .login-input:focus { border-color: #0d2137; box-shadow: 0 0 0 3px rgba(13,33,55,.08); }
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: #0d2137;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-login:hover { background: #1a3a5c; }
+    .login-error { color: #e53e3e; font-size: 13px; margin-top: 12px; display: none; }
+
+    /* ── 대시보드 ── */
+    .dashboard { display: none; flex-direction: column; min-height: 100vh; }
+    .dashboard.active { display: flex; }
+
+    .dash-header {
+      background: #0d2137;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .dash-header-left { display: flex; align-items: center; gap: 14px; }
+    .dash-logo { font-size: 15px; font-weight: 900; color: #fff; }
+    .dash-badge { background: #f0a500; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 20px; }
+    .dash-header-right { display: flex; align-items: center; gap: 10px; }
+    .btn-logout {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,.2); }
+    .btn-refresh {
+      background: #f0a500;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-refresh:hover { background: #d4920a; }
+
+    .dash-body { flex: 1; padding: 28px 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* ── 통계 카드 ── */
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(13,33,55,.07); text-align: center; }
+    .stat-card .stat-num { font-size: 32px; font-weight: 900; color: #0d2137; line-height: 1; margin-bottom: 6px; }
+    .stat-card .stat-label { font-size: 13px; color: #888; font-weight: 600; }
+    .stat-card.c-wait .stat-num { color: #b7791f; }
+    .stat-card.c-submit .stat-num { color: #2b6cb0; }
+    .stat-card.c-done .stat-num { color: #276749; }
+
+    /* ── 고객 관리 카드 ── */
+    .manage-card { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(13,33,55,.07); }
+    .manage-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .manage-card-header h2 { font-size: 18px; font-weight: 900; color: #0d2137; }
+    .list-count { font-size: 13px; color: #888; font-weight: 600; }
+
+    /* ── 검색 ── */
+    .search-bar-wrap { margin-bottom: 16px; }
+    .search-bar { display: flex; align-items: center; gap: 8px; background: #f5f7fa; border: 1.5px solid #d1d9e0; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; transition: border-color .15s; }
+    .search-bar:focus-within { border-color: #0d2137; background: #fff; box-shadow: 0 0 0 3px rgba(13,33,55,.07); }
+    .search-icon { font-size: 16px; flex-shrink: 0; }
+    .search-input { flex: 1; border: none; background: transparent; font-size: 14px; font-family: inherit; color: #222; outline: none; }
+    .search-input::placeholder { color: #aaa; }
+    .search-clear { background: none; border: none; color: #bbb; font-size: 15px; cursor: pointer; padding: 2px 4px; display: none; line-height: 1; }
+    .search-clear:hover { color: #e53e3e; }
+    .search-clear.visible { display: block; }
+    .search-filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { padding: 6px 16px; border-radius: 20px; border: 1.5px solid #d1d9e0; background: #fff; color: #666; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .filter-btn:hover { border-color: #0d2137; color: #0d2137; }
+    .filter-btn.active { background: #0d2137; border-color: #0d2137; color: #fff; }
+
+    /* ── 테이블 ── */
+    .table-wrap { overflow-x: auto; }
+    .customer-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+    .customer-table th { padding: 11px 10px; text-align: left; background: #f0f4f8; border-bottom: 2px solid #e2e8f0; font-weight: 800; color: #333; white-space: nowrap; }
+    .customer-table td { padding: 12px 10px; border-bottom: 1px solid #f0f4f8; vertical-align: middle; }
+    .customer-table tr:last-child td { border-bottom: none; }
+    .customer-table tr:hover td { background: #fafbfc; }
+
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .status-pending  { background: #fff8e1; color: #b7791f; }
+    .status-submit   { background: #ebf8ff; color: #2b6cb0; }
+    .status-done     { background: #f0fff4; color: #276749; }
+
+    .btn-upload-docs { background: #0d2137; color: #fff; border: none; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: background .15s; }
+    .btn-upload-docs:hover { background: #1a3a5c; }
+    .btn-reupload { background: #f5f7fa; color: #555; border: 1.5px solid #d1d9e0; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; margin-right: 4px; }
+    .btn-reupload:hover { background: #e2e8f0; border-color: #0d2137; color: #0d2137; }
+    .btn-view-docs { background: #e8f0fe; color: #1a3a5c; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; }
+    .btn-view-docs:hover { background: #c7d9fc; }
+    .btn-delete-row { background: #fff0f0; color: #e53e3e; border: 1px solid #fed7d7; border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: 4px; font-family: inherit; }
+    .btn-delete-row:hover { background: #ffe4e4; }
+    .confirm-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #276749; cursor: pointer; margin-right: 4px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #9ae6b4; background: #f0fff4; vertical-align: middle; }
+    .confirm-label input[type="checkbox"] { width: 15px; height: 15px; accent-color: #276749; cursor: pointer; flex-shrink: 0; }
+
+    .empty-list { text-align: center; padding: 48px 20px; color: #aaa; font-size: 14px; }
+    .search-empty { text-align: center; padding: 32px 20px; color: #aaa; font-size: 14px; }
+    .search-empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    /* ── 로딩 ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 18px; height: 18px; border: 3px solid #e2e8f0; border-top-color: #0d2137; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+    .loading-row { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 40px; color: #888; font-size: 14px; font-weight: 600; }
+
+    /* ── 서류 업로드 패널 (인라인) ── */
+    .upload-panel { background: #f8faff; border: 1.5px solid #d1d9e0; border-radius: 12px; padding: 20px; margin-top: 12px; }
+    .upload-panel h4 { font-size: 14px; font-weight: 800; color: #0d2137; margin-bottom: 16px; }
+    .upload-group { margin-bottom: 16px; }
+    .upload-group .upload-label { display: block; font-size: 13px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .upload-group .upload-label .req { color: #e53e3e; margin-left: 3px; }
+    .upload-group input[type="file"] { display: none; }
+    .upload-row { display: flex; gap: 8px; align-items: center; }
+    .btn-file-upload { display: inline-flex; align-items: center; gap: 5px; padding: 9px 14px; background: #f0f4f8; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 13px; font-weight: 700; color: #0d2137; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .btn-file-upload:hover { background: #e2e8f0; }
+    .file-name-display { flex: 1; font-size: 12px; color: #888; background: #fafbfc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 9px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-name-display.has-file { color: #0d2137; font-weight: 600; border-color: #0d2137; }
+    .btn-file-remove { display: none; background: none; border: none; color: #e53e3e; font-size: 16px; cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1; }
+    .btn-file-remove.visible { display: inline-flex; }
+    .panel-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-panel-cancel { flex: 1; padding: 10px; background: #fff; color: #555; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-panel-submit { flex: 2; padding: 10px; background: #f0a500; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+    .btn-panel-submit:hover { background: #d4920a; }
+
+    /* ── 서류 미리보기 모달 ── */
+    .doc-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+    .doc-modal-overlay.open { display: flex; }
+    .doc-modal { background: #fff; border-radius: 20px; padding: 28px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .doc-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .doc-modal-header h3 { font-size: 17px; font-weight: 900; color: #0d2137; }
+    .doc-modal-close { background: #f0f4f8; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #555; flex-shrink: 0; }
+    .doc-modal-close:hover { background: #e2e8f0; }
+    .doc-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .doc-preview-item { border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .doc-preview-label { background: #f0f4f8; padding: 8px 14px; font-size: 12px; font-weight: 800; color: #0d2137; border-bottom: 1px solid #e2e8f0; }
+    .doc-preview-body { padding: 12px; min-height: 140px; display: flex; align-items: center; justify-content: center; background: #fafbfc; }
+    .doc-preview-body img { max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 6px; cursor: zoom-in; }
+    .doc-preview-body iframe { width: 100%; height: 220px; border: none; }
+    .doc-preview-filename { padding: 8px 14px; font-size: 11px; color: #888; border-top: 1px solid #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-no-preview { text-align: center; color: #bbb; font-size: 13px; }
+    .doc-no-preview .doc-icon { font-size: 36px; margin-bottom: 8px; }
+
+    .hidden { display: none !important; }
+
+    @media(max-width: 768px) {
+      .dash-body { padding: 16px; }
+      .manage-card { padding: 16px; }
+      .stat-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width: 480px) {
+      .dash-header { padding: 0 14px; }
+      .dash-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🔐</div>
+    <h1>관리자 로그인</h1>
+    <p>티유디지털 구독신청 관리 시스템</p>
+    <input type="password" id="admin-pw" class="login-input" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="btn-login" onclick="doLogin()">로그인</button>
+    <p class="login-error" id="login-error">비밀번호가 틀렸습니다.</p>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div class="dashboard" id="dashboard">
+
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <span class="dash-logo">티유디지털</span>
+      <span class="dash-badge">관리자</span>
+    </div>
+    <div class="dash-header-right">
+      <button class="btn-refresh" onclick="reloadData()">
+        <span id="refresh-icon">🔄</span> 새로고침
+      </button>
+      <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <!-- 통계 -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">-</div>
+        <div class="stat-label">전체 신청</div>
+      </div>
+      <div class="stat-card c-wait">
+        <div class="stat-num" id="stat-wait">-</div>
+        <div class="stat-label">서류대기</div>
+      </div>
+      <div class="stat-card c-submit">
+        <div class="stat-num" id="stat-submit">-</div>
+        <div class="stat-label">서류제출</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="stat-done">-</div>
+        <div class="stat-label">확인완료</div>
+      </div>
+    </div>
+
+    <!-- 고객 목록 -->
+    <div class="manage-card">
+      <div class="manage-card-header">
+        <h2>구독 신청 고객 목록</h2>
+        <span class="list-count" id="list-count"></span>
+      </div>
+
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="이름, 연락처, 생년월일, 상태로 검색..." oninput="filterList(this.value)" />
+          <button class="search-clear" id="search-clear" onclick="clearSearch()" title="초기화">✕</button>
+        </div>
+        <div class="search-filter-row">
+          <button class="filter-btn active" onclick="setFilter(this,'all')">전체</button>
+          <button class="filter-btn" onclick="setFilter(this,'서류대기')">서류대기</button>
+          <button class="filter-btn" onclick="setFilter(this,'서류제출')">서류제출</button>
+          <button class="filter-btn" onclick="setFilter(this,'확인완료')">확인완료</button>
+        </div>
+      </div>
+
+      <div id="list-loading" class="loading-row" style="display:none;">
+        <div class="spinner"></div> 데이터 불러오는 중...
+      </div>
+      <div class="table-wrap">
+        <div id="customer-table-body"></div>
+      </div>
+    </div>
+
+  </div><!-- /dash-body -->
+</div><!-- /dashboard -->
+
+<!-- 서류 업로드 패널 (동적 생성) -->
+
+<!-- 서류 미리보기 모달 -->
+<div class="doc-modal-overlay" id="doc-modal-overlay" onclick="if(event.target===this)closeDocModal()">
+  <div class="doc-modal">
+    <div class="doc-modal-header">
+      <h3 id="doc-modal-title">첨부 서류 확인</h3>
+      <button class="doc-modal-close" onclick="closeDocModal()">✕</button>
+    </div>
+    <div class="doc-preview-grid" id="doc-preview-grid"></div>
+  </div>
+</div>
+
+<script>
+  /* ════════════════════════════════
+     설정값 — 변경 가능
+  ════════════════════════════════ */
+  const ADMIN_PASSWORD = 'tu2025!';       // 관리자 비밀번호
+  const SCRIPT_URL     = 'YOUR_SCRIPT_URL_HERE'; // Google Apps Script URL
+
+  /* ── 상태 ── */
+  let customersCache = [];
+  let searchQuery = '';
+  let statusFilter = 'all';
+  const sessionFileStore = {};
+  let uploadTargetId = null;
+
+  /* ════ 로그인 ════ */
+  function doLogin() {
+    const pw = document.getElementById('admin-pw').value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      loadCustomers();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('admin-pw').value = '';
+      document.getElementById('admin-pw').focus();
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('admin-pw').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    customersCache = [];
+  }
+
+  /* ════ API ════ */
+  async function loadCustomers() {
+    showLoading(true);
+    try {
+      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+      const json = await res.json();
+      customersCache = (json.data || []).map(c => ({
+        ...c,
+        id:        Number(c.id),
+        confirmed: c.confirmed === 'true' || c.confirmed === true,
+        docs:      c.docs && typeof c.docs === 'object' ? c.docs : null
+      }));
+    } catch(e) {
+      console.error('로드 실패:', e);
+      customersCache = [];
+    }
+    showLoading(false);
+    updateStats();
+    renderCustomerList();
+  }
+
+  function apiPost(payload) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body:   JSON.stringify(payload)
+    }).catch(e => console.error('저장 오류:', e));
+  }
+
+  function showLoading(show) {
+    document.getElementById('list-loading').style.display = show ? 'flex' : 'none';
+  }
+
+  async function reloadData() {
+    const icon = document.getElementById('refresh-icon');
+    icon.style.animation = 'spin .5s linear infinite';
+    icon.style.display = 'inline-block';
+    await loadCustomers();
+    icon.style.animation = '';
+  }
+
+  /* ════ 통계 업데이트 ════ */
+  function updateStats() {
+    const all = customersCache;
+    document.getElementById('stat-total').textContent  = all.length;
+    document.getElementById('stat-wait').textContent   = all.filter(c => c.status === '서류대기').length;
+    document.getElementById('stat-submit').textContent = all.filter(c => c.status === '서류제출').length;
+    document.getElementById('stat-done').textContent   = all.filter(c => c.status === '확인완료').length;
+  }
+
+  /* ════ 검색 / 필터 ════ */
+  function filterList(q) {
+    searchQuery = q.trim();
+    document.getElementById('search-clear').classList.toggle('visible', searchQuery.length > 0);
+    renderCustomerList();
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    filterList('');
+  }
+
+  function setFilter(btn, filter) {
+    statusFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCustomerList();
+  }
+
+  /* ════ 목록 렌더링 ════ */
+  function renderCustomerList() {
+    const wrap    = document.getElementById('customer-table-body');
+    const countEl = document.getElementById('list-count');
+    const all     = customersCache;
+
+    const q    = searchQuery.toLowerCase();
+    const list = all.filter(c => {
+      const ms = statusFilter === 'all' || c.status === statusFilter;
+      const mq = !q
+        || c.name.toLowerCase().includes(q)
+        || (c.phone || '').replace(/-/g,'').includes(q.replace(/-/g,''))
+        || (c.birth || '').includes(q)
+        || (c.status || '').includes(q);
+      return ms && mq;
+    });
+
+    countEl.textContent = (q || statusFilter !== 'all')
+      ? '검색결과 ' + list.length + ' / 전체 ' + all.length + '건'
+      : '총 ' + all.length + '건';
+
+    if (all.length === 0) {
+      wrap.innerHTML = '<div class="empty-list">등록된 고객이 없습니다.<br><small style="color:#ccc;margin-top:6px;display:block;">새로고침을 눌러 데이터를 불러오세요.</small></div>';
+      return;
+    }
+    if (list.length === 0) {
+      wrap.innerHTML = '<div class="search-empty"><div class="search-empty-icon">🔍</div>검색 결과가 없습니다.</div>';
+      return;
+    }
+
+    const statusClass = s => s === '확인완료' ? 'status-done' : (s === '서류제출' ? 'status-submit' : 'status-pending');
+
+    const rows = list.map(c => {
+      let docsCell, actionCell;
+
+      if (!c.docs) {
+        docsCell   = '<span style="color:#bbb;font-size:12px;">미첨부</span>';
+        actionCell = '<button class="btn-upload-docs" onclick="openUploadPanel(' + c.id + ')">서류 업로드</button>'
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      } else {
+        const chk = c.confirmed ? 'checked' : '';
+        docsCell   = '<button class="btn-view-docs" onclick="viewDocs(' + c.id + ')">📄 서류 보기</button>';
+        actionCell = '<button class="btn-reupload" onclick="openUploadPanel(' + c.id + ')">재업로드</button>'
+          + '<label class="confirm-label">'
+          + '<input type="checkbox" ' + chk + ' onchange="toggleConfirm(' + c.id + ',this.checked)" />'
+          + '서류확인</label>'
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      }
+
+      return '<tr id="row-' + c.id + '">'
+        + '<td><strong>' + c.name + '</strong></td>'
+        + '<td>' + c.birth + '</td>'
+        + '<td>' + c.phone + '</td>'
+        + '<td>' + c.period + '</td>'
+        + '<td>' + c.debit + '</td>'
+        + '<td style="font-size:11px;color:#999;">' + c.createdAt + '</td>'
+        + '<td style="text-align:center;">' + docsCell + '</td>'
+        + '<td><span class="status-badge ' + statusClass(c.status) + '">' + c.status + '</span></td>'
+        + '<td style="white-space:nowrap;">' + actionCell + '</td>'
+        + '</tr>'
+        + '<tr id="panel-' + c.id + '" style="display:none;"><td colspan="9" style="padding:0 10px 16px;"></td></tr>';
+    }).join('');
+
+    wrap.innerHTML = '<table class="customer-table">'
+      + '<thead><tr>'
+      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>구독기간</th><th>이체일</th><th>신청일시</th><th>첨부서류</th><th>상태</th><th style="min-width:200px;">관리</th>'
+      + '</tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '</table>';
+  }
+
+  /* ════ 서류 업로드 패널 ════ */
+  function openUploadPanel(id) {
+    /* 다른 패널 닫기 */
+    if (uploadTargetId && uploadTargetId !== id) {
+      const prev = document.getElementById('panel-' + uploadTargetId);
+      if (prev) prev.style.display = 'none';
+    }
+    uploadTargetId = id;
+    const panelRow = document.getElementById('panel-' + id);
+    if (!panelRow) return;
+
+    if (panelRow.style.display !== 'none') {
+      panelRow.style.display = 'none';
+      return;
+    }
+
+    panelRow.querySelector('td').innerHTML = `
+      <div class="upload-panel">
+        <h4>서류 업로드</h4>
+        <div class="upload-group">
+          <span class="upload-label">등기부등본 또는 매매계약서 <span class="req">*</span></span>
+          <input type="file" id="p-doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-doc1','pn-doc1','pr-doc1')" />
+          <div class="upload-row">
+            <label for="p-doc1" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-doc1">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-doc1" onclick="removeFile('p-doc1','pn-doc1','pr-doc1')">✕</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <span class="upload-label">신분증 사본 <span class="req">*</span></span>
+          <input type="file" id="p-doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-doc2','pn-doc2','pr-doc2')" />
+          <div class="upload-row">
+            <label for="p-doc2" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-doc2">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-doc2" onclick="removeFile('p-doc2','pn-doc2','pr-doc2')">✕</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <span class="upload-label">통장 사본 <span class="req">*</span></span>
+          <input type="file" id="p-doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-doc3','pn-doc3','pr-doc3')" />
+          <div class="upload-row">
+            <label for="p-doc3" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-doc3">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-doc3" onclick="removeFile('p-doc3','pn-doc3','pr-doc3')">✕</button>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-panel-cancel" onclick="closeUploadPanel()">취소</button>
+          <button class="btn-panel-submit" onclick="submitUpload()">제출하기</button>
+        </div>
+      </div>`;
+
+    panelRow.style.display = 'table-row';
+  }
+
+  function closeUploadPanel() {
+    if (uploadTargetId) {
+      const p = document.getElementById('panel-' + uploadTargetId);
+      if (p) p.style.display = 'none';
+    }
+    uploadTargetId = null;
+  }
+
+  function submitUpload() {
+    const doc1 = document.getElementById('p-doc1')?.files[0];
+    const doc2 = document.getElementById('p-doc2')?.files[0];
+    const doc3 = document.getElementById('p-doc3')?.files[0];
+
+    if (!doc1) { alert('등기부등본 또는 매매계약서를 업로드해 주세요.'); return; }
+    if (!doc2) { alert('신분증 사본을 업로드해 주세요.'); return; }
+    if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
+
+    const idx = customersCache.findIndex(c => c.id === uploadTargetId);
+    if (idx !== -1) {
+      customersCache[idx].docs      = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
+      customersCache[idx].status    = '서류제출';
+      customersCache[idx].confirmed = false;
+      apiPost({ action: 'update', customer: customersCache[idx] });
+      sessionFileStore['customer_' + uploadTargetId] = { doc1, doc2, doc3 };
+    }
+
+    closeUploadPanel();
+    updateStats();
+    renderCustomerList();
+  }
+
+  /* ════ 삭제 ════ */
+  function deleteCustomer(id) {
+    if (!confirm('해당 고객 정보를 삭제하시겠습니까?')) return;
+    customersCache = customersCache.filter(c => c.id !== id);
+    apiPost({ action: 'delete', id });
+    updateStats();
+    renderCustomerList();
+  }
+
+  /* ════ 서류 확인 체크박스 ════ */
+  function toggleConfirm(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      customersCache[idx].confirmed = checked;
+      customersCache[idx].status    = checked ? '확인완료' : '서류제출';
+      apiPost({ action: 'update', customer: customersCache[idx] });
+      updateStats();
+      renderCustomerList();
+    }
+  }
+
+  /* ════ 서류 미리보기 모달 ════ */
+  function viewDocs(id) {
+    const c = customersCache.find(c => c.id === id);
+    if (!c || !c.docs) return;
+
+    const files  = sessionFileStore['customer_' + id] || {};
+    const labels = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
+    const keys   = ['doc1', 'doc2', 'doc3'];
+
+    document.getElementById('doc-modal-title').textContent = c.name + ' 고객 서류';
+
+    document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
+      const fileName = c.docs[key] || '-';
+      const file     = files[key];
+      let previewHtml;
+
+      if (file) {
+        const url = URL.createObjectURL(file);
+        previewHtml = file.type === 'application/pdf'
+          ? '<iframe src="' + url + '#toolbar=0"></iframe>'
+          : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
+      } else {
+        previewHtml = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 미리보기 가능</small></div>';
+      }
+
+      return '<div class="doc-preview-item">'
+        + '<div class="doc-preview-label">' + labels[i] + '</div>'
+        + '<div class="doc-preview-body">' + previewHtml + '</div>'
+        + '<div class="doc-preview-filename">' + fileName + '</div>'
+        + '</div>';
+    }).join('');
+
+    document.getElementById('doc-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDocModal() {
+    document.getElementById('doc-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ════ 파일 핸들러 ════ */
+  function handleFile(inputId, nameId, removeId) {
+    const file     = document.getElementById(inputId)?.files[0];
+    const nameEl   = document.getElementById(nameId);
+    const removeEl = document.getElementById(removeId);
+    if (file && nameEl && removeEl) {
+      sessionFileStore[inputId] = file;
+      nameEl.textContent = file.name;
+      nameEl.classList.add('has-file');
+      removeEl.classList.add('visible');
+    }
+  }
+
+  function removeFile(inputId, nameId, removeId) {
+    const el = document.getElementById(inputId);
+    if (el) el.value = '';
+    const nameEl   = document.getElementById(nameId);
+    const removeEl = document.getElementById(removeId);
+    if (nameEl)   { nameEl.textContent = '선택된 파일 없음'; nameEl.classList.remove('has-file'); }
+    if (removeEl) { removeEl.classList.remove('visible'); }
+  }
+</script>
+</body>
+</html>
