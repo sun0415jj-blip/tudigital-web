@@ -663,7 +663,7 @@
       return;
     }
     if (!birth) {
-      alert('생년월일을 입력해 주세요.');
+      alert('생년월일 오류\n입력값: "' + document.getElementById('birth').value + '"\n길이: ' + document.getElementById('birth').value.length + '자');
       document.getElementById('birth').focus();
       return;
     }
@@ -681,6 +681,7 @@
       return;
     }
 
+    window.open('https://www.hankookcapital.co.kr/ib20/mnu/HKCFTM020000', '_blank');
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
     // step2에 이름·핸드폰 자동 채움
