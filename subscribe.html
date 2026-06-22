@@ -100,6 +100,10 @@
     @keyframes spin { to { transform:rotate(360deg); } }
     .spinner { width:20px; height:20px; border:3px solid #e2e8f0; border-top-color:#f0a500; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; margin-right:8px; }
 
+    .btn-save-each { padding:10px 24px; background:#0d2137; color:#fff; font-size:14px; font-weight:700; border:none; border-radius:8px; cursor:pointer; margin-top:10px; transition:background .15s; font-family:inherit; display:block; }
+    .btn-save-each:hover { background:#1a3a5c; }
+    .save-confirm { padding:12px 14px; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:8px; font-size:14px; font-weight:600; color:#2e7d32; margin-top:8px; word-break:break-all; }
+
     @media(max-width:640px){
       .header-inner{height:72px!important;gap:12px!important}
       .logo img{height:52px!important}
@@ -186,6 +190,7 @@
       <div class="form-group">
         <label for="amount">금액 <span class="req">*</span></label>
         <input type="text" id="amount" class="form-input" placeholder="예) 1,500,000" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9,]/g,'')" />
+        <small style="color:#888;font-size:12px;margin-top:4px;display:block;">💡 일시불 금액을 입력해 주세요.</small>
       </div>
       <div class="form-group">
         <label>구독기간 선택 <span class="req">*</span></label>
@@ -236,8 +241,41 @@
         <div class="summary-item"><label>자동이체일</label><span id="s2-debit">-</span></div>
       </div>
 
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="display:block;font-size:14px;font-weight:700;color:#333;margin-bottom:8px;">직업군 <span style="color:#e53e3e;margin-left:3px;">*</span></label>
+        <select id="job-category" class="form-input">
+          <option value="">-- 직업군을 선택해 주세요 --</option>
+          <option>건설관련직</option>
+          <option>기계관련직</option>
+          <option>섬유및의복관련직</option>
+          <option>식품가공관련직</option>
+          <option>재료관련직</option>
+          <option>전기·전자관련직</option>
+          <option>정보통신관련직</option>
+          <option>화학관련직</option>
+          <option>환경·인쇄·목재·가구·공예및생산단순직</option>
+          <option>경영·회계·사무관련직</option>
+          <option>금융·보험관련직</option>
+          <option>관리직</option>
+          <option>군인</option>
+          <option>농림어업관련직</option>
+          <option>교육및자연과학·사회과학연구관련직</option>
+          <option>문화·예술·디자인·방송관련직</option>
+          <option>법률·경찰·소방·교도관련직</option>
+          <option>보건·의료관련직</option>
+          <option>사회복지및종교관련직</option>
+          <option>경비및청소관련직</option>
+          <option>미용·숙박·여행·오락·스포츠관련직</option>
+          <option>영업및판매관련직</option>
+          <option>운전및운송관련직</option>
+          <option>음식서비스관련직</option>
+          <option>주부</option>
+          <option>무직</option>
+        </select>
+      </div>
+
       <div class="upload-guide">
-        📎 아래 필요 서류를 업로드 해주세요.
+        📎 각 서류를 업로드하고 저장해 주세요. 3개 모두 저장하면 제출 가능합니다.
         <ul>
           <li>(거주 주택) 본인 소유 등기부등본</li>
           <li>(신규 매매) 부동산 매매계약서</li>
@@ -246,47 +284,59 @@
         </ul>
       </div>
 
+      <!-- 서류 1 -->
       <div class="upload-group">
         <span class="upload-label">등기부등본 또는 매매계약서</span>
         <p class="upload-sub-label">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
-        <input type="file" id="doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc1','name-doc1','remove-doc1','download-doc1')" />
-        <div class="upload-row">
-          <label for="doc1" class="btn-file-upload">📂 파일 올리기</label>
-          <span class="file-name-display" id="name-doc1">선택된 파일 없음</span>
-          <a class="btn-file-download" id="download-doc1" href="#" download>⬇ 다운로드</a>
-          <button type="button" class="btn-file-remove" id="remove-doc1" onclick="removeFile('doc1','name-doc1','remove-doc1','download-doc1')">✕</button>
+        <input type="file" id="doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(1)" />
+        <div id="input-area-doc1">
+          <div class="upload-row">
+            <label for="doc1" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc1">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc1" onclick="removeDoc(1)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc1" onclick="saveDoc(1)">저장하기</button>
         </div>
+        <div class="save-confirm hidden" id="confirm-doc1"></div>
         <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
+      <!-- 서류 2 -->
       <div class="upload-group">
         <span class="upload-label">주민등록증 또는 운전면허증</span>
         <p class="upload-sub-label">신분증 앞면 사본</p>
-        <input type="file" id="doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc2','name-doc2','remove-doc2','download-doc2')" />
-        <div class="upload-row">
-          <label for="doc2" class="btn-file-upload">📂 파일 올리기</label>
-          <span class="file-name-display" id="name-doc2">선택된 파일 없음</span>
-          <a class="btn-file-download" id="download-doc2" href="#" download>⬇ 다운로드</a>
-          <button type="button" class="btn-file-remove" id="remove-doc2" onclick="removeFile('doc2','name-doc2','remove-doc2','download-doc2')">✕</button>
+        <input type="file" id="doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(2)" />
+        <div id="input-area-doc2">
+          <div class="upload-row">
+            <label for="doc2" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc2">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc2" onclick="removeDoc(2)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc2" onclick="saveDoc(2)">저장하기</button>
         </div>
+        <div class="save-confirm hidden" id="confirm-doc2"></div>
         <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
+      <!-- 서류 3 -->
       <div class="upload-group">
         <span class="upload-label">통장 사본</span>
         <p class="upload-sub-label">자동이체 출금 계좌 통장 앞면</p>
-        <input type="file" id="doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('doc3','name-doc3','remove-doc3','download-doc3')" />
-        <div class="upload-row">
-          <label for="doc3" class="btn-file-upload">📂 파일 올리기</label>
-          <span class="file-name-display" id="name-doc3">선택된 파일 없음</span>
-          <a class="btn-file-download" id="download-doc3" href="#" download>⬇ 다운로드</a>
-          <button type="button" class="btn-file-remove" id="remove-doc3" onclick="removeFile('doc3','name-doc3','remove-doc3','download-doc3')">✕</button>
+        <input type="file" id="doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(3)" />
+        <div id="input-area-doc3">
+          <div class="upload-row">
+            <label for="doc3" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc3">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc3" onclick="removeDoc(3)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc3" onclick="saveDoc(3)">저장하기</button>
         </div>
+        <div class="save-confirm hidden" id="confirm-doc3"></div>
         <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
-      <button class="btn-back" onclick="backToStep1()">← 이전으로</button>
-      <button class="btn-submit" id="btn-submit-final" onclick="submitApplication()">제출하기</button>
+      <button class="btn-submit hidden" id="btn-final-submit" onclick="submitApplication()">제출하기</button>
+      <button class="btn-back" onclick="backToStep1()" style="margin-top:12px;">← 이전으로</button>
     </div>
   </div>
 
@@ -294,8 +344,9 @@
   <div class="form-wrap hidden" id="section-complete">
     <div class="complete-card">
       <div class="complete-icon">✅</div>
-      <h2>신청이 완료되었습니다!</h2>
-      <p>담당자가 검토 후 빠르게 연락드리겠습니다.<br>영업일 기준 1~2일 내 연락드리니 잠시 기다려 주세요.</p>
+      <h2>제출 완료!</h2>
+      <p>서류 제출이 완료되었습니다.<br>담당자가 검토 후 연락드리겠습니다.</p>
+      <a class="btn-submit" style="display:block;text-align:center;text-decoration:none;margin-bottom:12px;" href="subscribe.html">구독신청 페이지로 이동</a>
       <a class="btn-home" href="index.html">홈으로 돌아가기</a>
     </div>
   </div>
@@ -325,6 +376,9 @@
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
   let pendingCustomer = null;
 
+  let docFiles = [null, null, null];
+  let docSaved = [false, false, false];
+
   function toggleNav() {
     document.getElementById('mobileNav').classList.toggle('open');
   }
@@ -337,7 +391,7 @@
     }).catch(e => console.error('전송 오류:', e));
   }
 
-  /* STEP 1 저장하기 → 어드민에 신용조회중 상태로 저장 */
+  /* STEP 1 저장하기 */
   function saveStep1() {
     const name   = document.getElementById('name').value.trim();
     const birth  = document.getElementById('birth').value.replace(/\D/g,'');
@@ -381,7 +435,7 @@
     document.getElementById('btn-goto-step2').classList.remove('hidden');
   }
 
-  /* STEP 1 → STEP 2 (신용조회 완료 후) */
+  /* STEP 1 → STEP 2 */
   function goToStep2() {
     if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
 
@@ -392,6 +446,8 @@
     document.getElementById('s2-amount').textContent  = pendingCustomer.amount + '원';
     document.getElementById('s2-period').textContent  = pendingCustomer.period;
     document.getElementById('s2-debit').textContent   = pendingCustomer.debit;
+
+    initDocUpload();
 
     document.getElementById('section-step1').classList.add('hidden');
     document.getElementById('section-step2').classList.remove('hidden');
@@ -405,19 +461,83 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /* 서류 업로드 초기화 */
+  function initDocUpload() {
+    docFiles = [null, null, null];
+    docSaved = [false, false, false];
+    [1, 2, 3].forEach(n => {
+      document.getElementById('doc' + n).value = '';
+      document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
+      document.getElementById('name-doc' + n).classList.remove('has-file');
+      document.getElementById('remove-doc' + n).classList.remove('visible');
+      document.getElementById('save-doc' + n).classList.add('hidden');
+      document.getElementById('input-area-doc' + n).classList.remove('hidden');
+      const confirm = document.getElementById('confirm-doc' + n);
+      if (confirm.dataset.objectUrl) { URL.revokeObjectURL(confirm.dataset.objectUrl); confirm.dataset.objectUrl = ''; }
+      confirm.innerHTML = '';
+      confirm.classList.add('hidden');
+    });
+    document.getElementById('btn-final-submit').classList.add('hidden');
+    document.getElementById('job-category').value = '';
+  }
+
+  function onDocSelected(n) {
+    const file = document.getElementById('doc' + n).files[0];
+    if (!file) return;
+    document.getElementById('name-doc' + n).textContent = file.name;
+    document.getElementById('name-doc' + n).classList.add('has-file');
+    document.getElementById('remove-doc' + n).classList.add('visible');
+    document.getElementById('save-doc' + n).classList.remove('hidden');
+  }
+
+  function removeDoc(n) {
+    document.getElementById('doc' + n).value = '';
+    document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
+    document.getElementById('name-doc' + n).classList.remove('has-file');
+    document.getElementById('remove-doc' + n).classList.remove('visible');
+    document.getElementById('save-doc' + n).classList.add('hidden');
+  }
+
+  function saveDoc(n) {
+    const file = document.getElementById('doc' + n).files[0];
+    if (!file) { alert('파일을 선택해 주세요.'); return; }
+
+    docFiles[n - 1] = file;
+    docSaved[n - 1] = true;
+
+    document.getElementById('input-area-doc' + n).classList.add('hidden');
+    document.getElementById('save-doc' + n).classList.add('hidden');
+
+    const url = URL.createObjectURL(file);
+    const confirm = document.getElementById('confirm-doc' + n);
+    confirm.dataset.objectUrl = url;
+    confirm.innerHTML =
+      '✅ 저장완료 — <span style="font-weight:400;font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + file.name + '</span>' +
+      '<a href="' + url + '" download="' + file.name + '" style="margin-left:8px;padding:6px 14px;background:#e8f0fe;border:1.5px solid #4a90d9;border-radius:8px;font-size:13px;font-weight:700;color:#1a5276;text-decoration:none;white-space:nowrap;flex-shrink:0;">⬇ 다운로드</a>';
+    confirm.style.cssText = 'display:flex;align-items:center;gap:6px;padding:12px 14px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:14px;font-weight:600;color:#2e7d32;margin-top:8px;';
+    confirm.classList.remove('hidden');
+
+    if (docSaved.some(s => s)) {
+      document.getElementById('btn-final-submit').classList.remove('hidden');
+    }
+  }
+
   /* 최종 제출 */
   function submitApplication() {
-    const doc1 = document.getElementById('doc1').files[0];
-    const doc2 = document.getElementById('doc2').files[0];
-    const doc3 = document.getElementById('doc3').files[0];
+    const job = document.getElementById('job-category').value;
+    if (!job) { alert('직업군을 선택해 주세요.'); document.getElementById('job-category').focus(); return; }
+    if (!docSaved.some(s => s)) { alert('서류를 최소 1개 이상 저장해 주세요.'); return; }
 
-    if (!doc1 && !doc2 && !doc3) { alert('서류를 최소 1개 이상 업로드해 주세요.'); return; }
-
-    const btn = document.getElementById('btn-submit-final');
+    const btn = document.getElementById('btn-final-submit');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> 제출 중...';
 
-    pendingCustomer.docs = { doc1: doc1 ? doc1.name : '', doc2: doc2 ? doc2.name : '', doc3: doc3 ? doc3.name : '' };
+    pendingCustomer.job = job;
+    pendingCustomer.docs = {
+      doc1: docFiles[0] ? docFiles[0].name : '',
+      doc2: docFiles[1] ? docFiles[1].name : '',
+      doc3: docFiles[2] ? docFiles[2].name : ''
+    };
     pendingCustomer.status = '서류제출';
 
     apiPost({ action: 'update', customer: pendingCustomer });
@@ -427,37 +547,6 @@
       document.getElementById('section-complete').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 800);
-  }
-
-  function handleFile(inputId, nameId, removeId, downloadId) {
-    const file       = document.getElementById(inputId).files[0];
-    const nameEl     = document.getElementById(nameId);
-    const removeEl   = document.getElementById(removeId);
-    const downloadEl = document.getElementById(downloadId);
-    if (file) {
-      nameEl.textContent = file.name;
-      nameEl.classList.add('has-file');
-      removeEl.classList.add('visible');
-      if (downloadEl.dataset.objectUrl) URL.revokeObjectURL(downloadEl.dataset.objectUrl);
-      const url = URL.createObjectURL(file);
-      downloadEl.href = url;
-      downloadEl.download = file.name;
-      downloadEl.dataset.objectUrl = url;
-      downloadEl.classList.add('visible');
-    }
-  }
-
-  function removeFile(inputId, nameId, removeId, downloadId) {
-    document.getElementById(inputId).value = '';
-    const nameEl     = document.getElementById(nameId);
-    const removeEl   = document.getElementById(removeId);
-    const downloadEl = document.getElementById(downloadId);
-    nameEl.textContent = '선택된 파일 없음';
-    nameEl.classList.remove('has-file');
-    removeEl.classList.remove('visible');
-    if (downloadEl.dataset.objectUrl) URL.revokeObjectURL(downloadEl.dataset.objectUrl);
-    downloadEl.href = '#';
-    downloadEl.classList.remove('visible');
   }
 </script>
 </body>
