@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구독 신청 | 영업사원 전용</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f5f7fa; color: #222; -webkit-font-smoothing: antialiased; }
+
+    .agent-header { background: #0d2137; padding: 16px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+    .agent-header img { height: 44px; }
+    .agent-header-title { color: #fff; font-size: 15px; font-weight: 800; }
+    .agent-header-badge { background: #f0a500; color: #0d2137; font-size: 11px; font-weight: 900; padding: 3px 10px; border-radius: 20px; margin-left: 4px; }
+
+    .form-section { padding: 36px 0 80px; }
+    .form-wrap { max-width: 600px; margin: 0 auto 28px; padding: 0 16px; }
+
+    .step-badge { display: inline-flex; align-items: center; gap: 10px; background: #0d2137; color: #fff; font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 24px; margin-bottom: 18px; }
+    .step-badge span { background: #f0a500; color: #fff; font-size: 12px; font-weight: 900; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    .form-card { background: #fff; border-radius: 20px; padding: 36px 32px; box-shadow: 0 4px 24px rgba(13,33,55,.1); }
+    .form-card h2 { font-size: 19px; font-weight: 900; color: #0d2137; margin-bottom: 26px; }
+
+    .agent-info-bar { background: #e8f0fe; border: 1.5px solid #b3caf5; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; font-size: 14px; font-weight: 600; color: #1a3a5c; display: flex; align-items: center; gap: 10px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 7px; }
+    .form-group label .req { color: #e53e3e; margin-left: 3px; }
+    .form-input { width: 100%; padding: 13px 16px; border: 1.5px solid #d1d9e0; border-radius: 10px; font-size: 15px; font-family: inherit; color: #222; background: #fafbfc; transition: border-color .15s, box-shadow .15s; outline: none; }
+    .form-input:focus { border-color: #0d2137; box-shadow: 0 0 0 3px rgba(13,33,55,.08); background: #fff; }
+    .form-input::placeholder { color: #aaa; }
+
+    .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .radio-group input[type="radio"], .radio-group input[type="checkbox"] { display: none; }
+    .radio-group label { display: inline-flex; align-items: center; justify-content: center; padding: 9px 22px; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 14px; font-weight: 700; color: #555; cursor: pointer; transition: all .15s; background: #fafbfc; }
+    .radio-group input[type="radio"]:checked + label,
+    .radio-group input[type="checkbox"]:checked + label { background: #0d2137; border-color: #0d2137; color: #fff; }
+    .radio-group label:hover { border-color: #0d2137; color: #0d2137; }
+
+    .agree-box { background: #f5f7fa; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px; margin-bottom: 22px; }
+    .agree-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .agree-check input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: #0d2137; flex-shrink: 0; }
+    .agree-check span { font-size: 14px; color: #444; line-height: 1.55; font-weight: 600; }
+
+    .customer-summary { background: #f0f4f8; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+    .summary-item label { display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 4px; }
+    .summary-item span { font-size: 14px; font-weight: 700; color: #0d2137; }
+
+    .upload-guide { background: #e8f0fe; border-radius: 10px; padding: 14px 18px; font-size: 14px; color: #1a3a5c; font-weight: 600; margin-bottom: 20px; line-height: 1.6; }
+    .upload-guide ul { margin: 8px 0 0 18px; font-size: 13px; font-weight: 400; color: #3a5a8c; }
+    .upload-guide ul li { margin-bottom: 3px; }
+
+    .upload-group { margin-bottom: 20px; }
+    .upload-group .upload-label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .upload-sub-label { font-size: 12px; color: #888; margin-bottom: 8px; line-height: 1.5; }
+    .upload-group input[type="file"] { display: none; }
+    .upload-row { display: flex; gap: 10px; align-items: center; }
+    .btn-file-upload { display: inline-flex; align-items: center; gap: 6px; padding: 11px 18px; background: #f0f4f8; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 14px; font-weight: 700; color: #0d2137; cursor: pointer; transition: background .15s; white-space: nowrap; flex-shrink: 0; }
+    .btn-file-upload:hover { background: #e2e8f0; border-color: #0d2137; }
+    .file-name-display { flex: 1; font-size: 13px; color: #888; background: #fafbfc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-name-display.has-file { color: #0d2137; font-weight: 600; border-color: #0d2137; }
+    .btn-file-remove { display: none; background: none; border: none; color: #e53e3e; font-size: 18px; cursor: pointer; padding: 4px 6px; flex-shrink: 0; line-height: 1; }
+    .btn-file-remove.visible { display: inline-flex; }
+    .upload-hint { font-size: 12px; color: #bbb; margin-top: 5px; }
+
+    .btn-save-each { padding: 10px 24px; background: #0d2137; color: #fff; font-size: 14px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: background .15s; font-family: inherit; display: block; }
+    .btn-save-each:hover { background: #1a3a5c; }
+    .save-confirm { padding: 12px 14px; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px; font-size: 14px; font-weight: 600; color: #2e7d32; margin-top: 8px; }
+
+    .btn-next { width: 100%; padding: 16px; background: #0d2137; color: #fff; font-size: 16px; font-weight: 800; border: none; border-radius: 12px; cursor: pointer; transition: background .15s; font-family: inherit; }
+    .btn-next:hover { background: #1a3a5c; }
+    .btn-submit { width: 100%; padding: 16px; background: #f0a500; color: #fff; font-size: 16px; font-weight: 800; border: none; border-radius: 12px; cursor: pointer; transition: background .15s; font-family: inherit; }
+    .btn-submit:hover { background: #d4920a; }
+    .btn-back { width: 100%; padding: 14px; background: #fff; color: #0d2137; font-size: 15px; font-weight: 700; border: 1.5px solid #d1d9e0; border-radius: 12px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
+    .btn-back:hover { background: #f5f7fa; }
+
+    .complete-card { background: #fff; border-radius: 20px; padding: 56px 32px; box-shadow: 0 4px 24px rgba(13,33,55,.1); text-align: center; }
+    .complete-icon { font-size: 60px; margin-bottom: 20px; }
+    .complete-card h2 { font-size: 24px; font-weight: 900; color: #0d2137; margin-bottom: 12px; }
+    .complete-card p { font-size: 15px; color: #666; line-height: 1.7; margin-bottom: 32px; }
+    .btn-new { display: inline-block; background: #f0a500; color: #fff; font-size: 15px; font-weight: 800; padding: 14px 36px; border-radius: 10px; cursor: pointer; border: none; font-family: inherit; margin-bottom: 12px; width: 100%; }
+    .btn-new:hover { background: #d4920a; }
+
+    .hidden { display: none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #f0a500; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+
+    @media (max-width: 640px) {
+      .form-card { padding: 24px 18px; }
+      .radio-group label { padding: 8px 14px; font-size: 13px; }
+      .agent-header img { height: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="agent-header">
+  <img src="static/logo.png" alt="티유디지털" onerror="this.style.display='none'" />
+  <div>
+    <span class="agent-header-title">구독 신청 입력</span>
+    <span class="agent-header-badge">영업사원 전용</span>
+  </div>
+</header>
+
+<section class="form-section">
+
+  <!-- STEP 1: 기본정보 -->
+  <div class="form-wrap" id="section-step1">
+    <div class="step-badge"><span>1</span> STEP 1 · 기본정보 입력</div>
+    <div class="form-card">
+      <h2>기본정보를 입력해 주세요</h2>
+
+      <div class="form-group">
+        <label for="agent-name">담당자명 <span class="req">*</span></label>
+        <input type="text" id="agent-name" class="form-input" placeholder="영업 담당자 이름" />
+      </div>
+
+      <div class="form-group">
+        <label for="name">고객 이름 <span class="req">*</span></label>
+        <input type="text" id="name" class="form-input" placeholder="홍길동" />
+      </div>
+      <div class="form-group">
+        <label for="birth">생년월일 <span class="req">*</span></label>
+        <input type="text" id="birth" class="form-input" placeholder="예) 19830214 또는 830214" maxlength="8" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" />
+        <small style="color:#888;font-size:12px;margin-top:4px;display:block;">8자리(YYYYMMDD) 또는 6자리(YYMMDD)</small>
+      </div>
+      <div class="form-group">
+        <label for="phone">핸드폰 번호 <span class="req">*</span></label>
+        <input type="tel" id="phone" class="form-input" placeholder="010-0000-0000" />
+      </div>
+      <div class="form-group">
+        <label>상품명 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="checkbox" id="prod-chanho" value="창호" /><label for="prod-chanho">창호</label>
+          <input type="checkbox" id="prod-juban" value="주방" /><label for="prod-juban">주방</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="amount">금액 <span class="req">*</span></label>
+        <input type="text" id="amount" class="form-input" placeholder="예) 1,500,000" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9,]/g,'')" />
+        <small style="color:#888;font-size:12px;margin-top:4px;display:block;">💡 일시불 금액을 입력해 주세요.</small>
+      </div>
+      <div class="form-group">
+        <label>구독기간 선택 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="period" id="p24" value="24개월" /><label for="p24">24개월</label>
+          <input type="radio" name="period" id="p36" value="36개월" /><label for="p36">36개월</label>
+          <input type="radio" name="period" id="p48" value="48개월" /><label for="p48">48개월</label>
+          <input type="radio" name="period" id="p60" value="60개월" checked /><label for="p60">60개월</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>자동이체일 선택 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="debit" id="d10" value="10일" /><label for="d10">10일</label>
+          <input type="radio" name="debit" id="d15" value="15일" /><label for="d15">15일</label>
+          <input type="radio" name="debit" id="d20" value="20일" /><label for="d20">20일</label>
+          <input type="radio" name="debit" id="d25" value="25일" /><label for="d25">25일</label>
+          <input type="radio" name="debit" id="dlast" value="말일" /><label for="dlast">말일</label>
+        </div>
+      </div>
+      <div class="agree-box">
+        <label class="agree-check">
+          <input type="checkbox" id="agreePrivacy" />
+          <span>개인정보 수집·이용에 동의합니다. (필수)<br><small style="font-weight:400;color:#888;">수집항목: 이름, 생년월일, 연락처 / 목적: 구독 서비스 신청 및 본인 확인</small></span>
+        </label>
+      </div>
+
+      <div id="save-success" class="hidden" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:14px;color:#2e7d32;font-weight:600;line-height:1.6;">
+        ✅ 기본정보가 저장되었습니다.<br><small style="font-weight:400;color:#388e3c;">신용조회 완료 후 아래 '다음 단계로' 버튼을 눌러 서류를 업로드해 주세요.</small>
+      </div>
+      <button class="btn-next" id="btn-save" onclick="saveStep1()">저장하기</button>
+      <button class="btn-submit hidden" id="btn-goto-step2" onclick="goToStep2()" style="margin-top:10px;">다음 단계로 → (서류 업로드)</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 서류 업로드 -->
+  <div class="form-wrap hidden" id="section-step2">
+    <div class="step-badge"><span>2</span> STEP 2 · 서류 업로드</div>
+    <div class="form-card">
+      <h2>서류를 업로드해 주세요</h2>
+
+      <div class="customer-summary">
+        <div class="summary-item"><label>담당자</label><span id="s2-agent">-</span></div>
+        <div class="summary-item"><label>이름</label><span id="s2-name">-</span></div>
+        <div class="summary-item"><label>생년월일</label><span id="s2-birth">-</span></div>
+        <div class="summary-item"><label>연락처</label><span id="s2-phone">-</span></div>
+        <div class="summary-item"><label>상품명</label><span id="s2-product">-</span></div>
+        <div class="summary-item"><label>금액</label><span id="s2-amount">-</span></div>
+        <div class="summary-item"><label>구독기간</label><span id="s2-period">-</span></div>
+        <div class="summary-item"><label>자동이체일</label><span id="s2-debit">-</span></div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="display:block;font-size:14px;font-weight:700;color:#333;margin-bottom:8px;">직업군 <span style="color:#e53e3e;margin-left:3px;">*</span></label>
+        <select id="job-category" style="width:100%;padding:13px 16px;border:1.5px solid #d1d9e0;border-radius:10px;font-size:15px;font-family:inherit;color:#222;background:#fafbfc;outline:none;box-sizing:border-box;appearance:auto;cursor:pointer;">
+          <option value="">-- 직업군을 선택해 주세요 --</option>
+          <option>건설관련직</option>
+          <option>기계관련직</option>
+          <option>섬유및의복관련직</option>
+          <option>식품가공관련직</option>
+          <option>재료관련직</option>
+          <option>전기·전자관련직</option>
+          <option>정보통신관련직</option>
+          <option>화학관련직</option>
+          <option>환경·인쇄·목재·가구·공예및생산단순직</option>
+          <option>경영·회계·사무관련직</option>
+          <option>금융·보험관련직</option>
+          <option>관리직</option>
+          <option>군인</option>
+          <option>농림어업관련직</option>
+          <option>교육및자연과학·사회과학연구관련직</option>
+          <option>문화·예술·디자인·방송관련직</option>
+          <option>법률·경찰·소방·교도관련직</option>
+          <option>보건·의료관련직</option>
+          <option>사회복지및종교관련직</option>
+          <option>경비및청소관련직</option>
+          <option>미용·숙박·여행·오락·스포츠관련직</option>
+          <option>영업및판매관련직</option>
+          <option>운전및운송관련직</option>
+          <option>음식서비스관련직</option>
+          <option>주부</option>
+          <option>무직</option>
+        </select>
+      </div>
+
+      <div class="upload-guide">
+        📎 각 서류를 업로드하고 저장해 주세요. 1개 이상 저장하면 제출 가능합니다.
+        <ul>
+          <li>(거주 주택) 본인 소유 등기부등본</li>
+          <li>(신규 매매) 부동산 매매계약서</li>
+          <li>신분증 사본</li>
+          <li>(자동이체) 통장 사본</li>
+        </ul>
+      </div>
+
+      <!-- 서류 1 -->
+      <div class="upload-group">
+        <span class="upload-label">등기부등본 또는 매매계약서</span>
+        <p class="upload-sub-label">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
+        <input type="file" id="doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(1)" />
+        <div id="input-area-doc1">
+          <div class="upload-row">
+            <label for="doc1" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc1">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc1" onclick="removeDoc(1)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc1" onclick="saveDoc(1)">저장하기</button>
+        </div>
+        <div class="save-confirm hidden" id="confirm-doc1"></div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
+      </div>
+
+      <!-- 서류 2 -->
+      <div class="upload-group">
+        <span class="upload-label">주민등록증 또는 운전면허증</span>
+        <p class="upload-sub-label">신분증 앞면 사본</p>
+        <input type="file" id="doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(2)" />
+        <div id="input-area-doc2">
+          <div class="upload-row">
+            <label for="doc2" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc2">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc2" onclick="removeDoc(2)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc2" onclick="saveDoc(2)">저장하기</button>
+        </div>
+        <div class="save-confirm hidden" id="confirm-doc2"></div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
+      </div>
+
+      <!-- 서류 3 -->
+      <div class="upload-group">
+        <span class="upload-label">통장 사본</span>
+        <p class="upload-sub-label">자동이체 출금 계좌 통장 앞면</p>
+        <input type="file" id="doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(3)" />
+        <div id="input-area-doc3">
+          <div class="upload-row">
+            <label for="doc3" class="btn-file-upload">📂 파일 올리기</label>
+            <span class="file-name-display" id="name-doc3">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="remove-doc3" onclick="removeDoc(3)">✕</button>
+          </div>
+          <button class="btn-save-each hidden" id="save-doc3" onclick="saveDoc(3)">저장하기</button>
+        </div>
+        <div class="save-confirm hidden" id="confirm-doc3"></div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
+      </div>
+
+      <button class="btn-submit hidden" id="btn-final-submit" onclick="submitApplication()">제출하기</button>
+      <button class="btn-back" onclick="backToStep1()" style="margin-top:12px;">← 이전으로</button>
+    </div>
+  </div>
+
+  <!-- 완료 -->
+  <div class="form-wrap hidden" id="section-complete">
+    <div class="complete-card">
+      <div class="complete-icon">✅</div>
+      <h2>제출 완료!</h2>
+      <p id="complete-msg">서류 제출이 완료되었습니다.<br>담당자가 검토 후 연락드리겠습니다.</p>
+      <button class="btn-new" onclick="resetAll()">새 고객 신청하기 →</button>
+    </div>
+  </div>
+
+</section>
+
+<script>
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+  let pendingCustomer = null;
+  let docFiles = [null, null, null];
+  let docSaved = [false, false, false];
+  let savedAgentName = '';
+
+  function apiPost(payload) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload)
+    }).catch(e => console.error('전송 오류:', e));
+  }
+
+  /* STEP 1 저장하기 */
+  function saveStep1() {
+    const agentName = document.getElementById('agent-name').value.trim();
+    const name   = document.getElementById('name').value.trim();
+    const birth  = document.getElementById('birth').value.replace(/\D/g,'');
+    const phone  = document.getElementById('phone').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const periodEl = document.querySelector('input[name="period"]:checked');
+    const debitEl  = document.querySelector('input[name="debit"]:checked');
+    const agreed   = document.getElementById('agreePrivacy').checked;
+
+    const productArr = [];
+    if (document.getElementById('prod-chanho').checked) productArr.push('창호');
+    if (document.getElementById('prod-juban').checked)  productArr.push('주방');
+    const product = productArr.join('+');
+
+    if (!agentName){ alert('담당자명을 입력해 주세요.'); document.getElementById('agent-name').focus(); return; }
+    if (!name)    { alert('고객 이름을 입력해 주세요.'); document.getElementById('name').focus(); return; }
+    if (birth.length !== 6 && birth.length !== 8) { alert('생년월일을 6자리 또는 8자리로 입력해 주세요.'); document.getElementById('birth').focus(); return; }
+    if (!phone)   { alert('핸드폰 번호를 입력해 주세요.'); document.getElementById('phone').focus(); return; }
+    if (!product) { alert('상품명을 선택해 주세요.'); return; }
+    if (!amount)  { alert('금액을 입력해 주세요.'); document.getElementById('amount').focus(); return; }
+    if (!periodEl) { alert('구독기간을 선택해 주세요.'); return; }
+    if (!debitEl)  { alert('자동이체일을 선택해 주세요.'); return; }
+    if (!agreed)   { alert('개인정보 수집·이용 동의가 필요합니다.'); return; }
+
+    savedAgentName = agentName;
+
+    pendingCustomer = {
+      id: Date.now(), name, birth, phone,
+      product, amount,
+      period: periodEl.value,
+      debit: debitEl.value,
+      status: '신용조회중', confirmed: false,
+      createdAt: new Date().toLocaleString('ko-KR') + ' [' + agentName + ']',
+      docs: null
+    };
+
+    apiPost({ action: 'save', customer: pendingCustomer });
+
+    const btn = document.getElementById('btn-save');
+    btn.disabled = true;
+    btn.textContent = '저장완료 ✓';
+    btn.style.background = '#888';
+    document.getElementById('save-success').classList.remove('hidden');
+    document.getElementById('btn-goto-step2').classList.remove('hidden');
+  }
+
+  function goToStep2() {
+    if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
+    document.getElementById('s2-agent').textContent  = savedAgentName;
+    document.getElementById('s2-name').textContent    = pendingCustomer.name;
+    document.getElementById('s2-birth').textContent   = pendingCustomer.birth;
+    document.getElementById('s2-phone').textContent   = pendingCustomer.phone;
+    document.getElementById('s2-product').textContent = pendingCustomer.product;
+    document.getElementById('s2-amount').textContent  = pendingCustomer.amount + '원';
+    document.getElementById('s2-period').textContent  = pendingCustomer.period;
+    document.getElementById('s2-debit').textContent   = pendingCustomer.debit;
+    initDocUpload();
+    document.getElementById('section-step1').classList.add('hidden');
+    document.getElementById('section-step2').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToStep1() {
+    document.getElementById('section-step2').classList.add('hidden');
+    document.getElementById('section-step1').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function initDocUpload() {
+    docFiles = [null, null, null];
+    docSaved = [false, false, false];
+    [1, 2, 3].forEach(n => {
+      document.getElementById('doc' + n).value = '';
+      document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
+      document.getElementById('name-doc' + n).classList.remove('has-file');
+      document.getElementById('remove-doc' + n).classList.remove('visible');
+      document.getElementById('save-doc' + n).classList.add('hidden');
+      document.getElementById('input-area-doc' + n).classList.remove('hidden');
+      const confirm = document.getElementById('confirm-doc' + n);
+      if (confirm.dataset.objectUrl) { URL.revokeObjectURL(confirm.dataset.objectUrl); confirm.dataset.objectUrl = ''; }
+      confirm.innerHTML = '';
+      confirm.classList.add('hidden');
+    });
+    document.getElementById('btn-final-submit').classList.add('hidden');
+    document.getElementById('job-category').value = '';
+  }
+
+  function onDocSelected(n) {
+    const file = document.getElementById('doc' + n).files[0];
+    if (!file) return;
+    document.getElementById('name-doc' + n).textContent = file.name;
+    document.getElementById('name-doc' + n).classList.add('has-file');
+    document.getElementById('remove-doc' + n).classList.add('visible');
+    document.getElementById('save-doc' + n).classList.remove('hidden');
+  }
+
+  function removeDoc(n) {
+    document.getElementById('doc' + n).value = '';
+    document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
+    document.getElementById('name-doc' + n).classList.remove('has-file');
+    document.getElementById('remove-doc' + n).classList.remove('visible');
+    document.getElementById('save-doc' + n).classList.add('hidden');
+    docFiles[n - 1] = null;
+    docSaved[n - 1] = false;
+    if (!docSaved.some(s => s)) document.getElementById('btn-final-submit').classList.add('hidden');
+  }
+
+  function saveDoc(n) {
+    const file = document.getElementById('doc' + n).files[0];
+    if (!file) { alert('파일을 선택해 주세요.'); return; }
+    docFiles[n - 1] = file;
+    docSaved[n - 1] = true;
+    document.getElementById('input-area-doc' + n).classList.add('hidden');
+    document.getElementById('save-doc' + n).classList.add('hidden');
+    const url = URL.createObjectURL(file);
+    const confirm = document.getElementById('confirm-doc' + n);
+    confirm.dataset.objectUrl = url;
+    confirm.innerHTML =
+      '✅ 저장완료 — <span style="font-weight:400;font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + file.name + '</span>' +
+      '<a href="' + url + '" download="' + file.name + '" style="margin-left:8px;padding:6px 14px;background:#e8f0fe;border:1.5px solid #4a90d9;border-radius:8px;font-size:13px;font-weight:700;color:#1a5276;text-decoration:none;white-space:nowrap;flex-shrink:0;">⬇ 다운로드</a>';
+    confirm.style.cssText = 'display:flex;align-items:center;gap:6px;padding:12px 14px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:14px;font-weight:600;color:#2e7d32;margin-top:8px;';
+    confirm.classList.remove('hidden');
+    if (docSaved.some(s => s)) document.getElementById('btn-final-submit').classList.remove('hidden');
+  }
+
+  function submitApplication() {
+    const job = document.getElementById('job-category').value;
+    if (!job) { alert('직업군을 선택해 주세요.'); document.getElementById('job-category').focus(); return; }
+    if (!docSaved.some(s => s)) { alert('서류를 최소 1개 이상 저장해 주세요.'); return; }
+
+    const btn = document.getElementById('btn-final-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> 제출 중...';
+
+    pendingCustomer.job = job;
+    pendingCustomer.docs = {
+      doc1: docFiles[0] ? docFiles[0].name : '',
+      doc2: docFiles[1] ? docFiles[1].name : '',
+      doc3: docFiles[2] ? docFiles[2].name : ''
+    };
+    pendingCustomer.status = '서류제출';
+    apiPost({ action: 'update', customer: pendingCustomer });
+
+    setTimeout(() => {
+      document.getElementById('complete-msg').innerHTML =
+        '<strong>' + pendingCustomer.name + '</strong> 고객 제출 완료!<br>담당자가 검토 후 연락드리겠습니다.';
+      document.getElementById('section-step2').classList.add('hidden');
+      document.getElementById('section-complete').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 800);
+  }
+
+  /* 새 고객 신청 — 담당자명은 유지 */
+  function resetAll() {
+    const agentName = savedAgentName;
+    pendingCustomer = null;
+    docFiles = [null, null, null];
+    docSaved = [false, false, false];
+
+    document.getElementById('agent-name').value = agentName;
+    document.getElementById('name').value = '';
+    document.getElementById('birth').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('prod-chanho').checked = false;
+    document.getElementById('prod-juban').checked = false;
+    document.querySelectorAll('input[name="period"]').forEach(r => r.checked = false);
+    document.getElementById('p60').checked = true;
+    document.querySelectorAll('input[name="debit"]').forEach(r => r.checked = false);
+    document.getElementById('agreePrivacy').checked = false;
+    document.getElementById('save-success').classList.add('hidden');
+    document.getElementById('btn-goto-step2').classList.add('hidden');
+    const btn = document.getElementById('btn-save');
+    btn.disabled = false;
+    btn.textContent = '저장하기';
+    btn.style.background = '';
+
+    document.getElementById('section-complete').classList.add('hidden');
+    document.getElementById('section-step1').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
