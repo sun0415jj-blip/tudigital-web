@@ -92,6 +92,7 @@
       .form-card { padding: 24px 18px; }
       .radio-group label { padding: 8px 14px; font-size: 13px; }
       .agent-header img { height: 36px; }
+      .agent-name-grid { grid-template-columns: 1fr !important; }
     }
   </style>
 </head>
@@ -113,10 +114,17 @@
     <div class="form-card">
       <h2>기본정보를 입력해 주세요</h2>
 
-      <div class="form-group">
-        <label for="agent-name">담당자명 <span class="req">*</span></label>
-        <input type="text" id="agent-name" class="form-input" placeholder="영업 담당자 이름" />
+      <div class="agent-name-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="agent-name">담당자명 <span class="req">*</span></label>
+          <input type="text" id="agent-name" class="form-input" placeholder="예) 김선민" />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="agent-org">소속 <span class="req">*</span></label>
+          <input type="text" id="agent-org" class="form-input" placeholder="예) 이움/LX하우시스" />
+        </div>
       </div>
+      <div style="margin-bottom:20px;"></div>
 
       <div class="form-group">
         <label for="name">고객 이름 <span class="req">*</span></label>
@@ -323,6 +331,7 @@
   /* STEP 1 저장하기 */
   function saveStep1() {
     const agentName = document.getElementById('agent-name').value.trim();
+    const agentOrg  = document.getElementById('agent-org').value.trim();
     const name   = document.getElementById('name').value.trim();
     const birth  = document.getElementById('birth').value.replace(/\D/g,'');
     const phone  = document.getElementById('phone').value.trim();
@@ -337,6 +346,7 @@
     const product = productArr.join('+');
 
     if (!agentName){ alert('담당자명을 입력해 주세요.'); document.getElementById('agent-name').focus(); return; }
+    if (!agentOrg) { alert('소속을 입력해 주세요.'); document.getElementById('agent-org').focus(); return; }
     if (!name)    { alert('고객 이름을 입력해 주세요.'); document.getElementById('name').focus(); return; }
     if (birth.length !== 6 && birth.length !== 8) { alert('생년월일을 6자리 또는 8자리로 입력해 주세요.'); document.getElementById('birth').focus(); return; }
     if (!phone)   { alert('핸드폰 번호를 입력해 주세요.'); document.getElementById('phone').focus(); return; }
@@ -346,7 +356,7 @@
     if (!debitEl)  { alert('자동이체일을 선택해 주세요.'); return; }
     if (!agreed)   { alert('개인정보 수집·이용 동의가 필요합니다.'); return; }
 
-    savedAgentName = agentName;
+    savedAgentName = agentName + '/' + agentOrg;
 
     pendingCustomer = {
       id: Date.now(), name, birth, phone,
@@ -354,7 +364,7 @@
       period: periodEl.value,
       debit: debitEl.value,
       status: '신용조회중', confirmed: false,
-      createdAt: new Date().toLocaleString('ko-KR') + ' [' + agentName + ']',
+      createdAt: new Date().toLocaleString('ko-KR') + ' [' + agentName + '/' + agentOrg + ']',
       docs: null
     };
 
@@ -370,7 +380,7 @@
 
   function goToStep2() {
     if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
-    document.getElementById('s2-agent').textContent  = savedAgentName;
+    document.getElementById('s2-agent').textContent  = savedAgentName; /* 이름/소속 합친 값 */
     document.getElementById('s2-name').textContent    = pendingCustomer.name;
     document.getElementById('s2-birth').textContent   = pendingCustomer.birth;
     document.getElementById('s2-phone').textContent   = pendingCustomer.phone;
@@ -481,7 +491,9 @@
     docFiles = [null, null, null];
     docSaved = [false, false, false];
 
-    document.getElementById('agent-name').value = agentName;
+    const parts = agentName.split('/');
+    document.getElementById('agent-name').value = parts[0] || agentName;
+    document.getElementById('agent-org').value  = parts.slice(1).join('/') || '';
     document.getElementById('name').value = '';
     document.getElementById('birth').value = '';
     document.getElementById('phone').value = '';
