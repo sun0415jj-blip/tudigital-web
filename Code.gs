@@ -55,9 +55,28 @@ function doPost(e) {
     updateRow(sheet, body.customer);
   } else if (body.action === 'delete') {
     deleteRow(sheet, body.id);
+  } else if (body.action === 'contact') {
+    sendContactEmail(body);
   }
 
   return jsonResponse({ ok: true });
+}
+
+// ── 파트너 문의 이메일 ────────────────────────
+function sendContactEmail(data) {
+  MailApp.sendEmail({
+    to: MANAGER_EMAIL,
+    subject: '[파트너 문의] ' + data.name + ' (' + (data.category || '기타') + ')',
+    htmlBody:
+      '<h3 style="color:#0d2137;">파트너 문의가 접수되었습니다</h3>' +
+      '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;">' +
+        '<tr><td><b>이름</b></td><td>' + data.name + '</td></tr>' +
+        '<tr><td><b>연락처</b></td><td>' + data.phone + '</td></tr>' +
+        '<tr><td><b>이메일</b></td><td>' + (data.email || '-') + '</td></tr>' +
+        '<tr><td><b>문의 유형</b></td><td>' + (data.category || '-') + '</td></tr>' +
+        '<tr><td><b>문의 내용</b></td><td style="white-space:pre-line;">' + data.message + '</td></tr>' +
+      '</table>'
+  });
 }
 
 // ── 담당자 알림 ──────────────────────────────

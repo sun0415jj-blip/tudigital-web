@@ -237,8 +237,104 @@
         <div class="contact-value">티유디지털</div>
       </div>
     </div>
+
+    <!-- 문의 폼 -->
+    <div id="contact-form-wrap" style="margin-top:48px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:40px 44px;">
+      <h3 style="font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;">파트너 문의하기</h3>
+      <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:32px;">양식을 작성해 주시면 담당자가 빠르게 연락드리겠습니다.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이름 <span style="color:#f0a500;">*</span></label>
+          <input id="cf-name" type="text" placeholder="홍길동" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">연락처 <span style="color:#f0a500;">*</span></label>
+          <input id="cf-phone" type="tel" placeholder="010-0000-0000" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이메일</label>
+          <input id="cf-email" type="email" placeholder="example@email.com" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">문의 유형 <span style="color:#f0a500;">*</span></label>
+          <select id="cf-category" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;appearance:auto;cursor:pointer;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+            <option value="" style="background:#0d2137;">-- 선택해 주세요 --</option>
+            <option value="인테리어 구독서비스" style="background:#0d2137;">인테리어 구독서비스</option>
+            <option value="LG가전 B2B" style="background:#0d2137;">LG가전 B2B</option>
+            <option value="결합비즈니스" style="background:#0d2137;">결합비즈니스</option>
+            <option value="금융사 에이전시" style="background:#0d2137;">금융사 에이전시</option>
+            <option value="기타" style="background:#0d2137;">기타</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">문의 내용 <span style="color:#f0a500;">*</span></label>
+        <textarea id="cf-message" placeholder="문의하실 내용을 자유롭게 작성해 주세요." rows="5" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'"></textarea>
+      </div>
+      <div id="cf-result" style="display:none;margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;font-weight:700;"></div>
+      <button onclick="submitContactForm()" id="cf-btn" style="margin-top:20px;width:100%;padding:16px;background:#f0a500;color:#fff;font-size:16px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#d4920a'" onmouseout="this.style.background='#f0a500'">문의 보내기 →</button>
+    </div>
   </div>
 </section>
+
+<style>
+  @media (max-width: 640px) {
+    #contact-form-wrap { padding: 28px 20px !important; }
+    #contact-form-wrap > div[style*="grid"] { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+  const CF_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+
+  function submitContactForm() {
+    const name     = document.getElementById('cf-name').value.trim();
+    const phone    = document.getElementById('cf-phone').value.trim();
+    const email    = document.getElementById('cf-email').value.trim();
+    const category = document.getElementById('cf-category').value;
+    const message  = document.getElementById('cf-message').value.trim();
+    const result   = document.getElementById('cf-result');
+    const btn      = document.getElementById('cf-btn');
+
+    if (!name || !phone || !category || !message) {
+      result.style.display = 'block';
+      result.style.background = 'rgba(229,57,53,0.18)';
+      result.style.color = '#ff6b6b';
+      result.textContent = '이름, 연락처, 문의 유형, 문의 내용은 필수 항목입니다.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '전송 중...';
+
+    fetch(CF_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'contact', name, phone, email, category, message })
+    })
+    .then(() => {
+      result.style.display = 'block';
+      result.style.background = 'rgba(76,175,80,0.18)';
+      result.style.color = '#69f0ae';
+      result.textContent = '✅ 문의가 접수되었습니다! 담당자가 빠르게 연락드리겠습니다.';
+      btn.textContent = '전송 완료';
+      document.getElementById('cf-name').value = '';
+      document.getElementById('cf-phone').value = '';
+      document.getElementById('cf-email').value = '';
+      document.getElementById('cf-category').value = '';
+      document.getElementById('cf-message').value = '';
+    })
+    .catch(() => {
+      result.style.display = 'block';
+      result.style.background = 'rgba(229,57,53,0.18)';
+      result.style.color = '#ff6b6b';
+      result.textContent = '전송 중 오류가 발생했습니다. 전화 또는 이메일로 문의해 주세요.';
+      btn.disabled = false;
+      btn.textContent = '문의 보내기 →';
+    });
+  }
+</script>
 
 <!-- ══ 푸터 ══ -->
 <footer class="footer">
