@@ -651,7 +651,31 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .contact-grid { grid-template-columns: repeat(2, 1fr); }
   .nav { display: none; }
   .btn-header { display: none; }
-  .nav-toggle { display: block; }
+  .nav-toggle { display: none; }
+  .mobile-nav {
+    display: flex !important;
+    flex-direction: row;
+    background: #0d2137;
+    padding: 0;
+    border-top: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-nav::-webkit-scrollbar { display: none; }
+  .mobile-nav a {
+    flex: 1;
+    padding: 13px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    border-bottom: none;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .mobile-nav a:last-child { border-right: none; }
+  .mobile-nav a:active { color: #fff; background: rgba(255,255,255,0.1); }
 }
 
 @media (max-width: 720px) {
