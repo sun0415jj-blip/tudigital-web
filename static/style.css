@@ -45,7 +45,7 @@ img { display: block; }
   height: 120px;
   gap: 48px;
 }
-.logo img { height: 110px; width: auto; filter: drop-shadow(0 0 0.4px rgba(0,0,0,0.55)); }
+.logo img { height: 130px; width: auto; filter: drop-shadow(0 0 0.4px rgba(0,0,0,0.55)); }
 .header-mobile-text { display: none; flex-direction: column; gap: 2px; flex: 1; }
 .header-company { font-size: 13px; font-weight: 800; color: var(--navy); }
 .header-tagline { font-size: 11px; color: #666; line-height: 1.4; }
@@ -664,8 +664,8 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .mobile-only { display: block !important; }
 
   /* 헤더 */
-  .header-inner { height: 90px; gap: 12px; }
-  .logo img { height: 110px; }
+  .header-inner { height: 110px; gap: 12px; }
+  .logo img { height: 100px; }
   .header-mobile-text { display: flex; }
 
   /* 히어로 - 태그/서브 숨기고 버튼 최적화 */
@@ -724,8 +724,8 @@ a.contact-item:hover, .contact-item.kakao:hover {
 @media (max-width: 400px) {
   .about-features { grid-template-columns: 1fr 1fr; }
   .contact-grid { grid-template-columns: 1fr 1fr; }
-  .logo img { height: 100px; }
-  .header-inner { height: 80px; }
+  .logo img { height: 90px; }
+  .header-inner { height: 100px; }
   .hero h1 { font-size: 28px; }
 }
 
