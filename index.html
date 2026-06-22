@@ -186,7 +186,7 @@
             <li>본사 직영 시공 &amp; 마케팅 지원</li>
             <li>안정적인 추가 수익 모델 제공</li>
           </ul>
-          <a class="btn-partner" href="#contact">파트너 문의하기 →</a>
+          <a class="btn-partner" href="#contact">파트너 신청 →</a>
         </div>
       </div>
 
@@ -201,7 +201,7 @@
             <li>단독 사은품 및 제휴 할인 지원</li>
             <li>다양한 업종과의 협업 기회</li>
           </ul>
-          <a class="btn-partner" href="#contact">파트너 문의하기 →</a>
+          <a class="btn-partner" href="#contact">파트너 신청 →</a>
         </div>
       </div>
 
@@ -209,71 +209,84 @@
   </div>
 </section>
 
-<!-- ══ 문의하기 ══ -->
+<!-- ══ 파트너 신청 ══ -->
 <section class="section bg-dark" id="contact">
   <div class="container">
     <div class="section-label light center">CONTACT</div>
-    <h2 class="section-title light center">비즈니스 문의</h2>
-    <p class="section-desc light center">파트너십 및 제휴 문의는 아래 채널로 연락해 주세요.</p>
-    <div class="contact-grid">
-      <a class="contact-item" href="tel:07071161149">
-        <div class="contact-icon">📞</div>
-        <div class="contact-label">전화</div>
-        <div class="contact-value">070-7116-1149</div>
-      </a>
-      <div class="contact-item">
-        <div class="contact-icon">📠</div>
-        <div class="contact-label">팩스</div>
-        <div class="contact-value">02-837-1206</div>
-      </div>
-      <a class="contact-item" href="mailto:kingsand80@naver.com">
-        <div class="contact-icon">✉️</div>
-        <div class="contact-label">이메일</div>
-        <div class="contact-value">kingsand80@naver.com</div>
-      </a>
-      <div class="contact-item kakao">
-        <img src="https://cdn.imweb.me/thumbnail/20260205/9986732698b7e.png" alt="카카오톡" class="contact-kakao-img" onerror="this.style.display='none'" />
-        <div class="contact-label">카카오톡</div>
-        <div class="contact-value">티유디지털</div>
+    <h2 class="section-title light center">파트너 신청</h2>
+    <p class="section-desc light center">파트너십 및 제휴 신청은 아래 양식 또는 연락처로 문의해 주세요.</p>
+
+    <!-- 탭 버튼 -->
+    <div style="display:flex;gap:0;border-radius:12px;overflow:hidden;border:1.5px solid rgba(255,255,255,0.15);max-width:400px;margin:0 auto 40px;">
+      <button id="tab-btn-form" onclick="switchContactTab('form')" style="flex:1;padding:14px 0;background:#f0a500;color:#fff;font-size:15px;font-weight:800;border:none;cursor:pointer;font-family:inherit;transition:background 0.2s;">신청폼</button>
+      <button id="tab-btn-contact" onclick="switchContactTab('contact')" style="flex:1;padding:14px 0;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.55);font-size:15px;font-weight:800;border:none;border-left:1.5px solid rgba(255,255,255,0.15);cursor:pointer;font-family:inherit;transition:background 0.2s;">연락처</button>
+    </div>
+
+    <!-- 패널: 신청폼 -->
+    <div id="panel-form">
+      <div id="contact-form-wrap" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:40px 44px;">
+        <h3 style="font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;">파트너 신청</h3>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:32px;">양식을 작성해 주시면 담당자가 빠르게 연락드리겠습니다.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이름 <span style="color:#f0a500;">*</span></label>
+            <input id="cf-name" type="text" placeholder="홍길동" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">연락처 <span style="color:#f0a500;">*</span></label>
+            <input id="cf-phone" type="tel" placeholder="010-0000-0000" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이메일</label>
+            <input id="cf-email" type="email" placeholder="example@email.com" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">신청 유형 <span style="color:#f0a500;">*</span></label>
+            <select id="cf-category" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;appearance:auto;cursor:pointer;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+              <option value="" style="background:#0d2137;">-- 선택해 주세요 --</option>
+              <option value="인테리어 구독서비스" style="background:#0d2137;">인테리어 구독서비스</option>
+              <option value="LG가전 B2B" style="background:#0d2137;">LG가전 B2B</option>
+              <option value="결합비즈니스" style="background:#0d2137;">결합비즈니스</option>
+              <option value="금융사 에이전시" style="background:#0d2137;">금융사 에이전시</option>
+              <option value="기타" style="background:#0d2137;">기타</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">문의 내용 <span style="color:#f0a500;">*</span></label>
+          <textarea id="cf-message" placeholder="문의하실 내용을 자유롭게 작성해 주세요." rows="5" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'"></textarea>
+        </div>
+        <div id="cf-result" style="display:none;margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;font-weight:700;"></div>
+        <button onclick="submitContactForm()" id="cf-btn" style="margin-top:20px;width:100%;padding:16px;background:#f0a500;color:#fff;font-size:16px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#d4920a'" onmouseout="this.style.background='#f0a500'">신청하기 →</button>
       </div>
     </div>
 
-    <!-- 문의 폼 -->
-    <div id="contact-form-wrap" style="margin-top:48px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:40px 44px;">
-      <h3 style="font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;">파트너 문의하기</h3>
-      <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:32px;">양식을 작성해 주시면 담당자가 빠르게 연락드리겠습니다.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div>
-          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이름 <span style="color:#f0a500;">*</span></label>
-          <input id="cf-name" type="text" placeholder="홍길동" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
+    <!-- 패널: 연락처 -->
+    <div id="panel-contact" style="display:none;">
+      <div class="contact-grid">
+        <a class="contact-item" href="tel:07071161149">
+          <div class="contact-icon">📞</div>
+          <div class="contact-label">전화</div>
+          <div class="contact-value">070-7116-1149</div>
+        </a>
+        <div class="contact-item">
+          <div class="contact-icon">📠</div>
+          <div class="contact-label">팩스</div>
+          <div class="contact-value">02-837-1206</div>
         </div>
-        <div>
-          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">연락처 <span style="color:#f0a500;">*</span></label>
-          <input id="cf-phone" type="tel" placeholder="010-0000-0000" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
-        </div>
-        <div>
-          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">이메일</label>
-          <input id="cf-email" type="email" placeholder="example@email.com" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" />
-        </div>
-        <div>
-          <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">문의 유형 <span style="color:#f0a500;">*</span></label>
-          <select id="cf-category" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;appearance:auto;cursor:pointer;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
-            <option value="" style="background:#0d2137;">-- 선택해 주세요 --</option>
-            <option value="인테리어 구독서비스" style="background:#0d2137;">인테리어 구독서비스</option>
-            <option value="LG가전 B2B" style="background:#0d2137;">LG가전 B2B</option>
-            <option value="결합비즈니스" style="background:#0d2137;">결합비즈니스</option>
-            <option value="금융사 에이전시" style="background:#0d2137;">금융사 에이전시</option>
-            <option value="기타" style="background:#0d2137;">기타</option>
-          </select>
+        <a class="contact-item" href="mailto:kingsand80@naver.com">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-label">이메일</div>
+          <div class="contact-value">kingsand80@naver.com</div>
+        </a>
+        <div class="contact-item kakao">
+          <img src="https://cdn.imweb.me/thumbnail/20260205/9986732698b7e.png" alt="카카오톡" class="contact-kakao-img" onerror="this.style.display='none'" />
+          <div class="contact-label">카카오톡</div>
+          <div class="contact-value">티유디지털</div>
         </div>
       </div>
-      <div style="margin-top:16px;">
-        <label style="display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:7px;">문의 내용 <span style="color:#f0a500;">*</span></label>
-        <textarea id="cf-message" placeholder="문의하실 내용을 자유롭게 작성해 주세요." rows="5" style="width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#f0a500'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'"></textarea>
-      </div>
-      <div id="cf-result" style="display:none;margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;font-weight:700;"></div>
-      <button onclick="submitContactForm()" id="cf-btn" style="margin-top:20px;width:100%;padding:16px;background:#f0a500;color:#fff;font-size:16px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background='#d4920a'" onmouseout="this.style.background='#f0a500'">문의 보내기 →</button>
     </div>
+
   </div>
 </section>
 
@@ -286,6 +299,16 @@
 
 <script>
   const CF_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+
+  function switchContactTab(tab) {
+    const isForm = tab === 'form';
+    document.getElementById('panel-form').style.display = isForm ? 'block' : 'none';
+    document.getElementById('panel-contact').style.display = isForm ? 'none' : 'block';
+    document.getElementById('tab-btn-form').style.background = isForm ? '#f0a500' : 'rgba(255,255,255,0.06)';
+    document.getElementById('tab-btn-form').style.color = isForm ? '#fff' : 'rgba(255,255,255,0.55)';
+    document.getElementById('tab-btn-contact').style.background = isForm ? 'rgba(255,255,255,0.06)' : '#f0a500';
+    document.getElementById('tab-btn-contact').style.color = isForm ? 'rgba(255,255,255,0.55)' : '#fff';
+  }
 
   function submitContactForm() {
     const name     = document.getElementById('cf-name').value.trim();
@@ -300,7 +323,7 @@
       result.style.display = 'block';
       result.style.background = 'rgba(229,57,53,0.18)';
       result.style.color = '#ff6b6b';
-      result.textContent = '이름, 연락처, 문의 유형, 문의 내용은 필수 항목입니다.';
+      result.textContent = '이름, 연락처, 신청 유형, 문의 내용은 필수 항목입니다.';
       return;
     }
 
@@ -317,8 +340,8 @@
       result.style.display = 'block';
       result.style.background = 'rgba(76,175,80,0.18)';
       result.style.color = '#69f0ae';
-      result.textContent = '✅ 문의가 접수되었습니다! 담당자가 빠르게 연락드리겠습니다.';
-      btn.textContent = '전송 완료';
+      result.textContent = '✅ 신청이 접수되었습니다! 담당자가 빠르게 연락드리겠습니다.';
+      btn.textContent = '신청 완료';
       document.getElementById('cf-name').value = '';
       document.getElementById('cf-phone').value = '';
       document.getElementById('cf-email').value = '';
@@ -331,7 +354,7 @@
       result.style.color = '#ff6b6b';
       result.textContent = '전송 중 오류가 발생했습니다. 전화 또는 이메일로 문의해 주세요.';
       btn.disabled = false;
-      btn.textContent = '문의 보내기 →';
+      btn.textContent = '신청하기 →';
     });
   }
 </script>
