@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>회사 연혁 | 티유디지털</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="static/style.css?v=6" />
+  <link rel="stylesheet" href="static/style.css?v=7" />
   <style>
     /* ── 히어로 ── */
     .hist-hero {
@@ -137,7 +137,8 @@
       font-size: 14px;
       font-weight: 700;
       color: #0d2137;
-      line-height: 1.5;
+      line-height: 1.65;
+      word-break: keep-all;
     }
 
     /* ── 활동 섹션 ── */
@@ -185,7 +186,7 @@
     /* ── 숫자 하이라이트 ── */
     .highlight-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 0;
       border: 1.5px solid rgba(255,255,255,0.12);
       border-radius: 16px;
@@ -194,12 +195,14 @@
     }
     .hl-item {
       text-align: center;
-      padding: 36px 20px;
+      padding: 40px 20px;
       border-right: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .hl-item:last-child { border-right: none; }
-    .hl-num { font-size: clamp(28px,4vw,44px); font-weight: 900; color: #f0a500; margin-bottom: 6px; }
-    .hl-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .hl-item:nth-child(2n) { border-right: none; }
+    .hl-item:nth-child(3), .hl-item:nth-child(4) { border-bottom: none; }
+    .hl-num { font-size: clamp(32px,5vw,52px); font-weight: 900; color: #f0a500; margin-bottom: 8px; }
+    .hl-label { font-size: 14px; color: rgba(255,255,255,0.6); }
 
     /* ── 반응형 ── */
     @media (max-width: 900px) {
@@ -213,10 +216,6 @@
       .tl-item::after { left: 24px; }
       .tl-card { max-width: 100%; }
       .activity-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-      .highlight-row { grid-template-columns: repeat(2,1fr); }
-      .hl-item:nth-child(2) { border-right: none; }
-      .hl-item:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.1); }
-      .hl-item:nth-child(4) { border-top: 1px solid rgba(255,255,255,0.1); }
     }
     @media (max-width: 640px) {
       .header-inner { height: 110px !important; justify-content: center !important; }
@@ -235,9 +234,6 @@
       .act-body { padding: 18px 16px; }
     }
     @media (max-width: 400px) {
-      .highlight-row { grid-template-columns: 1fr; }
-      .hl-item { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-top: none !important; }
-      .hl-item:last-child { border-bottom: none !important; }
       .hist-hero::before { font-size: 80px; }
       .tl-item, .tl-item.right { padding-left: 44px; }
     }  </style>
