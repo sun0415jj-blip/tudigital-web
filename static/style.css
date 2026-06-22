@@ -664,8 +664,8 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .mobile-only { display: block !important; }
 
   /* 헤더 */
-  .header-inner { height: 110px; gap: 12px; }
-  .logo img { height: 100px; }
+  .header-inner { height: 120px; gap: 12px; }
+  .logo img { height: 110px; }
   .header-mobile-text { display: flex; }
 
   /* 히어로 - 태그/서브 숨기고 버튼 최적화 */
