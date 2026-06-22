@@ -655,7 +655,7 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .mobile-nav {
     display: flex !important;
     flex-direction: row;
-    background: #0d2137;
+    background: #1e5080;
     padding: 0;
     border-top: none;
     overflow-x: auto;
