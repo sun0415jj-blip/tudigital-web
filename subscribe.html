@@ -198,7 +198,11 @@
           <span>개인정보 수집·이용에 동의합니다. (필수)<br><small style="font-weight:400;color:#888;">수집항목: 이름, 생년월일, 연락처 / 목적: 구독 서비스 신청 및 본인 확인</small></span>
         </label>
       </div>
-      <button class="btn-next" onclick="goToStep2()">저장하기</button>
+      <div id="save-success" class="hidden" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:14px;color:#2e7d32;font-weight:600;line-height:1.6;">
+        ✅ 기본정보가 저장되었습니다.<br><small style="font-weight:400;color:#388e3c;">신용조회 완료 후 아래 '다음 단계로' 버튼을 눌러 서류를 업로드해 주세요.</small>
+      </div>
+      <button class="btn-next" id="btn-save" onclick="saveStep1()">저장하기</button>
+      <button class="btn-submit hidden" id="btn-goto-step2" onclick="goToStep2()" style="margin-top:10px;">다음 단계로 → (서류 업로드)</button>
     </div>
   </div>
 
@@ -314,8 +318,8 @@
     }).catch(e => console.error('전송 오류:', e));
   }
 
-  /* STEP 1 → STEP 2 */
-  function goToStep2() {
+  /* STEP 1 저장하기 → 어드민에 신용조회중 상태로 저장 */
+  function saveStep1() {
     const name  = document.getElementById('name').value.trim();
     const birth = document.getElementById('birth').value.replace(/\D/g,'');
     const phone = document.getElementById('phone').value.trim();
@@ -334,17 +338,30 @@
       id: Date.now(), name, birth, phone,
       period: periodEl.value,
       debit: debitEl.value,
-      status: '서류대기', confirmed: false,
+      status: '신용조회중', confirmed: false,
       createdAt: new Date().toLocaleString('ko-KR'),
       docs: null
     };
 
-    /* Step 2 요약 채우기 */
-    document.getElementById('s2-name').textContent  = name;
-    document.getElementById('s2-birth').textContent = birth;
-    document.getElementById('s2-phone').textContent = phone;
-    document.getElementById('s2-period').textContent = periodEl.value;
-    document.getElementById('s2-debit').textContent  = debitEl.value;
+    apiPost({ action: 'save', customer: pendingCustomer });
+
+    const btn = document.getElementById('btn-save');
+    btn.disabled = true;
+    btn.textContent = '저장완료 ✓';
+    btn.style.background = '#888';
+    document.getElementById('save-success').classList.remove('hidden');
+    document.getElementById('btn-goto-step2').classList.remove('hidden');
+  }
+
+  /* STEP 1 → STEP 2 (신용조회 완료 후) */
+  function goToStep2() {
+    if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
+
+    document.getElementById('s2-name').textContent   = pendingCustomer.name;
+    document.getElementById('s2-birth').textContent  = pendingCustomer.birth;
+    document.getElementById('s2-phone').textContent  = pendingCustomer.phone;
+    document.getElementById('s2-period').textContent = pendingCustomer.period;
+    document.getElementById('s2-debit').textContent  = pendingCustomer.debit;
 
     document.getElementById('section-step1').classList.add('hidden');
     document.getElementById('section-step2').classList.remove('hidden');
@@ -375,7 +392,7 @@
     pendingCustomer.docs = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
     pendingCustomer.status = '서류제출';
 
-    apiPost({ action: 'save', customer: pendingCustomer });
+    apiPost({ action: 'update', customer: pendingCustomer });
 
     setTimeout(() => {
       document.getElementById('section-step2').classList.add('hidden');
