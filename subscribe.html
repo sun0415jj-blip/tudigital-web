@@ -40,9 +40,9 @@
     .form-input::placeholder { color:#aaa; }
 
     .radio-group { display:flex; flex-wrap:wrap; gap:10px; }
-    .radio-group input[type="radio"] { display:none; }
+    .radio-group input[type="radio"], .radio-group input[type="checkbox"] { display:none; }
     .radio-group label { display:inline-flex; align-items:center; justify-content:center; padding:9px 22px; border:1.5px solid #d1d9e0; border-radius:8px; font-size:14px; font-weight:700; color:#555; cursor:pointer; transition:all .15s; margin-bottom:0; background:#fafbfc; }
-    .radio-group input[type="radio"]:checked + label { background:#0d2137; border-color:#0d2137; color:#fff; }
+    .radio-group input[type="radio"]:checked + label, .radio-group input[type="checkbox"]:checked + label { background:#0d2137; border-color:#0d2137; color:#fff; }
     .radio-group label:hover { border-color:#0d2137; color:#0d2137; }
 
     .agree-box { background:#f5f7fa; border:1px solid #e2e8f0; border-radius:10px; padding:16px 18px; margin-bottom:24px; }
@@ -177,6 +177,17 @@
         <input type="tel" id="phone" class="form-input" placeholder="010-0000-0000" />
       </div>
       <div class="form-group">
+        <label>상품명 <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="checkbox" id="prod-chanho" value="창호" /><label for="prod-chanho">창호</label>
+          <input type="checkbox" id="prod-juban" value="주방" /><label for="prod-juban">주방</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="amount">금액 <span class="req">*</span></label>
+        <input type="text" id="amount" class="form-input" placeholder="예) 1,500,000" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9,]/g,'')" />
+      </div>
+      <div class="form-group">
         <label>구독기간 선택 <span class="req">*</span></label>
         <div class="radio-group">
           <input type="radio" name="period" id="p24" value="24개월" /><label for="p24">24개월</label>
@@ -219,6 +230,8 @@
         <div class="summary-item"><label>이름</label><span id="s2-name">-</span></div>
         <div class="summary-item"><label>생년월일</label><span id="s2-birth">-</span></div>
         <div class="summary-item"><label>연락처</label><span id="s2-phone">-</span></div>
+        <div class="summary-item"><label>상품명</label><span id="s2-product">-</span></div>
+        <div class="summary-item"><label>금액</label><span id="s2-amount">-</span></div>
         <div class="summary-item"><label>구독기간</label><span id="s2-period">-</span></div>
         <div class="summary-item"><label>자동이체일</label><span id="s2-debit">-</span></div>
       </div>
@@ -326,22 +339,31 @@
 
   /* STEP 1 저장하기 → 어드민에 신용조회중 상태로 저장 */
   function saveStep1() {
-    const name  = document.getElementById('name').value.trim();
-    const birth = document.getElementById('birth').value.replace(/\D/g,'');
-    const phone = document.getElementById('phone').value.trim();
+    const name   = document.getElementById('name').value.trim();
+    const birth  = document.getElementById('birth').value.replace(/\D/g,'');
+    const phone  = document.getElementById('phone').value.trim();
+    const amount = document.getElementById('amount').value.trim();
     const periodEl = document.querySelector('input[name="period"]:checked');
     const debitEl  = document.querySelector('input[name="debit"]:checked');
     const agreed   = document.getElementById('agreePrivacy').checked;
 
-    if (!name)  { alert('이름을 입력해 주세요.'); document.getElementById('name').focus(); return; }
+    const productArr = [];
+    if (document.getElementById('prod-chanho').checked) productArr.push('창호');
+    if (document.getElementById('prod-juban').checked)  productArr.push('주방');
+    const product = productArr.join('+');
+
+    if (!name)    { alert('이름을 입력해 주세요.'); document.getElementById('name').focus(); return; }
     if (birth.length !== 6 && birth.length !== 8) { alert('생년월일을 6자리 또는 8자리로 입력해 주세요.'); document.getElementById('birth').focus(); return; }
-    if (!phone) { alert('핸드폰 번호를 입력해 주세요.'); document.getElementById('phone').focus(); return; }
+    if (!phone)   { alert('핸드폰 번호를 입력해 주세요.'); document.getElementById('phone').focus(); return; }
+    if (!product) { alert('상품명을 선택해 주세요.'); return; }
+    if (!amount)  { alert('금액을 입력해 주세요.'); document.getElementById('amount').focus(); return; }
     if (!periodEl) { alert('구독기간을 선택해 주세요.'); return; }
     if (!debitEl)  { alert('자동이체일을 선택해 주세요.'); return; }
     if (!agreed)   { alert('개인정보 수집·이용 동의가 필요합니다.'); return; }
 
     pendingCustomer = {
       id: Date.now(), name, birth, phone,
+      product, amount,
       period: periodEl.value,
       debit: debitEl.value,
       status: '신용조회중', confirmed: false,
@@ -363,11 +385,13 @@
   function goToStep2() {
     if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
 
-    document.getElementById('s2-name').textContent   = pendingCustomer.name;
-    document.getElementById('s2-birth').textContent  = pendingCustomer.birth;
-    document.getElementById('s2-phone').textContent  = pendingCustomer.phone;
-    document.getElementById('s2-period').textContent = pendingCustomer.period;
-    document.getElementById('s2-debit').textContent  = pendingCustomer.debit;
+    document.getElementById('s2-name').textContent    = pendingCustomer.name;
+    document.getElementById('s2-birth').textContent   = pendingCustomer.birth;
+    document.getElementById('s2-phone').textContent   = pendingCustomer.phone;
+    document.getElementById('s2-product').textContent = pendingCustomer.product;
+    document.getElementById('s2-amount').textContent  = pendingCustomer.amount + '원';
+    document.getElementById('s2-period').textContent  = pendingCustomer.period;
+    document.getElementById('s2-debit').textContent   = pendingCustomer.debit;
 
     document.getElementById('section-step1').classList.add('hidden');
     document.getElementById('section-step2').classList.remove('hidden');

@@ -46,8 +46,8 @@ function doPost(e) {
   if (body.action === 'save') {
     const c = body.customer;
     sheet.appendRow([
-      c.id, c.name, c.birth, c.phone, c.period, c.debit,
-      c.status, String(c.confirmed || false), c.createdAt,
+      c.id, c.name, c.birth, c.phone, c.product || '', c.amount || '',
+      c.period, c.debit, c.status, String(c.confirmed || false), c.createdAt,
       c.docs ? JSON.stringify(c.docs) : ''
     ]);
     notifyManager(c);  // 담당자 알림 발송
@@ -78,6 +78,8 @@ function sendEmail(customer) {
         '<tr><td><b>고객명</b></td><td>' + customer.name + '</td></tr>' +
         '<tr><td><b>생년월일</b></td><td>' + customer.birth + '</td></tr>' +
         '<tr><td><b>연락처</b></td><td>' + customer.phone + '</td></tr>' +
+        '<tr><td><b>상품명</b></td><td>' + (customer.product || '-') + '</td></tr>' +
+        '<tr><td><b>금액</b></td><td>' + (customer.amount || '-') + '원</td></tr>' +
         '<tr><td><b>구독기간</b></td><td>' + customer.period + '</td></tr>' +
         '<tr><td><b>자동이체일</b></td><td>' + customer.debit + '</td></tr>' +
         '<tr><td><b>신청일시</b></td><td>' + customer.createdAt + '</td></tr>' +
@@ -143,9 +145,9 @@ function updateRow(sheet, c) {
   const data = sheet.getDataRange().getValues();
   for (let i = 1; i < data.length; i++) {
     if (String(data[i][0]) === String(c.id)) {
-      sheet.getRange(i + 1, 1, 1, 10).setValues([[
-        c.id, c.name, c.birth, c.phone, c.period, c.debit,
-        c.status, String(c.confirmed || false), c.createdAt,
+      sheet.getRange(i + 1, 1, 1, 12).setValues([[
+        c.id, c.name, c.birth, c.phone, c.product || '', c.amount || '',
+        c.period, c.debit, c.status, String(c.confirmed || false), c.createdAt,
         c.docs ? JSON.stringify(c.docs) : ''
       ]]);
       return;
@@ -173,7 +175,7 @@ function jsonResponse(obj) {
 function setupSheet() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   sheet.setName('고객목록');
-  const headers = ['id','name','birth','phone','period','debit','status','confirmed','createdAt','docs'];
+  const headers = ['id','name','birth','phone','product','amount','period','debit','status','confirmed','createdAt','docs'];
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
   sheet.setFrozenRows(1);
