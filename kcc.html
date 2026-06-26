@@ -164,6 +164,11 @@
       .stat-bar { grid-template-columns:1fr 1fr; }
       .sec { padding:64px 0; }
     }
+    .mobile-only { display: none; }
+    @media (max-width: 768px) {
+      .mobile-only { display: inline; }
+      .desktop-only { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -196,7 +201,7 @@
     <a href="index.html" class="back-link">← 돌아가기</a>
     <div class="sol-badge">KCC홈씨씨 인테리어 구독 사업</div>
     <h1>인테리어 구독을 위한<br><em>토털 비즈니스 솔루션</em></h1>
-    <p class="sub">금융솔루션 · 마케팅DB · 랜딩페이지 · 파트너 어드민<br>금융솔루션부터 마케팅DB, 랜딩페이지, 어드민까지 인테리어 구독 사업의 전 영역을 직접 운영합니다</p>
+    <p class="sub"><span class="desktop-only">금융솔루션 · 마케팅DB · 랜딩페이지 · 파트너 어드민</span><span class="mobile-only">금융솔루션 · 마케팅 · 파트너 어드민</span><br>금융솔루션부터 마케팅DB, 랜딩페이지, 어드민까지 인테리어 구독 사업의 전 영역을 직접 운영합니다</p>
     <div class="sol-cards">
       <div class="sol-card">
         <div class="icon">💳</div>
