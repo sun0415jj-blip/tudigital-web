@@ -1,4 +1,4 @@
-/* Created: 2026-06-16 */
+﻿/* Created: 2026-06-16 */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -156,6 +156,20 @@ img { display: block; }
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+}
+.btn-subscribe {
+  background: linear-gradient(135deg, #0099e0, #0077b8);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 15px 32px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: 0 4px 24px rgba(0,153,224,0.4);
+}
+.btn-subscribe:hover { background: linear-gradient(135deg, #0088cc, #005fa3); transform: translateY(-2px); }
+@media (max-width: 768px) {
+  .btn-subscribe { width: auto; text-align: center; font-size: 13px; padding: 12px 18px; font-weight: 900; }
 }
 .btn-primary {
   background: var(--gold);
@@ -699,7 +713,21 @@ a.contact-item:hover, .contact-item.kakao:hover {
   .hero-sub { display: block; }
   .hero h1 { margin-bottom: 32px; }
   .hero-btns { flex-direction: row; gap: 10px; }
-  .btn-primary { width: auto; text-align: center; font-size: 13px; padding: 12px 18px; font-weight: 900; }
+  .btn-subscribe {
+  background: linear-gradient(135deg, #0099e0, #0077b8);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 15px 32px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: 0 4px 24px rgba(0,153,224,0.4);
+}
+.btn-subscribe:hover { background: linear-gradient(135deg, #0088cc, #005fa3); transform: translateY(-2px); }
+@media (max-width: 768px) {
+  .btn-subscribe { width: auto; text-align: center; font-size: 13px; padding: 12px 18px; font-weight: 900; }
+}
+.btn-primary { width: auto; text-align: center; font-size: 13px; padding: 12px 18px; font-weight: 900; }
   .btn-ghost { width: auto; text-align: center; font-size: 13px; padding: 12px 18px; }
 
   /* 섹션 */
