@@ -232,16 +232,19 @@
     });
   }
 
-  async function uploadOne(file, docKey) {
-    const base64 = await toBase64(file);
-    const res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'uploadFile', base64, fileName: file.name, mimeType: file.type, customerId, docKey })
-    });
-    const json = await res.json();
-    if (!json.ok || !json.url) throw new Error('업로드 실패');
-    return json.url;
+  async function pollUntilDone(maxAttempts = 15, interval = 3000) {
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(r => setTimeout(r, interval));
+      try {
+        const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+        const json = await res.json();
+        const c    = (json.data || []).find(c => String(c.id) === String(customerId));
+        if (c && c.docs && typeof c.docs === 'object') {
+          const hasUrls = Object.values(c.docs).some(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
+          if (hasUrls) return;
+        }
+      } catch(e) {}
+    }
   }
 
   async function submit() {
@@ -250,20 +253,28 @@
     btn.innerHTML = '<span class="spinner"></span>업로드 중... 잠시만 기다려 주세요';
 
     try {
-      const [u1, u2, u3] = await Promise.all([
-        uploadOne(files[0], 'doc1'),
-        uploadOne(files[1], 'doc2'),
-        uploadOne(files[2], 'doc3')
+      const [b1, b2, b3] = await Promise.all([
+        toBase64(files[0]),
+        toBase64(files[1]),
+        toBase64(files[2])
       ]);
 
-      await fetch(SCRIPT_URL, {
+      fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'update',
-          customer: { ...customerData, docs: { doc1: u1, doc2: u2, doc3: u3 }, status: '서류제출' }
+        mode:   'no-cors',
+        body:   JSON.stringify({
+          action: 'uploadAndSave',
+          customerId,
+          files: {
+            doc1: { data: b1, name: files[0].name, type: files[0].type },
+            doc2: { data: b2, name: files[1].name, type: files[1].type },
+            doc3: { data: b3, name: files[2].name, type: files[2].type }
+          }
         })
       });
+
+      btn.innerHTML = '<span class="spinner"></span>처리 중... (최대 30초 소요)';
+      await pollUntilDone();
 
       show('complete');
     } catch(e) {

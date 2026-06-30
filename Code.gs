@@ -57,9 +57,22 @@ function doPost(e) {
     deleteRow(sheet, body.id);
   } else if (body.action === 'contact') {
     sendContactEmail(body);
-  } else if (body.action === 'uploadFile') {
-    const url = uploadFileToDrive(body.base64, body.fileName, body.mimeType, body.customerId, body.docKey);
-    return jsonResponse({ ok: true, url: url });
+  } else if (body.action === 'uploadAndSave') {
+    const docUrls = {};
+    const filesData = body.files || {};
+    for (const key of ['doc1', 'doc2', 'doc3']) {
+      if (filesData[key] && filesData[key].data) {
+        docUrls[key] = uploadFileToDrive(filesData[key].data, filesData[key].name, filesData[key].type, body.customerId, key);
+      }
+    }
+    const allData = sheet.getDataRange().getValues();
+    for (let i = 1; i < allData.length; i++) {
+      if (String(allData[i][0]) === String(body.customerId)) {
+        sheet.getRange(i + 1, 9).setValue('서류제출');
+        sheet.getRange(i + 1, 12).setValue(JSON.stringify(docUrls));
+        break;
+      }
+    }
   }
 
   return jsonResponse({ ok: true });

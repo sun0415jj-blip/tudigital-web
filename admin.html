@@ -657,25 +657,44 @@
     const submitBtn = document.querySelector('#panel-' + uploadTargetId + ' .btn-panel-submit');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>업로드 중...'; }
 
+    const targetId = uploadTargetId;
+
     try {
-      const [url1, url2, url3] = await Promise.all([
-        driveUpload(doc1, uploadTargetId, 'doc1'),
-        driveUpload(doc2, uploadTargetId, 'doc2'),
-        driveUpload(doc3, uploadTargetId, 'doc3')
+      const [b1, b2, b3] = await Promise.all([
+        fileToBase64(doc1),
+        fileToBase64(doc2),
+        fileToBase64(doc3)
       ]);
 
-      const idx = customersCache.findIndex(c => c.id === uploadTargetId);
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode:   'no-cors',
+        body:   JSON.stringify({
+          action: 'uploadAndSave',
+          customerId: targetId,
+          files: {
+            doc1: { data: b1, name: doc1.name, type: doc1.type },
+            doc2: { data: b2, name: doc2.name, type: doc2.type },
+            doc3: { data: b3, name: doc3.name, type: doc3.type }
+          }
+        })
+      });
+
+      if (submitBtn) submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>처리 중... (최대 30초)';
+
+      const driveUrls = await pollForDriveUrls(targetId);
+
+      const idx = customersCache.findIndex(c => c.id === targetId);
       if (idx !== -1) {
-        customersCache[idx].docs      = { doc1: url1, doc2: url2, doc3: url3 };
+        customersCache[idx].docs      = driveUrls || { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
         customersCache[idx].status    = '서류제출';
         customersCache[idx].confirmed = false;
-        apiPost({ action: 'update', customer: customersCache[idx] });
-        sessionFileStore['customer_' + uploadTargetId] = { doc1, doc2, doc3 };
       }
 
       closeUploadPanel();
       updateStats();
       renderCustomerList();
+      showToast('서류 업로드 완료!');
     } catch(e) {
       console.error(e);
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '제출하기'; }
@@ -683,16 +702,20 @@
     }
   }
 
-  async function driveUpload(file, customerId, docKey) {
-    const base64 = await fileToBase64(file);
-    const res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'uploadFile', base64, fileName: file.name, mimeType: file.type, customerId, docKey })
-    });
-    const json = await res.json();
-    if (!json.ok || !json.url) throw new Error('Drive 업로드 실패');
-    return json.url;
+  async function pollForDriveUrls(customerId, maxAttempts = 15, interval = 3000) {
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(r => setTimeout(r, interval));
+      try {
+        const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+        const json = await res.json();
+        const c    = (json.data || []).find(c => Number(c.id) === Number(customerId));
+        if (c && c.docs && typeof c.docs === 'object') {
+          const hasUrls = Object.values(c.docs).some(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
+          if (hasUrls) return c.docs;
+        }
+      } catch(e) {}
+    }
+    return null;
   }
 
   /* ════ 삭제 ════ */
