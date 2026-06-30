@@ -478,11 +478,11 @@
         + '<td><strong>' + c.name + '</strong></td>'
         + '<td>' + c.birth + '</td>'
         + '<td>' + c.phone + '</td>'
-        + '<td>' + c.period + '</td>'
-        + '<td>' + c.debit + '</td>'
-        + '<td style="font-size:11px;color:#999;">' + c.createdAt + '</td>'
-        + '<td style="text-align:center;">' + docsCell + '</td>'
+        + '<td>' + (c.product || '-') + '</td>'
+        + '<td>' + (c.amount || '-') + '</td>'
         + '<td><span class="status-badge ' + statusClass(c.status) + '">' + c.status + '</span></td>'
+        + '<td style="text-align:center;">' + docsCell + '</td>'
+        + '<td>' + (c.period || '-') + '</td>'
         + '<td style="white-space:nowrap;">' + actionCell + '</td>'
         + '</tr>'
         + '<tr id="panel-' + c.id + '" style="display:none;"><td colspan="9" style="padding:0 10px 16px;"></td></tr>';
@@ -490,7 +490,7 @@
 
     wrap.innerHTML = '<table class="customer-table">'
       + '<thead><tr>'
-      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>구독기간</th><th>이체일</th><th>신청일시</th><th>첨부서류</th><th>상태</th><th style="min-width:200px;">관리</th>'
+      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>상품명</th><th>구독금액</th><th>상태</th><th>첨부서류</th><th>구독기간</th><th style="min-width:200px;">관리</th>'
       + '</tr></thead>'
       + '<tbody>' + rows + '</tbody>'
       + '</table>';
