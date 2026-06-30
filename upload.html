@@ -1,0 +1,280 @@
+<!-- Created: 2026-06-30 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>서류 업로드 | 티유디지털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: #222; min-height: 100vh; }
+
+    .top-bar { background: #0d2137; padding: 18px 20px; text-align: center; }
+    .top-bar .logo { color: #fff; font-size: 18px; font-weight: 900; }
+    .top-bar .sub { color: rgba(255,255,255,.6); font-size: 13px; margin-top: 3px; }
+
+    .wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .card { background: #fff; border-radius: 16px; padding: 28px 22px; box-shadow: 0 2px 16px rgba(13,33,55,.08); }
+
+    .customer-box { background: #f0f4f8; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
+    .customer-box h3 { font-size: 17px; font-weight: 900; color: #0d2137; margin-bottom: 12px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info-item label { display: block; font-size: 11px; color: #888; font-weight: 600; margin-bottom: 2px; }
+    .info-item span { font-size: 13px; font-weight: 700; color: #0d2137; }
+
+    .section-title { font-size: 15px; font-weight: 900; color: #0d2137; margin-bottom: 6px; }
+    .section-sub { font-size: 13px; color: #888; margin-bottom: 18px; line-height: 1.55; }
+
+    .progress-wrap { margin-bottom: 20px; }
+    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #f0a500; border-radius: 4px; transition: width .35s ease; }
+    .progress-text { font-size: 12px; color: #888; margin-top: 5px; }
+
+    .upload-group { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f4f8; }
+    .upload-group:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .upload-group-label { display: block; font-size: 14px; font-weight: 800; color: #222; margin-bottom: 3px; }
+    .upload-group-sub { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .upload-group input[type="file"] { display: none; }
+    .upload-row { display: flex; gap: 8px; align-items: center; }
+    .btn-file { display: inline-flex; align-items: center; gap: 5px; padding: 10px 14px; background: #f0f4f8; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 13px; font-weight: 700; color: #0d2137; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s; }
+    .btn-file:hover { background: #e2e8f0; }
+    .file-name-display { flex: 1; font-size: 12px; color: #aaa; background: #fafbfc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .file-name-display.has-file { color: #0d2137; font-weight: 700; border-color: #0d2137; background: #f0f9ff; }
+
+    .btn-submit { width: 100%; padding: 16px; background: #f0a500; color: #fff; font-size: 16px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; margin-top: 20px; }
+    .btn-submit:hover:not(:disabled) { background: #d4920a; }
+    .btn-submit:disabled { background: #d1d9e0; color: #aaa; cursor: not-allowed; }
+
+    /* 상태 화면 */
+    .state-page { text-align: center; padding: 80px 20px; }
+    .state-icon { font-size: 52px; margin-bottom: 16px; }
+    .state-title { font-size: 20px; font-weight: 900; color: #0d2137; margin-bottom: 8px; }
+    .state-sub { font-size: 14px; color: #888; line-height: 1.7; }
+
+    .complete-card { background: #fff; border-radius: 20px; padding: 52px 28px; text-align: center; box-shadow: 0 4px 24px rgba(13,33,55,.1); }
+    .complete-icon { font-size: 60px; margin-bottom: 18px; }
+    .complete-title { font-size: 22px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
+    .complete-sub { font-size: 14px; color: #666; line-height: 1.8; }
+    .complete-contact { margin-top: 24px; padding: 14px 18px; background: #f0f4f8; border-radius: 10px; font-size: 14px; color: #555; font-weight: 600; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">티유디지털</div>
+  <div class="sub">KCC홈씨씨 창호 구독 · 서류 업로드</div>
+</div>
+
+<div class="wrap">
+
+  <!-- 로딩 -->
+  <div id="s-loading" class="state-page">
+    <div class="state-icon">⏳</div>
+    <div class="state-title">불러오는 중...</div>
+  </div>
+
+  <!-- 오류 -->
+  <div id="s-error" class="state-page hidden">
+    <div class="state-icon">❌</div>
+    <div class="state-title">잘못된 링크입니다</div>
+    <div class="state-sub">올바른 링크를 통해 접속해 주세요.<br>문의: 1588-0883</div>
+  </div>
+
+  <!-- 업로드 폼 -->
+  <div id="s-form" class="hidden">
+    <div class="card">
+
+      <div class="customer-box">
+        <h3 id="c-name"></h3>
+        <div class="info-grid">
+          <div class="info-item"><label>상품명</label><span id="c-product">-</span></div>
+          <div class="info-item"><label>구독금액</label><span id="c-amount">-</span></div>
+          <div class="info-item"><label>구독기간</label><span id="c-period">-</span></div>
+          <div class="info-item"><label>자동이체일</label><span id="c-debit">-</span></div>
+        </div>
+      </div>
+
+      <div class="section-title">서류를 업로드해 주세요</div>
+      <div class="section-sub">아래 3가지 서류를 모두 선택한 뒤 제출해 주세요.<br>JPG, PNG, PDF 파일 가능합니다.</div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="progress-text" id="prog-text">0 / 3 선택됨</div>
+      </div>
+
+      <!-- 서류 1 -->
+      <div class="upload-group">
+        <span class="upload-group-label">① 등기부등본 또는 매매계약서</span>
+        <p class="upload-group-sub">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
+        <input type="file" id="f1" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(1)" />
+        <div class="upload-row">
+          <label for="f1" class="btn-file">📂 파일 선택</label>
+          <span class="file-name-display" id="fn1">선택된 파일 없음</span>
+        </div>
+      </div>
+
+      <!-- 서류 2 -->
+      <div class="upload-group">
+        <span class="upload-group-label">② 신분증 사본</span>
+        <p class="upload-group-sub">주민등록증 또는 운전면허증 앞면</p>
+        <input type="file" id="f2" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(2)" />
+        <div class="upload-row">
+          <label for="f2" class="btn-file">📂 파일 선택</label>
+          <span class="file-name-display" id="fn2">선택된 파일 없음</span>
+        </div>
+      </div>
+
+      <!-- 서류 3 -->
+      <div class="upload-group">
+        <span class="upload-group-label">③ 통장 사본</span>
+        <p class="upload-group-sub">자동이체 출금 계좌 통장 앞면</p>
+        <input type="file" id="f3" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(3)" />
+        <div class="upload-row">
+          <label for="f3" class="btn-file">📂 파일 선택</label>
+          <span class="file-name-display" id="fn3">선택된 파일 없음</span>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btn-submit" onclick="submit()" disabled>
+        3개 서류를 모두 선택해 주세요
+      </button>
+
+    </div>
+  </div>
+
+  <!-- 완료 -->
+  <div id="s-complete" class="hidden">
+    <div class="complete-card">
+      <div class="complete-icon">✅</div>
+      <div class="complete-title">서류 제출 완료!</div>
+      <div class="complete-sub">서류가 성공적으로 접수되었습니다.<br>담당자 검토 후 연락드리겠습니다.</div>
+      <div class="complete-contact">📞 문의: 1588-0883</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+
+  let customerId   = null;
+  let customerData = null;
+  let files        = [null, null, null];
+
+  async function init() {
+    customerId = new URLSearchParams(location.search).get('id');
+    if (!customerId) { show('error'); return; }
+
+    try {
+      const ctrl  = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 10000);
+      const res   = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: ctrl.signal });
+      clearTimeout(timer);
+      const json  = await res.json();
+      const c     = (json.data || []).find(c => String(c.id) === String(customerId));
+      if (!c) { show('error'); return; }
+      customerData = c;
+      renderInfo(c);
+      show('form');
+    } catch(e) {
+      show('error');
+    }
+  }
+
+  function show(state) {
+    ['loading','error','form','complete'].forEach(s =>
+      document.getElementById('s-' + s).classList.toggle('hidden', s !== state)
+    );
+  }
+
+  function renderInfo(c) {
+    document.getElementById('c-name').textContent = c.name + ' 고객님';
+    document.getElementById('c-product').textContent = c.product || '-';
+    const amt = Number(String(c.amount || '').replace(/[^0-9]/g, ''));
+    document.getElementById('c-amount').textContent = amt ? amt.toLocaleString('ko-KR') + '원' : '-';
+    document.getElementById('c-period').textContent = c.period || '-';
+    document.getElementById('c-debit').textContent  = c.debit  || '-';
+  }
+
+  function onSelect(n) {
+    const file = document.getElementById('f' + n).files[0];
+    if (!file) return;
+    files[n - 1] = file;
+    const el = document.getElementById('fn' + n);
+    el.textContent = file.name;
+    el.classList.add('has-file');
+    updateUI();
+  }
+
+  function updateUI() {
+    const cnt = files.filter(Boolean).length;
+    document.getElementById('prog-fill').style.width = (cnt / 3 * 100) + '%';
+    document.getElementById('prog-text').textContent = cnt + ' / 3 선택됨';
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = cnt < 3;
+    btn.textContent = cnt < 3 ? cnt + '/3 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
+  }
+
+  function toBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload  = e => res(e.target.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function uploadOne(file, docKey) {
+    const base64 = await toBase64(file);
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'uploadFile', base64, fileName: file.name, mimeType: file.type, customerId, docKey })
+    });
+    const json = await res.json();
+    if (!json.ok || !json.url) throw new Error('업로드 실패');
+    return json.url;
+  }
+
+  async function submit() {
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>업로드 중... 잠시만 기다려 주세요';
+
+    try {
+      const [u1, u2, u3] = await Promise.all([
+        uploadOne(files[0], 'doc1'),
+        uploadOne(files[1], 'doc2'),
+        uploadOne(files[2], 'doc3')
+      ]);
+
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'update',
+          customer: { ...customerData, docs: { doc1: u1, doc2: u2, doc3: u3 }, status: '서류제출' }
+        })
+      });
+
+      show('complete');
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = '서류 제출하기 →';
+      alert('업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

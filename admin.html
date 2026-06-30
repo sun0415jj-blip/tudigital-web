@@ -160,6 +160,10 @@
     .btn-view-docs { background: #e8f0fe; color: #1a3a5c; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; }
     .btn-view-docs:hover { background: #c7d9fc; }
     .btn-delete-row { background: #fff0f0; color: #e53e3e; border: 1px solid #fed7d7; border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: 4px; font-family: inherit; }
+    .btn-link-send { background: #e8f4fd; color: #1565c0; border: 1.5px solid #90caf9; border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; margin-left: 4px; }
+    .btn-link-send:hover { background: #bbdefb; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0d2137; color: #fff; padding: 13px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 99999; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .btn-delete-row:hover { background: #ffe4e4; }
     .confirm-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #276749; cursor: pointer; margin-right: 4px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #9ae6b4; background: #f0fff4; vertical-align: middle; }
     .confirm-label input[type="checkbox"] { width: 15px; height: 15px; accent-color: #276749; cursor: pointer; flex-shrink: 0; }
@@ -337,6 +341,9 @@
 
   </div><!-- /dash-body -->
 </div><!-- /dashboard -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <!-- 서류 업로드 패널 (동적 생성) -->
 
@@ -541,6 +548,7 @@
       if (!c.docs) {
         docsCell   = '<span style="color:#bbb;font-size:12px;">미첨부</span>';
         actionCell = '<button class="btn-upload-docs" onclick="openUploadPanel(' + c.id + ')">서류 업로드</button>'
+          + '<button class="btn-link-send" onclick="copyUploadLink(' + c.id + ')">🔗 링크 전송</button>'
           + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
       } else {
         const chk = c.confirmed ? 'checked' : '';
@@ -840,6 +848,23 @@
       nameEl.classList.add('has-file');
       removeEl.classList.add('visible');
     }
+  }
+
+  /* ════ 업로드 링크 복사 ════ */
+  function copyUploadLink(id) {
+    const url = 'https://www.tudigital.co.kr/upload.html?id=' + id;
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('📋 링크 복사 완료! 카톡으로 붙여넣기 해주세요');
+    }).catch(() => {
+      prompt('아래 링크를 복사해서 고객에게 전달해 주세요:', url);
+    });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
   /* ════ localStorage 파일 저장 ════ */
