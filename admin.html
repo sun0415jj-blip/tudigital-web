@@ -431,7 +431,10 @@
   async function loadCustomers() {
     showLoading(true);
     try {
-      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: controller.signal });
+      clearTimeout(timer);
       const json = await res.json();
       customersCache = (json.data || []).map(c => ({
         ...c,
@@ -442,6 +445,8 @@
     } catch(e) {
       console.error('로드 실패:', e);
       customersCache = [];
+      document.getElementById('customer-table-body').innerHTML =
+        '<div class="empty-list">데이터를 불러올 수 없습니다.<br><small style="color:#ccc;margin-top:6px;display:block;">새로고침을 눌러 다시 시도해 주세요.</small></div>';
     }
     showLoading(false);
     updateStats();
