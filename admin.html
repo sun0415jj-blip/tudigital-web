@@ -212,6 +212,37 @@
 
     .hidden { display: none !important; }
 
+    /* ── 고객 상세 팝업 ── */
+    .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 9998; align-items: center; justify-content: center; padding: 20px; }
+    .detail-overlay.open { display: flex; }
+    .detail-modal { background: #fff; border-radius: 20px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .detail-header { background: #0d2137; border-radius: 20px 20px 0 0; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .detail-header-info { color: #fff; }
+    .detail-header-name { font-size: 20px; font-weight: 900; margin-bottom: 3px; }
+    .detail-header-date { font-size: 12px; color: rgba(255,255,255,.6); }
+    .detail-close { background: rgba(255,255,255,.15); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .detail-close:hover { background: rgba(255,255,255,.25); }
+    .detail-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .detail-section-title { font-size: 11px; font-weight: 800; color: #aaa; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+    .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .detail-info-item { background: #f8fafc; border-radius: 10px; padding: 12px 14px; }
+    .detail-info-label { font-size: 11px; color: #888; font-weight: 600; margin-bottom: 4px; }
+    .detail-info-value { font-size: 14px; font-weight: 700; color: #0d2137; }
+    .detail-timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item { display: flex; align-items: flex-start; gap: 14px; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .tl-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+    .tl-dot.done { background: #0d2137; color: #fff; }
+    .tl-dot.current { background: #f0a500; color: #fff; }
+    .tl-dot.pending { background: #e2e8f0; color: #aaa; }
+    .tl-line { width: 2px; flex: 1; min-height: 22px; background: #e2e8f0; margin: 3px 0; }
+    .tl-line.done { background: #0d2137; }
+    .tl-content { padding: 3px 0 20px; }
+    .tl-label { font-size: 14px; font-weight: 700; color: #222; }
+    .tl-label.done { color: #0d2137; }
+    .tl-label.pending { color: #bbb; }
+    .tl-sub { font-size: 12px; color: #999; margin-top: 2px; }
+
     @media(max-width: 768px) {
       .dash-body { padding: 16px; }
       .manage-card { padding: 16px; }
@@ -308,6 +339,43 @@
 </div><!-- /dashboard -->
 
 <!-- 서류 업로드 패널 (동적 생성) -->
+
+<!-- 고객 상세 팝업 -->
+<div class="detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <div class="detail-header-info">
+        <div class="detail-header-name" id="detail-name"></div>
+        <div class="detail-header-date" id="detail-date"></div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body">
+      <div>
+        <div class="detail-section-title">기본 정보</div>
+        <div class="detail-info-grid">
+          <div class="detail-info-item"><div class="detail-info-label">이름</div><div class="detail-info-value" id="d-name"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">생년월일</div><div class="detail-info-value" id="d-birth"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">연락처</div><div class="detail-info-value" id="d-phone"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">신청일시</div><div class="detail-info-value" id="d-created" style="font-size:12px;"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="detail-section-title">구독 정보</div>
+        <div class="detail-info-grid">
+          <div class="detail-info-item"><div class="detail-info-label">상품명</div><div class="detail-info-value" id="d-product"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">구독금액</div><div class="detail-info-value" id="d-amount"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">구독기간</div><div class="detail-info-value" id="d-period"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">자동이체일</div><div class="detail-info-value" id="d-debit"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="detail-section-title">진행 상태</div>
+        <div class="detail-timeline" id="d-timeline"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- 서류 미리보기 모달 -->
 <div class="doc-modal-overlay" id="doc-modal-overlay" onclick="if(event.target===this)closeDocModal()">
@@ -475,7 +543,7 @@
       }
 
       return '<tr id="row-' + c.id + '">'
-        + '<td><strong>' + c.name + '</strong></td>'
+        + '<td style="cursor:pointer;" onclick="openDetail(' + c.id + ')"><strong style="color:#0d2137;text-decoration:underline;text-underline-offset:2px;">' + c.name + '</strong></td>'
         + '<td>' + c.birth + '</td>'
         + '<td>' + c.phone + '</td>'
         + '<td>' + (c.product || '-') + '</td>'
@@ -601,6 +669,59 @@
       updateStats();
       renderCustomerList();
     }
+  }
+
+  /* ════ 고객 상세 팝업 ════ */
+  function openDetail(id) {
+    const c = customersCache.find(c => c.id === id);
+    if (!c) return;
+
+    document.getElementById('detail-name').textContent = c.name + ' 고객';
+    document.getElementById('detail-date').textContent = '신청일: ' + (c.createdAt || '-');
+    document.getElementById('d-name').textContent    = c.name;
+    document.getElementById('d-birth').textContent   = c.birth || '-';
+    document.getElementById('d-phone').textContent   = c.phone || '-';
+    document.getElementById('d-created').textContent = c.createdAt || '-';
+    document.getElementById('d-product').textContent = c.product || '-';
+    document.getElementById('d-amount').textContent  = c.amount ? c.amount + '원' : '-';
+    document.getElementById('d-period').textContent  = c.period || '-';
+    document.getElementById('d-debit').textContent   = c.debit || '-';
+
+    const steps = [
+      { key: '신청접수',   sub: '기본정보 제출 완료',      done: true },
+      { key: '신용조회중', sub: '담당자 신용조회 진행 중',  done: c.status !== '신용조회중' || c.docs },
+      { key: '서류제출',   sub: '서류 업로드 완료',         done: !!c.docs },
+      { key: '확인완료',   sub: '서류 검토 및 최종 확인',   done: c.confirmed },
+    ];
+
+    const currentIdx = c.confirmed ? 3 : c.docs ? 2 : c.status === '신용조회중' ? 1 : 0;
+
+    document.getElementById('d-timeline').innerHTML = steps.map((s, i) => {
+      const isDone    = s.done;
+      const isCurrent = !isDone && i === currentIdx + 1;
+      const dotClass  = isDone ? 'done' : isCurrent ? 'current' : 'pending';
+      const lblClass  = isDone ? 'done' : isCurrent ? '' : 'pending';
+      const icon      = isDone ? '✓' : isCurrent ? '●' : '○';
+      const isLast    = i === steps.length - 1;
+      return '<div class="tl-item">'
+        + '<div class="tl-left">'
+        + '<div class="tl-dot ' + dotClass + '">' + icon + '</div>'
+        + (isLast ? '' : '<div class="tl-line ' + (isDone ? 'done' : '') + '"></div>')
+        + '</div>'
+        + '<div class="tl-content">'
+        + '<div class="tl-label ' + lblClass + '">' + s.key + '</div>'
+        + '<div class="tl-sub">' + s.sub + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+    document.getElementById('detail-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDetail() {
+    document.getElementById('detail-overlay').classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   /* ════ 서류 미리보기 모달 ════ */
