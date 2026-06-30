@@ -402,6 +402,9 @@
   const sessionFileStore = {};
   let uploadTargetId = null;
 
+  const fmtPhone  = p => p ? (p.startsWith('0') ? p : '0' + p) : '-';
+  const fmtAmount = a => a ? Number(String(a).replace(/[^0-9]/g, '')).toLocaleString('ko-KR') + '원' : '-';
+
   /* ════ 로그인 ════ */
   function doLogin() {
     const pw = document.getElementById('admin-pw').value;
@@ -545,9 +548,9 @@
       return '<tr id="row-' + c.id + '">'
         + '<td style="cursor:pointer;" onclick="openDetail(' + c.id + ')"><strong style="color:#0d2137;text-decoration:underline;text-underline-offset:2px;">' + c.name + '</strong></td>'
         + '<td>' + c.birth + '</td>'
-        + '<td>' + c.phone + '</td>'
+        + '<td>' + fmtPhone(c.phone) + '</td>'
         + '<td>' + (c.product || '-') + '</td>'
-        + '<td>' + (c.amount || '-') + '</td>'
+        + '<td>' + fmtAmount(c.amount) + '</td>'
         + '<td><span class="status-badge ' + statusClass(c.status) + '">' + c.status + '</span></td>'
         + '<td style="text-align:center;">' + docsCell + '</td>'
         + '<td>' + (c.period || '-') + '</td>'
@@ -680,10 +683,10 @@
     document.getElementById('detail-date').textContent = '신청일: ' + (c.createdAt || '-');
     document.getElementById('d-name').textContent    = c.name;
     document.getElementById('d-birth').textContent   = c.birth || '-';
-    document.getElementById('d-phone').textContent   = c.phone || '-';
+    document.getElementById('d-phone').textContent   = fmtPhone(c.phone);
     document.getElementById('d-created').textContent = c.createdAt || '-';
     document.getElementById('d-product').textContent = c.product || '-';
-    document.getElementById('d-amount').textContent  = c.amount ? c.amount + '원' : '-';
+    document.getElementById('d-amount').textContent  = fmtAmount(c.amount);
     document.getElementById('d-period').textContent  = c.period || '-';
     document.getElementById('d-debit').textContent   = c.debit || '-';
 
