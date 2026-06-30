@@ -691,17 +691,18 @@
     document.getElementById('d-debit').textContent   = c.debit || '-';
 
     const steps = [
-      { key: '신청접수',   sub: '기본정보 제출 완료',      done: true },
-      { key: '신용조회중', sub: '담당자 신용조회 진행 중',  done: c.status !== '신용조회중' || c.docs },
-      { key: '서류제출',   sub: '서류 업로드 완료',         done: !!c.docs },
-      { key: '확인완료',   sub: '서류 검토 및 최종 확인',   done: c.confirmed },
+      { key: '신청접수',   sub: '기본정보 제출 완료'     },
+      { key: '신용조회중', sub: '담당자 신용조회 진행 중' },
+      { key: '서류제출',   sub: '서류 업로드 완료'        },
+      { key: '확인완료',   sub: '서류 검토 및 최종 확인'  },
     ];
 
-    const currentIdx = c.confirmed ? 3 : c.docs ? 2 : c.status === '신용조회중' ? 1 : 0;
+    // 현재 진행 단계 인덱스 (0~3), 4=전체완료
+    const stepIdx = c.confirmed ? 4 : c.docs ? 3 : 1;
 
     document.getElementById('d-timeline').innerHTML = steps.map((s, i) => {
-      const isDone    = s.done;
-      const isCurrent = !isDone && i === currentIdx + 1;
+      const isDone    = i < stepIdx;
+      const isCurrent = i === stepIdx && stepIdx < 4;
       const dotClass  = isDone ? 'done' : isCurrent ? 'current' : 'pending';
       const lblClass  = isDone ? 'done' : isCurrent ? '' : 'pending';
       const icon      = isDone ? '✓' : isCurrent ? '●' : '○';
@@ -743,19 +744,23 @@
       const file     = files[key];
       let previewHtml;
 
+      let downloadHtml;
       if (file) {
         const url = URL.createObjectURL(file);
         previewHtml = file.type === 'application/pdf'
           ? '<iframe src="' + url + '#toolbar=0"></iframe>'
           : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
+        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">⬇ 다운로드</a>';
       } else {
-        previewHtml = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 미리보기 가능</small></div>';
+        previewHtml = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
+        downloadHtml = '<span style="font-size:12px;color:#bbb;">재업로드 후 다운로드 가능</span>';
       }
 
       return '<div class="doc-preview-item">'
         + '<div class="doc-preview-label">' + labels[i] + '</div>'
         + '<div class="doc-preview-body">' + previewHtml + '</div>'
         + '<div class="doc-preview-filename">' + fileName + '</div>'
+        + '<div style="padding:10px 14px;border-top:1px solid #e2e8f0;">' + downloadHtml + '</div>'
         + '</div>';
     }).join('');
 
