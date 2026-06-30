@@ -647,15 +647,14 @@
 
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  function sendOneFile(targetId, docKey, base64, file) {
+  function sendAllFiles(targetId, files) {
     fetch(SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
       body:   JSON.stringify({
-        action:     'uploadOneFile',
+        action:     'uploadAllFiles',
         customerId: targetId,
-        docKey,
-        file: { data: base64, name: file.name, type: file.type }
+        files
       })
     });
   }
@@ -697,18 +696,14 @@
         fileToBase64(doc1), fileToBase64(doc2), fileToBase64(doc3)
       ]);
 
-      setMsg('서류 ① 업로드 중...');
-      sendOneFile(targetId, 'doc1', b1, doc1);
-      await sleep(1000);
+      setMsg('서류 업로드 중... (1~2분 소요)');
+      sendAllFiles(targetId, [
+        { data: b1, name: doc1.name, type: doc1.type, docKey: 'doc1' },
+        { data: b2, name: doc2.name, type: doc2.type, docKey: 'doc2' },
+        { data: b3, name: doc3.name, type: doc3.type, docKey: 'doc3' }
+      ]);
 
-      setMsg('서류 ② 업로드 중...');
-      sendOneFile(targetId, 'doc2', b2, doc2);
-      await sleep(1000);
-
-      setMsg('서류 ③ 업로드 중...');
-      sendOneFile(targetId, 'doc3', b3, doc3);
-
-      setMsg('처리 완료 확인 중... (최대 80초)');
+      setMsg('처리 완료 확인 중...');
       const driveUrls = await pollForDriveUrls(targetId);
 
       const idx = customersCache.findIndex(c => c.id === targetId);

@@ -256,19 +256,6 @@
 
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  function sendOneFile(docKey, base64, file) {
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      body:   JSON.stringify({
-        action:     'uploadOneFile',
-        customerId,
-        docKey,
-        file: { data: base64, name: file.name, type: file.type }
-      })
-    });
-  }
-
   async function pollUntilAllDone(maxAttempts = 25, interval = 3000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
@@ -296,16 +283,22 @@
         toBase64(files[2])
       ]);
 
-      btn.innerHTML = '<span class="spinner"></span>서류 ① 업로드 중...';
-      sendOneFile('doc1', b1, files[0]);
-      await sleep(1000);
+      btn.innerHTML = '<span class="spinner"></span>서류 업로드 중... (1~2분 소요)';
 
-      btn.innerHTML = '<span class="spinner"></span>서류 ② 업로드 중...';
-      sendOneFile('doc2', b2, files[1]);
-      await sleep(1000);
-
-      btn.innerHTML = '<span class="spinner"></span>서류 ③ 업로드 중...';
-      sendOneFile('doc3', b3, files[2]);
+      // 3개를 한 번에 전송 (lock 경쟁 없이 순차 처리)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode:   'no-cors',
+        body:   JSON.stringify({
+          action: 'uploadAllFiles',
+          customerId,
+          files: [
+            { data: b1, name: files[0].name, type: files[0].type, docKey: 'doc1' },
+            { data: b2, name: files[1].name, type: files[1].type, docKey: 'doc2' },
+            { data: b3, name: files[2].name, type: files[2].type, docKey: 'doc3' }
+          ]
+        })
+      });
 
       btn.innerHTML = '<span class="spinner"></span>처리 중... 잠시만 기다려 주세요';
       await pollUntilAllDone();
