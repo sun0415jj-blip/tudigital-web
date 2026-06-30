@@ -247,7 +247,7 @@
     });
   }
 
-  async function pollUntilAllDone(maxAttempts = 40, interval = 4000) {
+  async function pollUntilAllDone(maxAttempts = 25, interval = 3000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
       try {
