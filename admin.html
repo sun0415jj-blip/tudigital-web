@@ -436,12 +436,14 @@
       const res  = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: controller.signal });
       clearTimeout(timer);
       const json = await res.json();
-      customersCache = (json.data || []).map(c => ({
-        ...c,
-        id:        Number(c.id),
-        confirmed: c.confirmed === 'true' || c.confirmed === true,
-        docs:      c.docs && typeof c.docs === 'object' ? c.docs : null
-      }));
+      customersCache = (json.data || []).map(c => {
+        const docs = c.docs && typeof c.docs === 'object' ? c.docs : null;
+        const confirmed = c.confirmed === 'true' || c.confirmed === true;
+        let status = c.status;
+        if (confirmed) status = '확인완료';
+        else if (docs && status === '서류대기') status = '서류제출';
+        return { ...c, id: Number(c.id), confirmed, docs, status };
+      });
     } catch(e) {
       console.error('로드 실패:', e);
       customersCache = [];
@@ -651,6 +653,7 @@
       customersCache[idx].confirmed = false;
       apiPost({ action: 'update', customer: customersCache[idx] });
       sessionFileStore['customer_' + uploadTargetId] = { doc1, doc2, doc3 };
+      storeFilesLocally(uploadTargetId, { doc1, doc2, doc3 });
     }
 
     closeUploadPanel();
@@ -738,26 +741,39 @@
     const c = customersCache.find(c => c.id === id);
     if (!c || !c.docs) return;
 
-    const files  = sessionFileStore['customer_' + id] || {};
+    const sessionFiles = sessionFileStore['customer_' + id] || {};
+    let storedFiles = {};
+    try {
+      const raw = localStorage.getItem('docs_' + id);
+      if (raw) storedFiles = JSON.parse(raw);
+    } catch(e) {}
+
     const labels = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
     const keys   = ['doc1', 'doc2', 'doc3'];
+    const dlStyle = 'display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;';
 
     document.getElementById('doc-modal-title').textContent = c.name + ' 고객 서류';
 
     document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
-      const fileName = c.docs[key] || '-';
-      const file     = files[key];
-      let previewHtml;
+      const fileName    = c.docs[key] || '-';
+      const sessionFile = sessionFiles[key];
+      const storedFile  = storedFiles[key];
+      let previewHtml, downloadHtml, url;
 
-      let downloadHtml;
-      if (file) {
-        const url = URL.createObjectURL(file);
-        previewHtml = file.type === 'application/pdf'
+      if (sessionFile) {
+        url = URL.createObjectURL(sessionFile);
+        previewHtml  = sessionFile.type === 'application/pdf'
           ? '<iframe src="' + url + '#toolbar=0"></iframe>'
           : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
-        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">⬇ 다운로드</a>';
+        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
+      } else if (storedFile && storedFile.data) {
+        url = storedFile.data;
+        previewHtml  = storedFile.type === 'application/pdf'
+          ? '<iframe src="' + url + '#toolbar=0"></iframe>'
+          : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
+        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else {
-        previewHtml = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
+        previewHtml  = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
         downloadHtml = '<span style="font-size:12px;color:#bbb;">재업로드 후 다운로드 가능</span>';
       }
 
@@ -788,6 +804,32 @@
       nameEl.textContent = file.name;
       nameEl.classList.add('has-file');
       removeEl.classList.add('visible');
+    }
+  }
+
+  /* ════ localStorage 파일 저장 ════ */
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = e => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function storeFilesLocally(id, files) {
+    const stored = {};
+    for (const [key, file] of Object.entries(files)) {
+      if (file) {
+        try {
+          stored[key] = { name: file.name, type: file.type, data: await fileToBase64(file) };
+        } catch(e) {}
+      }
+    }
+    try {
+      localStorage.setItem('docs_' + id, JSON.stringify(stored));
+    } catch(e) {
+      console.warn('localStorage 저장 실패 (용량 초과):', e);
     }
   }
 
