@@ -247,7 +247,7 @@
     });
   }
 
-  async function pollUntilAllDone(maxAttempts = 20, interval = 4000) {
+  async function pollUntilAllDone(maxAttempts = 20, interval = 3000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
       try {
@@ -276,16 +276,16 @@
 
       btn.innerHTML = '<span class="spinner"></span>서류 ① 업로드 중...';
       sendOneFile('doc1', b1, files[0]);
-      await sleep(5000);
+      await sleep(1000);
 
       btn.innerHTML = '<span class="spinner"></span>서류 ② 업로드 중...';
       sendOneFile('doc2', b2, files[1]);
-      await sleep(5000);
+      await sleep(1000);
 
       btn.innerHTML = '<span class="spinner"></span>서류 ③ 업로드 중...';
       sendOneFile('doc3', b3, files[2]);
 
-      btn.innerHTML = '<span class="spinner"></span>처리 완료 확인 중... (최대 80초)';
+      btn.innerHTML = '<span class="spinner"></span>처리 중... 잠시만 기다려 주세요';
       await pollUntilAllDone();
 
       show('complete');

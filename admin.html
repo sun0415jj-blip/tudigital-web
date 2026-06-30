@@ -660,7 +660,7 @@
     });
   }
 
-  async function pollForDriveUrls(customerId, maxAttempts = 20, interval = 4000) {
+  async function pollForDriveUrls(customerId, maxAttempts = 20, interval = 3000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
       try {
@@ -699,11 +699,11 @@
 
       setMsg('서류 ① 업로드 중...');
       sendOneFile(targetId, 'doc1', b1, doc1);
-      await sleep(5000);
+      await sleep(1000);
 
       setMsg('서류 ② 업로드 중...');
       sendOneFile(targetId, 'doc2', b2, doc2);
-      await sleep(5000);
+      await sleep(1000);
 
       setMsg('서류 ③ 업로드 중...');
       sendOneFile(targetId, 'doc3', b3, doc3);
