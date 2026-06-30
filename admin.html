@@ -402,8 +402,8 @@
   const sessionFileStore = {};
   let uploadTargetId = null;
 
-  const fmtPhone  = p => p ? (p.startsWith('0') ? p : '0' + p) : '-';
-  const fmtAmount = a => a ? Number(String(a).replace(/[^0-9]/g, '')).toLocaleString('ko-KR') + '원' : '-';
+  const fmtPhone  = p => { if (!p && p !== 0) return '-'; const s = String(p); return s.startsWith('0') ? s : '0' + s; };
+  const fmtAmount = a => { const n = Number(String(a || '').replace(/[^0-9]/g, '')); return n ? n.toLocaleString('ko-KR') + '원' : '-'; };
 
   /* ════ 로그인 ════ */
   function doLogin() {
