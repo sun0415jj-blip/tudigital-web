@@ -377,8 +377,26 @@
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
   let pendingCustomer = null;
 
-  let docFiles = [null, null, null];
+  let docFiles = [null, null, null]; // { url, name } 또는 null
   let docSaved = [false, false, false];
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = e => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function apiUpload(payload) {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  }
 
   function toggleNav() {
     document.getElementById('mobileNav').classList.toggle('open');
@@ -499,27 +517,48 @@
     document.getElementById('save-doc' + n).classList.add('hidden');
   }
 
-  function saveDoc(n) {
+  async function saveDoc(n) {
     const file = document.getElementById('doc' + n).files[0];
     if (!file) { alert('파일을 선택해 주세요.'); return; }
 
-    docFiles[n - 1] = file;
-    docSaved[n - 1] = true;
+    const btn = document.getElementById('save-doc' + n);
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> 업로드 중...';
 
-    document.getElementById('input-area-doc' + n).classList.add('hidden');
-    document.getElementById('save-doc' + n).classList.add('hidden');
+    try {
+      const base64 = await fileToBase64(file);
+      const json   = await apiUpload({
+        action:     'uploadFile',
+        base64:     base64,
+        fileName:   file.name,
+        mimeType:   file.type,
+        customerId: pendingCustomer ? pendingCustomer.id : Date.now(),
+        docKey:     'doc' + n
+      });
 
-    const url = URL.createObjectURL(file);
-    const confirm = document.getElementById('confirm-doc' + n);
-    confirm.dataset.objectUrl = url;
-    confirm.innerHTML =
-      '✅ 저장완료 — <span style="font-weight:400;font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + file.name + '</span>' +
-      '<a href="' + url + '" download="' + file.name + '" style="margin-left:8px;padding:6px 14px;background:#e8f0fe;border:1.5px solid #4a90d9;border-radius:8px;font-size:13px;font-weight:700;color:#1a5276;text-decoration:none;white-space:nowrap;flex-shrink:0;">⬇ 다운로드</a>';
-    confirm.style.cssText = 'display:flex;align-items:center;gap:6px;padding:12px 14px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:14px;font-weight:600;color:#2e7d32;margin-top:8px;';
-    confirm.classList.remove('hidden');
+      if (!json.ok || !json.url) throw new Error('서버 응답 오류');
 
-    if (docSaved.some(s => s)) {
-      document.getElementById('btn-final-submit').classList.remove('hidden');
+      docFiles[n - 1] = { url: json.url, name: file.name };
+      docSaved[n - 1] = true;
+
+      document.getElementById('input-area-doc' + n).classList.add('hidden');
+      btn.classList.add('hidden');
+
+      const confirm = document.getElementById('confirm-doc' + n);
+      confirm.innerHTML =
+        '✅ 저장완료 — <span style="font-weight:400;font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + file.name + '</span>' +
+        '<a href="' + json.url + '" target="_blank" style="margin-left:8px;padding:6px 14px;background:#e8f0fe;border:1.5px solid #4a90d9;border-radius:8px;font-size:13px;font-weight:700;color:#1a5276;text-decoration:none;white-space:nowrap;flex-shrink:0;">⬇ 다운로드</a>';
+      confirm.style.cssText = 'display:flex;align-items:center;gap:6px;padding:12px 14px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:14px;font-weight:600;color:#2e7d32;margin-top:8px;';
+      confirm.classList.remove('hidden');
+
+      if (docSaved.some(s => s)) {
+        document.getElementById('btn-final-submit').classList.remove('hidden');
+      }
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = '저장하기';
+      alert('업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }
 
@@ -535,9 +574,9 @@
 
     pendingCustomer.job = job;
     pendingCustomer.docs = {
-      doc1: docFiles[0] ? docFiles[0].name : '',
-      doc2: docFiles[1] ? docFiles[1].name : '',
-      doc3: docFiles[2] ? docFiles[2].name : ''
+      doc1: docFiles[0] ? (docFiles[0].url || docFiles[0].name || '') : '',
+      doc2: docFiles[1] ? (docFiles[1].url || docFiles[1].name || '') : '',
+      doc3: docFiles[2] ? (docFiles[2].url || docFiles[2].name || '') : ''
     };
     pendingCustomer.status = '서류제출';
 

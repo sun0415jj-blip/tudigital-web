@@ -637,7 +637,7 @@
     uploadTargetId = null;
   }
 
-  function submitUpload() {
+  async function submitUpload() {
     const doc1 = document.getElementById('p-doc1')?.files[0];
     const doc2 = document.getElementById('p-doc2')?.files[0];
     const doc3 = document.getElementById('p-doc3')?.files[0];
@@ -646,19 +646,45 @@
     if (!doc2) { alert('신분증 사본을 업로드해 주세요.'); return; }
     if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
 
-    const idx = customersCache.findIndex(c => c.id === uploadTargetId);
-    if (idx !== -1) {
-      customersCache[idx].docs      = { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
-      customersCache[idx].status    = '서류제출';
-      customersCache[idx].confirmed = false;
-      apiPost({ action: 'update', customer: customersCache[idx] });
-      sessionFileStore['customer_' + uploadTargetId] = { doc1, doc2, doc3 };
-      storeFilesLocally(uploadTargetId, { doc1, doc2, doc3 });
-    }
+    const submitBtn = document.querySelector('#panel-' + uploadTargetId + ' .btn-panel-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>업로드 중...'; }
 
-    closeUploadPanel();
-    updateStats();
-    renderCustomerList();
+    try {
+      const [url1, url2, url3] = await Promise.all([
+        driveUpload(doc1, uploadTargetId, 'doc1'),
+        driveUpload(doc2, uploadTargetId, 'doc2'),
+        driveUpload(doc3, uploadTargetId, 'doc3')
+      ]);
+
+      const idx = customersCache.findIndex(c => c.id === uploadTargetId);
+      if (idx !== -1) {
+        customersCache[idx].docs      = { doc1: url1, doc2: url2, doc3: url3 };
+        customersCache[idx].status    = '서류제출';
+        customersCache[idx].confirmed = false;
+        apiPost({ action: 'update', customer: customersCache[idx] });
+        sessionFileStore['customer_' + uploadTargetId] = { doc1, doc2, doc3 };
+      }
+
+      closeUploadPanel();
+      updateStats();
+      renderCustomerList();
+    } catch(e) {
+      console.error(e);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '제출하기'; }
+      alert('업로드 실패: ' + e.message);
+    }
+  }
+
+  async function driveUpload(file, customerId, docKey) {
+    const base64 = await fileToBase64(file);
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'uploadFile', base64, fileName: file.name, mimeType: file.type, customerId, docKey })
+    });
+    const json = await res.json();
+    if (!json.ok || !json.url) throw new Error('Drive 업로드 실패');
+    return json.url;
   }
 
   /* ════ 삭제 ════ */
@@ -748,39 +774,48 @@
       if (raw) storedFiles = JSON.parse(raw);
     } catch(e) {}
 
-    const labels = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
-    const keys   = ['doc1', 'doc2', 'doc3'];
+    const labels  = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
+    const keys    = ['doc1', 'doc2', 'doc3'];
     const dlStyle = 'display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;';
 
     document.getElementById('doc-modal-title').textContent = c.name + ' 고객 서류';
 
     document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
-      const fileName    = c.docs[key] || '-';
+      const docVal      = c.docs[key] || '';
+      const isDriveUrl  = docVal.startsWith('https://drive.google.com');
       const sessionFile = sessionFiles[key];
       const storedFile  = storedFiles[key];
+      const displayName = isDriveUrl ? labels[i] : (docVal || '-');
       let previewHtml, downloadHtml, url;
 
-      if (sessionFile) {
+      if (isDriveUrl) {
+        const driveId = docVal.split('id=')[1] || '';
+        const thumbUrl = driveId ? 'https://drive.google.com/thumbnail?id=' + driveId + '&sz=w600' : '';
+        previewHtml = thumbUrl
+          ? '<img src="' + thumbUrl + '" alt="' + labels[i] + '" onclick="window.open(\'' + docVal + '\',\'_blank\')" onerror="this.parentElement.innerHTML=\'<div class=&quot;doc-no-preview&quot;><div class=&quot;doc-icon&quot;>☁️</div><div>Google Drive 파일</div></div>\'" />'
+          : '<div class="doc-no-preview"><div class="doc-icon">☁️</div><div>Google Drive 파일</div></div>';
+        downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
+      } else if (sessionFile) {
         url = URL.createObjectURL(sessionFile);
         previewHtml  = sessionFile.type === 'application/pdf'
           ? '<iframe src="' + url + '#toolbar=0"></iframe>'
-          : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
-        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
+          : '<img src="' + url + '" alt="' + displayName + '" onclick="window.open(this.src,\'_blank\')" />';
+        downloadHtml = '<a href="' + url + '" download="' + displayName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else if (storedFile && storedFile.data) {
         url = storedFile.data;
         previewHtml  = storedFile.type === 'application/pdf'
           ? '<iframe src="' + url + '#toolbar=0"></iframe>'
-          : '<img src="' + url + '" alt="' + fileName + '" onclick="window.open(this.src,\'_blank\')" />';
-        downloadHtml = '<a href="' + url + '" download="' + fileName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
+          : '<img src="' + url + '" alt="' + displayName + '" onclick="window.open(this.src,\'_blank\')" />';
+        downloadHtml = '<a href="' + url + '" download="' + displayName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else {
-        previewHtml  = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + fileName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
+        previewHtml  = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + displayName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
         downloadHtml = '<span style="font-size:12px;color:#bbb;">재업로드 후 다운로드 가능</span>';
       }
 
       return '<div class="doc-preview-item">'
         + '<div class="doc-preview-label">' + labels[i] + '</div>'
         + '<div class="doc-preview-body">' + previewHtml + '</div>'
-        + '<div class="doc-preview-filename">' + fileName + '</div>'
+        + '<div class="doc-preview-filename">' + displayName + '</div>'
         + '<div style="padding:10px 14px;border-top:1px solid #e2e8f0;">' + downloadHtml + '</div>'
         + '</div>';
     }).join('');

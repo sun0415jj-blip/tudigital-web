@@ -57,9 +57,29 @@ function doPost(e) {
     deleteRow(sheet, body.id);
   } else if (body.action === 'contact') {
     sendContactEmail(body);
+  } else if (body.action === 'uploadFile') {
+    const url = uploadFileToDrive(body.base64, body.fileName, body.mimeType, body.customerId, body.docKey);
+    return jsonResponse({ ok: true, url: url });
   }
 
   return jsonResponse({ ok: true });
+}
+
+// ── Google Drive 파일 업로드 ──────────────────────
+function getOrCreateFolder(folderName) {
+  const iter = DriveApp.getFoldersByName(folderName);
+  return iter.hasNext() ? iter.next() : DriveApp.createFolder(folderName);
+}
+
+function uploadFileToDrive(base64Data, fileName, mimeType, customerId, docKey) {
+  const folder   = getOrCreateFolder('티유디지털_구독서류');
+  const base64   = base64Data.indexOf(',') > -1 ? base64Data.split(',')[1] : base64Data;
+  const bytes    = Utilities.base64Decode(base64);
+  const safeName = String(customerId) + '_' + docKey + '_' + fileName;
+  const blob     = Utilities.newBlob(bytes, mimeType || 'application/octet-stream', safeName);
+  const file     = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return 'https://drive.google.com/uc?export=download&id=' + file.getId();
 }
 
 // ── 파트너 문의 이메일 ────────────────────────
