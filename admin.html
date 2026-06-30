@@ -660,7 +660,7 @@
     });
   }
 
-  async function pollForDriveUrls(customerId, maxAttempts = 20, interval = 3000) {
+  async function pollForDriveUrls(customerId, maxAttempts = 40, interval = 4000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
       try {
@@ -713,15 +713,22 @@
 
       const idx = customersCache.findIndex(c => c.id === targetId);
       if (idx !== -1) {
-        customersCache[idx].docs      = driveUrls || { doc1: doc1.name, doc2: doc2.name, doc3: doc3.name };
-        customersCache[idx].status    = '서류제출';
-        customersCache[idx].confirmed = false;
+        if (driveUrls) {
+          customersCache[idx].docs = driveUrls;
+          customersCache[idx].status    = '서류제출';
+          customersCache[idx].confirmed = false;
+        } else {
+          // 타임아웃 — Apps Script 아직 처리 중. 2분 후 자동 새로고침
+          customersCache[idx].status    = '서류제출';
+          customersCache[idx].confirmed = false;
+          setTimeout(() => loadCustomers(), 120000);
+        }
       }
 
       closeUploadPanel();
       updateStats();
       renderCustomerList();
-      showToast('서류 업로드 완료!');
+      showToast(driveUrls ? '서류 업로드 완료!' : '업로드 전송 완료! 처리 중이며 곧 자동 업데이트됩니다.');
     } catch(e) {
       console.error(e);
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '제출하기'; }
@@ -805,8 +812,19 @@
   }
 
   /* ════ 서류 미리보기 모달 ════ */
-  function viewDocs(id) {
-    const c = customersCache.find(c => c.id === id);
+  async function viewDocs(id) {
+    // 최신 Drive URL을 가져오기 위해 서버에서 신선한 데이터 조회
+    try {
+      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+      const json = await res.json();
+      const fresh = (json.data || []).find(c => String(c.id) === String(id));
+      if (fresh) {
+        const idx = customersCache.findIndex(c => String(c.id) === String(id));
+        if (idx !== -1) customersCache[idx] = { ...customersCache[idx], ...fresh };
+      }
+    } catch(e) {}
+
+    const c = customersCache.find(c => String(c.id) === String(id));
     if (!c || !c.docs) return;
 
     const sessionFiles = sessionFileStore['customer_' + id] || {};
