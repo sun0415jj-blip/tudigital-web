@@ -855,10 +855,10 @@
       }
 
       return '<div class="doc-preview-item">'
-        + '<div class="doc-preview-label">' + labels[i] + '</div>'
+        + '<div class="doc-preview-label" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+        + '<span>' + labels[i] + '</span>' + downloadHtml
+        + '</div>'
         + '<div class="doc-preview-body">' + previewHtml + '</div>'
-        + '<div class="doc-preview-filename">' + displayName + '</div>'
-        + '<div style="padding:10px 14px;border-top:1px solid #e2e8f0;">' + downloadHtml + '</div>'
         + '</div>';
     }).join('');
 
