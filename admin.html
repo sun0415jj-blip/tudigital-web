@@ -645,6 +645,37 @@
     uploadTargetId = null;
   }
 
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function sendOneFile(targetId, docKey, base64, file) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body:   JSON.stringify({
+        action:     'uploadOneFile',
+        customerId: targetId,
+        docKey,
+        file: { data: base64, name: file.name, type: file.type }
+      })
+    });
+  }
+
+  async function pollForDriveUrls(customerId, maxAttempts = 20, interval = 4000) {
+    for (let i = 0; i < maxAttempts; i++) {
+      await sleep(interval);
+      try {
+        const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+        const json = await res.json();
+        const c    = (json.data || []).find(c => Number(c.id) === Number(customerId));
+        if (c && c.docs && typeof c.docs === 'object') {
+          const urls = Object.values(c.docs).filter(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
+          if (urls.length >= 3) return c.docs;
+        }
+      } catch(e) {}
+    }
+    return null;
+  }
+
   async function submitUpload() {
     const doc1 = document.getElementById('p-doc1')?.files[0];
     const doc2 = document.getElementById('p-doc2')?.files[0];
@@ -655,33 +686,29 @@
     if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
 
     const submitBtn = document.querySelector('#panel-' + uploadTargetId + ' .btn-panel-submit');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>업로드 중...'; }
+    const setMsg = m => { if (submitBtn) submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>' + m; };
+
+    if (submitBtn) { submitBtn.disabled = true; setMsg('파일 변환 중...'); }
 
     const targetId = uploadTargetId;
 
     try {
       const [b1, b2, b3] = await Promise.all([
-        fileToBase64(doc1),
-        fileToBase64(doc2),
-        fileToBase64(doc3)
+        fileToBase64(doc1), fileToBase64(doc2), fileToBase64(doc3)
       ]);
 
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode:   'no-cors',
-        body:   JSON.stringify({
-          action: 'uploadAndSave',
-          customerId: targetId,
-          files: {
-            doc1: { data: b1, name: doc1.name, type: doc1.type },
-            doc2: { data: b2, name: doc2.name, type: doc2.type },
-            doc3: { data: b3, name: doc3.name, type: doc3.type }
-          }
-        })
-      });
+      setMsg('서류 ① 업로드 중...');
+      sendOneFile(targetId, 'doc1', b1, doc1);
+      await sleep(5000);
 
-      if (submitBtn) submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>처리 중... (최대 30초)';
+      setMsg('서류 ② 업로드 중...');
+      sendOneFile(targetId, 'doc2', b2, doc2);
+      await sleep(5000);
 
+      setMsg('서류 ③ 업로드 중...');
+      sendOneFile(targetId, 'doc3', b3, doc3);
+
+      setMsg('처리 완료 확인 중... (최대 80초)');
       const driveUrls = await pollForDriveUrls(targetId);
 
       const idx = customersCache.findIndex(c => c.id === targetId);
@@ -700,22 +727,6 @@
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '제출하기'; }
       alert('업로드 실패: ' + e.message);
     }
-  }
-
-  async function pollForDriveUrls(customerId, maxAttempts = 15, interval = 3000) {
-    for (let i = 0; i < maxAttempts; i++) {
-      await new Promise(r => setTimeout(r, interval));
-      try {
-        const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
-        const json = await res.json();
-        const c    = (json.data || []).find(c => Number(c.id) === Number(customerId));
-        if (c && c.docs && typeof c.docs === 'object') {
-          const hasUrls = Object.values(c.docs).some(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
-          if (hasUrls) return c.docs;
-        }
-      } catch(e) {}
-    }
-    return null;
   }
 
   /* ════ 삭제 ════ */

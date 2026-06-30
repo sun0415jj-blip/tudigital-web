@@ -57,21 +57,28 @@ function doPost(e) {
     deleteRow(sheet, body.id);
   } else if (body.action === 'contact') {
     sendContactEmail(body);
-  } else if (body.action === 'uploadAndSave') {
-    const docUrls = {};
-    const filesData = body.files || {};
-    for (const key of ['doc1', 'doc2', 'doc3']) {
-      if (filesData[key] && filesData[key].data) {
-        docUrls[key] = uploadFileToDrive(filesData[key].data, filesData[key].name, filesData[key].type, body.customerId, key);
+  } else if (body.action === 'uploadOneFile') {
+    // 파일 1개씩 순차 업로드 (payload 크기 분산)
+    const lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+    try {
+      const f   = body.file;
+      const url = uploadFileToDrive(f.data, f.name, f.type, body.customerId, body.docKey);
+      const allData = sheet.getDataRange().getValues();
+      for (let i = 1; i < allData.length; i++) {
+        if (String(allData[i][0]) === String(body.customerId)) {
+          let existingDocs = {};
+          try { if (allData[i][11]) existingDocs = JSON.parse(allData[i][11]); } catch(e) {}
+          existingDocs[body.docKey] = url;
+          sheet.getRange(i + 1, 12).setValue(JSON.stringify(existingDocs));
+          if (existingDocs.doc1 && existingDocs.doc2 && existingDocs.doc3) {
+            sheet.getRange(i + 1, 9).setValue('서류제출');
+          }
+          break;
+        }
       }
-    }
-    const allData = sheet.getDataRange().getValues();
-    for (let i = 1; i < allData.length; i++) {
-      if (String(allData[i][0]) === String(body.customerId)) {
-        sheet.getRange(i + 1, 9).setValue('서류제출');
-        sheet.getRange(i + 1, 12).setValue(JSON.stringify(docUrls));
-        break;
-      }
+    } finally {
+      lock.releaseLock();
     }
   }
 

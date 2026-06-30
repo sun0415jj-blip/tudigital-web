@@ -232,16 +232,31 @@
     });
   }
 
-  async function pollUntilDone(maxAttempts = 15, interval = 3000) {
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function sendOneFile(docKey, base64, file) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body:   JSON.stringify({
+        action:     'uploadOneFile',
+        customerId,
+        docKey,
+        file: { data: base64, name: file.name, type: file.type }
+      })
+    });
+  }
+
+  async function pollUntilAllDone(maxAttempts = 20, interval = 4000) {
     for (let i = 0; i < maxAttempts; i++) {
-      await new Promise(r => setTimeout(r, interval));
+      await sleep(interval);
       try {
         const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
         const json = await res.json();
         const c    = (json.data || []).find(c => String(c.id) === String(customerId));
         if (c && c.docs && typeof c.docs === 'object') {
-          const hasUrls = Object.values(c.docs).some(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
-          if (hasUrls) return;
+          const driveUrls = Object.values(c.docs).filter(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
+          if (driveUrls.length >= 3) return;
         }
       } catch(e) {}
     }
@@ -250,31 +265,28 @@
   async function submit() {
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>업로드 중... 잠시만 기다려 주세요';
 
     try {
+      btn.innerHTML = '<span class="spinner"></span>파일 변환 중...';
       const [b1, b2, b3] = await Promise.all([
         toBase64(files[0]),
         toBase64(files[1]),
         toBase64(files[2])
       ]);
 
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode:   'no-cors',
-        body:   JSON.stringify({
-          action: 'uploadAndSave',
-          customerId,
-          files: {
-            doc1: { data: b1, name: files[0].name, type: files[0].type },
-            doc2: { data: b2, name: files[1].name, type: files[1].type },
-            doc3: { data: b3, name: files[2].name, type: files[2].type }
-          }
-        })
-      });
+      btn.innerHTML = '<span class="spinner"></span>서류 ① 업로드 중...';
+      sendOneFile('doc1', b1, files[0]);
+      await sleep(5000);
 
-      btn.innerHTML = '<span class="spinner"></span>처리 중... (최대 30초 소요)';
-      await pollUntilDone();
+      btn.innerHTML = '<span class="spinner"></span>서류 ② 업로드 중...';
+      sendOneFile('doc2', b2, files[1]);
+      await sleep(5000);
+
+      btn.innerHTML = '<span class="spinner"></span>서류 ③ 업로드 중...';
+      sendOneFile('doc3', b3, files[2]);
+
+      btn.innerHTML = '<span class="spinner"></span>처리 완료 확인 중... (최대 80초)';
+      await pollUntilAllDone();
 
       show('complete');
     } catch(e) {
