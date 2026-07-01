@@ -84,6 +84,11 @@
     .btn-new { display: inline-block; background: #f0a500; color: #fff; font-size: 15px; font-weight: 800; padding: 14px 36px; border-radius: 10px; cursor: pointer; border: none; font-family: inherit; margin-bottom: 12px; width: 100%; }
     .btn-new:hover { background: #d4920a; }
 
+    .consent-notice-box { background: #fff3cd; border: 1.5px solid #f0a500; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; text-align: center; }
+    .consent-notice-box a { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 900; color: #7a4f00; text-decoration: none; }
+    .consent-notice-box a:hover { color: #0d2137; text-decoration: underline; }
+    .consent-notice-box .consent-sub { font-size: 12px; color: #a06000; margin-top: 6px; font-weight: 600; }
+
     .hidden { display: none !important; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #f0a500; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
@@ -113,6 +118,13 @@
     <div class="step-badge"><span>1</span> STEP 1 · 기본정보 입력</div>
     <div class="form-card">
       <h2>기본정보를 입력해 주세요</h2>
+
+      <div class="consent-notice-box">
+        <a href="https://m.hankookcapital.co.kr/ib20/mnu/HKMUCR010101" target="_blank">
+          👆 한국캐피탈 신용정보 동의하기
+        </a>
+        <div class="consent-sub">고객이 직접 신용정보를 동의하셔야 신청이 가능합니다</div>
+      </div>
 
       <div class="agent-name-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div class="form-group" style="margin-bottom:0;">
