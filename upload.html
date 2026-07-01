@@ -232,12 +232,12 @@
         r.readAsDataURL(file);
       });
     }
-    // 이미지: 최대 1200px로 리사이즈 후 압축 (4~8MB → 200~400KB)
+    // 이미지: 최대 800px로 리사이즈 후 압축
     return new Promise((res, rej) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        const MAX = 1200;
+        const MAX = 800;
         let { width, height } = img;
         if (width > MAX || height > MAX) {
           if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
@@ -247,7 +247,7 @@
         canvas.width = width; canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         URL.revokeObjectURL(url);
-        res(canvas.toDataURL('image/jpeg', 0.85));
+        res(canvas.toDataURL('image/jpeg', 0.72));
       };
       img.onerror = rej;
       img.src = url;
@@ -256,7 +256,8 @@
 
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  async function pollUntilAllDone(maxAttempts = 25, interval = 3000) {
+  // 최대 3분 대기, 성공 시 true / 타임아웃 시 false 반환
+  async function pollUntilAllDone(maxAttempts = 60, interval = 3000) {
     for (let i = 0; i < maxAttempts; i++) {
       await sleep(interval);
       try {
@@ -265,10 +266,19 @@
         const c    = (json.data || []).find(c => String(c.id) === String(customerId));
         if (c && c.docs && typeof c.docs === 'object') {
           const driveUrls = Object.values(c.docs).filter(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
-          if (driveUrls.length >= 3) return;
+          if (driveUrls.length >= 3) return true;
         }
       } catch(e) {}
     }
+    return false;
+  }
+
+  function sendOneFile(data, name, type, docKey) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body:   JSON.stringify({ action: 'uploadOneFile', customerId, data, name, type, docKey })
+    });
   }
 
   async function submit() {
@@ -283,27 +293,23 @@
         toBase64(files[2])
       ]);
 
-      btn.innerHTML = '<span class="spinner"></span>서류 업로드 중... (1~2분 소요)';
+      btn.innerHTML = '<span class="spinner"></span>서류 업로드 중... (최대 3분)';
 
-      // 3개를 한 번에 전송 (lock 경쟁 없이 순차 처리)
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode:   'no-cors',
-        body:   JSON.stringify({
-          action: 'uploadAllFiles',
-          customerId,
-          files: [
-            { data: b1, name: files[0].name, type: files[0].type, docKey: 'doc1' },
-            { data: b2, name: files[1].name, type: files[1].type, docKey: 'doc2' },
-            { data: b3, name: files[2].name, type: files[2].type, docKey: 'doc3' }
-          ]
-        })
-      });
+      // 3개를 병렬 전송 — 각각 별도 Apps Script 실행, 시트 쓰기만 lock 사용
+      sendOneFile(b1, files[0].name, files[0].type, 'doc1');
+      sendOneFile(b2, files[1].name, files[1].type, 'doc2');
+      sendOneFile(b3, files[2].name, files[2].type, 'doc3');
 
-      btn.innerHTML = '<span class="spinner"></span>처리 중... 잠시만 기다려 주세요';
-      await pollUntilAllDone();
+      btn.innerHTML = '<span class="spinner"></span>처리 확인 중... 잠시만 기다려 주세요';
+      const done = await pollUntilAllDone();
 
-      show('complete');
+      if (done) {
+        show('complete');
+      } else {
+        btn.disabled = false;
+        btn.textContent = '서류 제출하기 →';
+        alert('처리가 지연되고 있습니다.\n잠시 후 이 페이지를 다시 열어 재시도해 주세요.\n문의: 1588-0883');
+      }
     } catch(e) {
       console.error(e);
       btn.disabled = false;

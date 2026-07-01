@@ -1,4 +1,5 @@
 // Google Apps Script - 구독신청 고객 관리
+// Created: 2026-06-30
 
 // =============================================
 // 알림 설정 (담당자 정보를 여기에 입력하세요)
@@ -17,8 +18,13 @@ const KAKAO_PFID        = '';   // 카카오채널 pfId
 const KAKAO_TEMPLATE_ID = '';   // 알림톡 템플릿 ID
 // =============================================
 
+function getSheet() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName('고객목록')
+      || SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+}
+
 function doGet(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const sheet = getSheet();
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) {
     return jsonResponse({ ok: true, data: [] });
@@ -41,44 +47,65 @@ function doGet(e) {
 
 function doPost(e) {
   const body = JSON.parse(e.postData.contents);
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
   if (body.action === 'save') {
+    const sheet = getSheet();
     const c = body.customer;
     sheet.appendRow([
       c.id, c.name, c.birth, c.phone, c.product || '', c.amount || '',
       c.period, c.debit, c.status, String(c.confirmed || false), c.createdAt,
       c.docs ? JSON.stringify(c.docs) : ''
     ]);
-    notifyManager(c);  // 담당자 알림 발송
+    notifyManager(c);
+
   } else if (body.action === 'update') {
-    updateRow(sheet, body.customer);
+    updateRow(getSheet(), body.customer);
+
   } else if (body.action === 'delete') {
-    deleteRow(sheet, body.id);
+    deleteRow(getSheet(), body.id);
+
   } else if (body.action === 'contact') {
     sendContactEmail(body);
+
   } else if (body.action === 'uploadOneFile') {
-    // 파일 1개씩 순차 업로드 (payload 크기 분산)
+    // Upload single file to Drive (slow - outside lock)
+    const url = uploadFileToDrive(body.data, body.name, body.type, body.customerId, body.docKey);
+    // Atomic read-modify-write only (fast - inside lock)
     const lock = LockService.getScriptLock();
     lock.waitLock(30000);
     try {
-      const f   = body.file;
-      const url = uploadFileToDrive(f.data, f.name, f.type, body.customerId, body.docKey);
-      const allData = sheet.getDataRange().getValues();
+      const s = getSheet();
+      const allData = s.getDataRange().getValues();
       for (let i = 1; i < allData.length; i++) {
         if (String(allData[i][0]) === String(body.customerId)) {
-          let existingDocs = {};
-          try { if (allData[i][11]) existingDocs = JSON.parse(allData[i][11]); } catch(e) {}
-          existingDocs[body.docKey] = url;
-          sheet.getRange(i + 1, 12).setValue(JSON.stringify(existingDocs));
-          if (existingDocs.doc1 && existingDocs.doc2 && existingDocs.doc3) {
-            sheet.getRange(i + 1, 9).setValue('서류제출');
+          let docs = {};
+          try { if (allData[i][11]) docs = JSON.parse(allData[i][11]); } catch(err) {}
+          docs[body.docKey] = url;
+          s.getRange(i + 1, 12).setValue(JSON.stringify(docs));
+          if (Object.keys(docs).length >= 3) {
+            s.getRange(i + 1, 9).setValue('서류제출');
           }
           break;
         }
       }
     } finally {
       lock.releaseLock();
+    }
+
+  } else if (body.action === 'uploadAllFiles') {
+    // Legacy: upload all 3 files sequentially in one execution
+    const sheet = getSheet();
+    const docs = {};
+    for (const f of body.files) {
+      docs[f.docKey] = uploadFileToDrive(f.data, f.name, f.type, body.customerId, f.docKey);
+    }
+    const allData = sheet.getDataRange().getValues();
+    for (let i = 1; i < allData.length; i++) {
+      if (String(allData[i][0]) === String(body.customerId)) {
+        sheet.getRange(i + 1, 12).setValue(JSON.stringify(docs));
+        sheet.getRange(i + 1, 9).setValue('서류제출');
+        break;
+      }
     }
   }
 
@@ -158,7 +185,6 @@ function sendKakaoOrSMS(customer) {
 
   let message;
   if (KAKAO_PFID && KAKAO_TEMPLATE_ID) {
-    // 카카오 알림톡
     message = {
       to:   MANAGER_PHONE,
       from: SENDER_PHONE,
@@ -174,7 +200,6 @@ function sendKakaoOrSMS(customer) {
       }
     };
   } else {
-    // 카카오 미설정 시 SMS 대체 발송
     message = {
       to:   MANAGER_PHONE,
       from: SENDER_PHONE,
@@ -232,7 +257,7 @@ function jsonResponse(obj) {
 
 // 최초 1회 실행 - 헤더 설정
 function setupSheet() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const sheet = getSheet();
   sheet.setName('고객목록');
   const headers = ['id','name','birth','phone','product','amount','period','debit','status','confirmed','createdAt','docs'];
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
