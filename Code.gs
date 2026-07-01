@@ -24,6 +24,31 @@ function getSheet() {
 }
 
 function doGet(e) {
+  // saveAllDocUrls: 3개 imgbb URL을 한 번에 저장 (GET 방식, CORS 안전)
+  if (e.parameter && e.parameter.action === 'saveAllDocUrls') {
+    const lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+    try {
+      const s = getSheet();
+      const allData = s.getDataRange().getValues();
+      for (let i = 1; i < allData.length; i++) {
+        if (String(allData[i][0]) === String(e.parameter.customerId)) {
+          const docs = {
+            doc1: e.parameter.doc1 || '',
+            doc2: e.parameter.doc2 || '',
+            doc3: e.parameter.doc3 || ''
+          };
+          s.getRange(i + 1, 12).setValue(JSON.stringify(docs));
+          s.getRange(i + 1, 9).setValue('서류제출');
+          break;
+        }
+      }
+    } finally {
+      lock.releaseLock();
+    }
+    return jsonResponse({ ok: true });
+  }
+
   const sheet = getSheet();
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) {

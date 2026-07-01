@@ -281,14 +281,6 @@
     return json.data.url;
   }
 
-  function saveDocUrl(url, docKey) {
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      body:   JSON.stringify({ action: 'saveDocUrl', customerId, docKey, url })
-    });
-  }
-
   async function submit() {
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
@@ -301,9 +293,18 @@
         uploadFileToImgbb(files[2])
       ]);
 
-      saveDocUrl(url1, 'doc1');
-      saveDocUrl(url2, 'doc2');
-      saveDocUrl(url3, 'doc3');
+      btn.innerHTML = '<span class="spinner"></span>저장 중...';
+      const params = new URLSearchParams({
+        action: 'saveAllDocUrls',
+        customerId,
+        doc1: url1,
+        doc2: url2,
+        doc3: url3,
+        t: Date.now()
+      });
+      const res  = await fetch(SCRIPT_URL + '?' + params);
+      const json = await res.json();
+      if (!json.ok) throw new Error('저장 실패');
 
       show('complete');
     } catch(e) {

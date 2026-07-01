@@ -698,13 +698,18 @@
         uploadFileToImgbb(doc3)
       ]);
 
-      const saveUrl = (url, docKey) => fetch(SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        body: JSON.stringify({ action: 'saveDocUrl', customerId: targetId, docKey, url })
+      setMsg('저장 중...');
+      const params = new URLSearchParams({
+        action: 'saveAllDocUrls',
+        customerId: targetId,
+        doc1: url1,
+        doc2: url2,
+        doc3: url3,
+        t: Date.now()
       });
-      saveUrl(url1, 'doc1');
-      saveUrl(url2, 'doc2');
-      saveUrl(url3, 'doc3');
+      const saveRes  = await fetch(SCRIPT_URL + '?' + params);
+      const saveJson = await saveRes.json();
+      if (!saveJson.ok) throw new Error('저장 실패');
 
       const docs = { doc1: url1, doc2: url2, doc3: url3 };
       const idx = customersCache.findIndex(c => c.id === targetId);
