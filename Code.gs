@@ -38,6 +38,7 @@ function doGet(e) {
 
   // saveAllDocUrls: 3개 imgbb URL을 한 번에 저장 (GET 방식, CORS 안전)
   if (e.parameter && e.parameter.action === 'saveAllDocUrls') {
+    let customerName = '', customerPhone = '';
     const lock = LockService.getScriptLock();
     lock.waitLock(30000);
     try {
@@ -45,6 +46,8 @@ function doGet(e) {
       const allData = s.getDataRange().getValues();
       for (let i = 1; i < allData.length; i++) {
         if (String(allData[i][0]) === String(e.parameter.customerId)) {
+          customerName  = allData[i][1] || '';
+          customerPhone = allData[i][3] || '';
           const docs = {
             doc1: e.parameter.doc1 || '',
             doc2: e.parameter.doc2 || '',
@@ -57,6 +60,22 @@ function doGet(e) {
       }
     } finally {
       lock.releaseLock();
+    }
+    if (customerName) {
+      try {
+        MailApp.sendEmail({
+          to: MANAGER_EMAIL,
+          subject: '[서류접수] ' + customerName + ' 고객 서류 업로드 완료',
+          htmlBody:
+            '<h3 style="color:#0d2137;">서류가 접수되었습니다</h3>' +
+            '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;">' +
+              '<tr><td><b>고객명</b></td><td>' + customerName + '</td></tr>' +
+              '<tr><td><b>연락처</b></td><td>' + customerPhone + '</td></tr>' +
+              '<tr><td><b>접수시각</b></td><td>' + new Date().toLocaleString('ko-KR') + '</td></tr>' +
+            '</table>' +
+            '<p style="margin-top:16px;color:#2b6cb0;font-weight:bold;">➡ 어드민에서 서류를 확인해 주세요.</p>'
+        });
+      } catch(err) {}
     }
     return jsonResponse({ ok: true });
   }
