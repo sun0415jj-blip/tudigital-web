@@ -1,0 +1,367 @@
+<!-- Created: 2026-07-01 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구독 신청 | 티유디지털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: #222; min-height: 100vh; }
+
+    .top-bar { background: #0d2137; padding: 18px 20px; text-align: center; }
+    .top-bar .logo { color: #fff; font-size: 18px; font-weight: 900; }
+    .top-bar .sub { color: rgba(255,255,255,.6); font-size: 13px; margin-top: 3px; }
+
+    .consent-banner { background: #fff3cd; border-bottom: 2px solid #f0a500; padding: 14px 20px; text-align: center; }
+    .consent-banner a { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; color: #7a4f00; text-decoration: none; }
+    .consent-banner a:hover { color: #0d2137; text-decoration: underline; }
+    .consent-banner .banner-sub { font-size: 12px; color: #a06000; margin-top: 4px; font-weight: 600; }
+
+    .wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 60px; }
+    .card { background: #fff; border-radius: 16px; padding: 28px 22px; box-shadow: 0 2px 16px rgba(13,33,55,.08); }
+
+    /* 스텝 인디케이터 */
+    .step-indicator { display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
+    .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; max-width: 100px; }
+    .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; }
+    .step-circle.active  { background: #0d2137; color: #fff; }
+    .step-circle.done    { background: #22c55e; color: #fff; }
+    .step-circle.pending { background: #e2e8f0; color: #aaa; }
+    .step-label { font-size: 11px; font-weight: 700; color: #aaa; text-align: center; line-height: 1.3; }
+    .step-label.active { color: #0d2137; }
+    .step-line { flex: 1; height: 2px; background: #e2e8f0; margin-bottom: 20px; max-width: 50px; }
+    .step-line.done { background: #22c55e; }
+
+    /* 신용동의 */
+    .section-title { font-size: 19px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
+    .section-desc  { font-size: 14px; color: #555; line-height: 1.75; margin-bottom: 20px; }
+    .notice-box { background: #fff8e1; border: 1.5px solid #f0a500; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
+    .notice-box p { font-size: 13px; color: #7a5200; font-weight: 600; line-height: 1.7; }
+    .notice-box p strong { color: #0d2137; }
+
+    .btn-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: #0d2137; color: #fff; font-size: 15px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; text-decoration: none; transition: background .15s; margin-bottom: 12px; }
+    .btn-link:hover { background: #1a3a5c; }
+    .btn-consent-done { width: 100%; padding: 15px; background: #22c55e; color: #fff; font-size: 15px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; display: none; }
+    .btn-consent-done:hover { background: #16a34a; }
+    .btn-consent-done.visible { display: block; }
+    .hint-text { font-size: 12px; color: #aaa; text-align: center; margin-top: 10px; }
+
+    /* 기본정보 폼 */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 7px; }
+    .form-label .req { color: #e53e3e; margin-left: 3px; }
+    .form-input, .form-select {
+      width: 100%; padding: 13px 14px;
+      border: 1.5px solid #d1d9e0; border-radius: 10px;
+      font-size: 14px; font-family: inherit; color: #222;
+      background: #fafbfc; outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: #0d2137; box-shadow: 0 0 0 3px rgba(13,33,55,.08); background: #fff;
+    }
+    .form-input::placeholder { color: #bbb; }
+    .form-select {
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; background-color: #fafbfc;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-hint { font-size: 12px; color: #aaa; margin-top: 5px; }
+
+    .divider { height: 1px; background: #f0f4f8; margin: 22px 0; }
+
+    .btn-submit { width: 100%; padding: 16px; background: #f0a500; color: #fff; font-size: 16px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-submit:hover:not(:disabled) { background: #d4920a; }
+    .btn-submit:disabled { background: #d1d9e0; color: #aaa; cursor: not-allowed; }
+
+    /* 완료 */
+    .complete-card { background: #fff; border-radius: 20px; padding: 52px 28px; text-align: center; box-shadow: 0 4px 24px rgba(13,33,55,.1); }
+    .complete-icon  { font-size: 60px; margin-bottom: 18px; }
+    .complete-title { font-size: 22px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
+    .complete-sub   { font-size: 14px; color: #666; line-height: 1.85; }
+    .complete-notice { margin-top: 24px; padding: 16px 18px; background: #e8f0fe; border-radius: 12px; font-size: 13px; color: #1a3a5c; font-weight: 600; line-height: 1.6; }
+    .complete-contact { margin-top: 14px; padding: 14px 18px; background: #f0f4f8; border-radius: 10px; font-size: 14px; color: #555; font-weight: 600; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">티유디지털</div>
+  <div class="sub">KCC홈씨씨 창호 구독 신청</div>
+</div>
+
+<div class="consent-banner">
+  <a href="https://m.hankookcapital.co.kr/ib20/mnu/HKMUCR010101" target="_blank">
+    🔗 한국캐피탈 신용정보 동의하기
+  </a>
+  <div class="banner-sub">신용정보를 동의하셔야 조회가 가능합니다</div>
+</div>
+
+<div class="wrap">
+
+  <!-- STEP 1: 신용정보 동의 -->
+  <div id="s-consent">
+    <div class="card">
+
+      <div class="step-indicator">
+        <div class="step-item">
+          <div class="step-circle active">1</div>
+          <div class="step-label active">신용정보<br>동의</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+          <div class="step-circle pending">2</div>
+          <div class="step-label">기본정보<br>입력</div>
+        </div>
+      </div>
+
+      <div class="section-title">신용정보 동의를 먼저 완료해 주세요</div>
+      <div class="section-desc">
+        구독 신청 전, 한국캐피탈의 신용정보 조회 동의가 필요합니다.<br>
+        아래 버튼을 눌러 동의를 완료한 후 기본정보를 입력해 주세요.
+      </div>
+
+      <div class="notice-box">
+        <p>
+          <strong>📋 진행 순서</strong><br>
+          ① 아래 버튼 클릭 → 한국캐피탈 신용정보 동의 페이지로 이동<br>
+          ② 동의 절차 완료 후 이 페이지로 돌아오기<br>
+          ③ "동의 완료" 버튼 클릭 → 기본정보 입력 진행
+        </p>
+      </div>
+
+      <a href="https://m.hankookcapital.co.kr/ib20/mnu/HKMUCR010101"
+         target="_blank"
+         class="btn-link"
+         onclick="onConsentClick()">
+        🔗 한국캐피탈 신용정보 동의하기
+      </a>
+
+      <button class="btn-consent-done" id="btn-consent-done" onclick="show('form')">
+        ✅ 동의 완료 → 기본정보 입력하기
+      </button>
+
+      <p class="hint-text">동의 페이지 완료 후 이 버튼을 눌러주세요</p>
+
+    </div>
+  </div>
+
+  <!-- STEP 2: 기본정보 입력 -->
+  <div id="s-form" class="hidden">
+    <div class="card">
+
+      <div class="step-indicator">
+        <div class="step-item">
+          <div class="step-circle done">✓</div>
+          <div class="step-label">신용정보<br>동의</div>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step-item">
+          <div class="step-circle active">2</div>
+          <div class="step-label active">기본정보<br>입력</div>
+        </div>
+      </div>
+
+      <div class="section-title">기본정보를 입력해 주세요</div>
+
+      <!-- 이름 / 생년월일 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">이름 <span class="req">*</span></label>
+          <input type="text" id="f-name" class="form-input" placeholder="홍길동" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">생년월일 <span class="req">*</span></label>
+          <input type="text" id="f-birth" class="form-input" placeholder="19901015" maxlength="8" />
+        </div>
+      </div>
+
+      <!-- 연락처 -->
+      <div class="form-group">
+        <label class="form-label">연락처 <span class="req">*</span></label>
+        <input type="tel" id="f-phone" class="form-input" placeholder="010-1234-5678" />
+      </div>
+
+      <!-- 직업군 -->
+      <div class="form-group">
+        <label class="form-label">직업군 <span class="req">*</span></label>
+        <select id="f-job" class="form-select">
+          <option value="">-- 직업군을 선택해 주세요 --</option>
+          <option value="건설관련직">건설관련직</option>
+          <option value="기계관련직">기계관련직</option>
+          <option value="재료관련직">재료관련직</option>
+          <option value="전기·전자관련직">전기·전자관련직</option>
+          <option value="정보통신관련직">정보통신관련직</option>
+          <option value="화학관련직">화학관련직</option>
+          <option value="환경·인쇄·목재·가구·공예및생산단순직">환경·인쇄·목재·가구·공예및생산단순직</option>
+          <option value="경영·회계·사무관련직">경영·회계·사무관련직</option>
+          <option value="금융·보험관련직">금융·보험관련직</option>
+          <option value="관리직">관리직</option>
+          <option value="군인">군인</option>
+          <option value="농림어업관련직">농림어업관련직</option>
+          <option value="교육및자연과학·사회과학연구관련직">교육및자연과학·사회과학연구관련직</option>
+          <option value="문화·예술·디자인·방송관련직">문화·예술·디자인·방송관련직</option>
+          <option value="법률·경찰·소방·교도관련직">법률·경찰·소방·교도관련직</option>
+          <option value="보건·의료관련직">보건·의료관련직</option>
+          <option value="사회복지및종교관련직">사회복지및종교관련직</option>
+          <option value="경비및청소관련직">경비및청소관련직</option>
+          <option value="미용·숙박·여행·오락·스포츠관련직">미용·숙박·여행·오락·스포츠관련직</option>
+          <option value="영업및판매관련직">영업및판매관련직</option>
+          <option value="운전및운송관련직">운전및운송관련직</option>
+          <option value="음식서비스관련직">음식서비스관련직</option>
+          <option value="주부">주부</option>
+          <option value="무직">무직</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 상품명 / 구독금액 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">상품명</label>
+          <select id="f-product" class="form-select">
+            <option value="KCC 창호 구독">KCC 창호 구독</option>
+            <option value="LG 가전 구독">LG 가전 구독</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">구독금액</label>
+          <input type="number" id="f-amount" class="form-input" placeholder="59000" />
+          <p class="form-hint">원/월</p>
+        </div>
+      </div>
+
+      <!-- 구독기간 / 자동이체일 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">구독기간 <span class="req">*</span></label>
+          <select id="f-period" class="form-select">
+            <option value="">선택</option>
+            <option value="36개월">36개월</option>
+            <option value="48개월">48개월</option>
+            <option value="60개월">60개월</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">자동이체일 <span class="req">*</span></label>
+          <select id="f-debit" class="form-select">
+            <option value="">선택</option>
+            <option value="5일">5일</option>
+            <option value="10일">10일</option>
+            <option value="15일">15일</option>
+            <option value="20일">20일</option>
+            <option value="25일">25일</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="btn-submit" id="btn-submit" onclick="submitApply()">
+        신청서 제출하기 →
+      </button>
+
+    </div>
+  </div>
+
+  <!-- 완료 -->
+  <div id="s-complete" class="hidden">
+    <div class="complete-card">
+      <div class="complete-icon">✅</div>
+      <div class="complete-title">신청이 완료됐습니다!</div>
+      <div class="complete-sub">
+        기본정보가 성공적으로 접수되었습니다.<br>
+        담당자가 검토 후 서류 업로드 링크를 보내드립니다.
+      </div>
+      <div class="complete-notice">
+        📋 다음 단계<br>
+        담당자로부터 서류 업로드 링크를 받으시면<br>
+        아래 서류 3가지를 준비해 업로드해 주세요.<br><br>
+        · 등기부등본 또는 매매계약서<br>
+        · 신분증 앞면 사본<br>
+        · 통장 사본 (자동이체 계좌)
+      </div>
+      <div class="complete-contact">📞 문의: 1588-0883</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+
+  function show(state) {
+    ['consent', 'form', 'complete'].forEach(s =>
+      document.getElementById('s-' + s).classList.toggle('hidden', s !== state)
+    );
+  }
+
+  function onConsentClick() {
+    setTimeout(() => {
+      document.getElementById('btn-consent-done').classList.add('visible');
+    }, 1500);
+  }
+
+  async function submitApply() {
+    const name   = document.getElementById('f-name').value.trim();
+    const birth  = document.getElementById('f-birth').value.trim();
+    const phone  = document.getElementById('f-phone').value.trim();
+    const job    = document.getElementById('f-job').value;
+    const period = document.getElementById('f-period').value;
+    const debit  = document.getElementById('f-debit').value;
+
+    if (!name)   { alert('이름을 입력해 주세요.'); return; }
+    if (!birth)  { alert('생년월일을 입력해 주세요.'); return; }
+    if (!phone)  { alert('연락처를 입력해 주세요.'); return; }
+    if (!job)    { alert('직업군을 선택해 주세요.'); return; }
+    if (!period) { alert('구독기간을 선택해 주세요.'); return; }
+    if (!debit)  { alert('자동이체일을 선택해 주세요.'); return; }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>저장 중...';
+
+    const agentName = new URLSearchParams(location.search).get('agent') || '';
+    const product   = document.getElementById('f-product').value;
+    const amount    = document.getElementById('f-amount').value.trim();
+
+    const customer = {
+      id:        Date.now(),
+      name,
+      birth,
+      phone,
+      product,
+      amount:    amount ? Number(amount.replace(/[^0-9]/g, '')) : '',
+      period,
+      debit,
+      status:    '신청접수',
+      confirmed: false,
+      createdAt: new Date().toLocaleString('ko-KR'),
+      docs:      { jobType: job }
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', customer }),
+      });
+      show('complete');
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = '신청서 제출하기 →';
+      alert('저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }
+</script>
+</body>
+</html>

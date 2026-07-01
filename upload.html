@@ -15,54 +15,59 @@
     .top-bar .logo { color: #fff; font-size: 18px; font-weight: 900; }
     .top-bar .sub { color: rgba(255,255,255,.6); font-size: 13px; margin-top: 3px; }
 
-    .wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 60px; }
-
+    .wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 60px; }
     .card { background: #fff; border-radius: 16px; padding: 28px 22px; box-shadow: 0 2px 16px rgba(13,33,55,.08); }
 
-    .customer-box { background: #f0f4f8; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
-    .customer-box h3 { font-size: 17px; font-weight: 900; color: #0d2137; margin-bottom: 12px; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .info-item label { display: block; font-size: 11px; color: #888; font-weight: 600; margin-bottom: 2px; }
-    .info-item span { font-size: 13px; font-weight: 700; color: #0d2137; }
+    /* 페이지 타이틀 */
+    .page-title { font-size: 19px; font-weight: 900; color: #0d2137; margin-bottom: 18px; }
 
-    .section-title { font-size: 15px; font-weight: 900; color: #0d2137; margin-bottom: 6px; }
-    .section-sub { font-size: 13px; color: #888; margin-bottom: 18px; line-height: 1.55; }
+    /* 고객 정보 박스 */
+    .info-card { background: #f0f4f8; border-radius: 12px; padding: 18px 16px; margin-bottom: 22px; }
+    .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; }
+    @media (max-width: 400px) { .info-grid { grid-template-columns: repeat(2, 1fr); } }
+    .info-item label { display: block; font-size: 11px; color: #888; font-weight: 700; margin-bottom: 3px; letter-spacing: .02em; }
+    .info-item span  { font-size: 13px; font-weight: 800; color: #0d2137; word-break: break-all; }
 
-    .progress-wrap { margin-bottom: 20px; }
-    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
-    .progress-fill { height: 100%; background: #f0a500; border-radius: 4px; transition: width .35s ease; }
-    .progress-text { font-size: 12px; color: #888; margin-top: 5px; }
+    /* 서류 안내 박스 */
+    .doc-info-box { background: #e8f0fe; border-radius: 10px; padding: 16px 18px; margin-bottom: 22px; }
+    .doc-info-box .doc-info-title { font-size: 14px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
+    .doc-info-box ul { margin-left: 18px; }
+    .doc-info-box ul li { font-size: 13px; color: #2a4a7c; font-weight: 500; margin-bottom: 5px; line-height: 1.5; }
 
+    /* 업로드 그룹 */
     .upload-group { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f4f8; }
     .upload-group:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .upload-group-label { display: block; font-size: 14px; font-weight: 800; color: #222; margin-bottom: 3px; }
-    .upload-group-sub { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .upload-group-label .req { color: #e53e3e; margin-left: 2px; }
+    .upload-group-sub { font-size: 12px; color: #aaa; margin-bottom: 10px; line-height: 1.5; }
     .upload-group input[type="file"] { display: none; }
     .upload-row { display: flex; gap: 8px; align-items: center; }
     .btn-file { display: inline-flex; align-items: center; gap: 5px; padding: 10px 14px; background: #f0f4f8; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 13px; font-weight: 700; color: #0d2137; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s; }
     .btn-file:hover { background: #e2e8f0; }
     .file-name-display { flex: 1; font-size: 12px; color: #aaa; background: #fafbfc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
     .file-name-display.has-file { color: #0d2137; font-weight: 700; border-color: #0d2137; background: #f0f9ff; }
+    .upload-hint { font-size: 11px; color: #bbb; margin-top: 5px; }
 
-    .btn-submit { width: 100%; padding: 16px; background: #f0a500; color: #fff; font-size: 16px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; margin-top: 20px; }
+    .divider { height: 1px; background: #f0f4f8; margin: 22px 0; }
+
+    .btn-submit { width: 100%; padding: 16px; background: #f0a500; color: #fff; font-size: 16px; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background .15s; }
     .btn-submit:hover:not(:disabled) { background: #d4920a; }
     .btn-submit:disabled { background: #d1d9e0; color: #aaa; cursor: not-allowed; }
 
     /* 상태 화면 */
     .state-page { text-align: center; padding: 80px 20px; }
-    .state-icon { font-size: 52px; margin-bottom: 16px; }
+    .state-icon  { font-size: 52px; margin-bottom: 16px; }
     .state-title { font-size: 20px; font-weight: 900; color: #0d2137; margin-bottom: 8px; }
-    .state-sub { font-size: 14px; color: #888; line-height: 1.7; }
+    .state-sub   { font-size: 14px; color: #888; line-height: 1.7; }
 
-    .complete-card { background: #fff; border-radius: 20px; padding: 52px 28px; text-align: center; box-shadow: 0 4px 24px rgba(13,33,55,.1); }
-    .complete-icon { font-size: 60px; margin-bottom: 18px; }
-    .complete-title { font-size: 22px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
-    .complete-sub { font-size: 14px; color: #666; line-height: 1.8; }
+    .complete-card    { background: #fff; border-radius: 20px; padding: 52px 28px; text-align: center; box-shadow: 0 4px 24px rgba(13,33,55,.1); }
+    .complete-icon    { font-size: 60px; margin-bottom: 18px; }
+    .complete-title   { font-size: 22px; font-weight: 900; color: #0d2137; margin-bottom: 10px; }
+    .complete-sub     { font-size: 14px; color: #666; line-height: 1.8; }
     .complete-contact { margin-top: 24px; padding: 14px 18px; background: #f0f4f8; border-radius: 10px; font-size: 14px; color: #555; font-weight: 600; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
-
     .hidden { display: none !important; }
   </style>
 </head>
@@ -88,62 +93,77 @@
     <div class="state-sub">올바른 링크를 통해 접속해 주세요.<br>문의: 1588-0883</div>
   </div>
 
-  <!-- 업로드 폼 -->
+  <!-- 서류 업로드 폼 -->
   <div id="s-form" class="hidden">
     <div class="card">
 
-      <div class="customer-box">
-        <h3 id="c-name"></h3>
+      <div class="page-title">서류를 업로드해 주세요</div>
+
+      <!-- 고객 정보 -->
+      <div class="info-card">
         <div class="info-grid">
+          <div class="info-item"><label>담당자</label><span id="c-agent">-</span></div>
+          <div class="info-item"><label>이름</label><span id="c-name">-</span></div>
+          <div class="info-item"><label>생년월일</label><span id="c-birth">-</span></div>
+          <div class="info-item"><label>연락처</label><span id="c-phone">-</span></div>
           <div class="info-item"><label>상품명</label><span id="c-product">-</span></div>
-          <div class="info-item"><label>구독금액</label><span id="c-amount">-</span></div>
+          <div class="info-item"><label>금액</label><span id="c-amount">-</span></div>
           <div class="info-item"><label>구독기간</label><span id="c-period">-</span></div>
           <div class="info-item"><label>자동이체일</label><span id="c-debit">-</span></div>
         </div>
       </div>
 
-      <div class="section-title">서류를 업로드해 주세요</div>
-      <div class="section-sub">아래 3가지 서류를 모두 선택한 뒤 제출해 주세요.<br>JPG, PNG, PDF 파일 가능합니다.</div>
-
-      <div class="progress-wrap">
-        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-        <div class="progress-text" id="prog-text">0 / 3 선택됨</div>
+      <!-- 서류 안내 -->
+      <div class="doc-info-box">
+        <p class="doc-info-title">📋 아래 서류 3가지를 모두 업로드해 주세요</p>
+        <ul>
+          <li>등기부등본 또는 매매계약서</li>
+          <li>주민등록증 또는 운전면허증 (신분증 앞면 사본)</li>
+          <li>통장 사본 (자동이체 출금 계좌 앞면)</li>
+        </ul>
       </div>
+
+      <div class="divider"></div>
 
       <!-- 서류 1 -->
       <div class="upload-group">
-        <span class="upload-group-label">① 등기부등본 또는 매매계약서</span>
+        <span class="upload-group-label">① 등기부등본 또는 매매계약서 <span class="req">*</span></span>
         <p class="upload-group-sub">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
         <input type="file" id="f1" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(1)" />
         <div class="upload-row">
           <label for="f1" class="btn-file">📂 파일 선택</label>
           <span class="file-name-display" id="fn1">선택된 파일 없음</span>
         </div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
       <!-- 서류 2 -->
       <div class="upload-group">
-        <span class="upload-group-label">② 신분증 사본</span>
-        <p class="upload-group-sub">주민등록증 또는 운전면허증 앞면</p>
+        <span class="upload-group-label">② 주민등록증 또는 운전면허증 <span class="req">*</span></span>
+        <p class="upload-group-sub">신분증 앞면 사본</p>
         <input type="file" id="f2" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(2)" />
         <div class="upload-row">
           <label for="f2" class="btn-file">📂 파일 선택</label>
           <span class="file-name-display" id="fn2">선택된 파일 없음</span>
         </div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
       <!-- 서류 3 -->
       <div class="upload-group">
-        <span class="upload-group-label">③ 통장 사본</span>
+        <span class="upload-group-label">③ 통장 사본 <span class="req">*</span></span>
         <p class="upload-group-sub">자동이체 출금 계좌 통장 앞면</p>
         <input type="file" id="f3" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(3)" />
         <div class="upload-row">
           <label for="f3" class="btn-file">📂 파일 선택</label>
           <span class="file-name-display" id="fn3">선택된 파일 없음</span>
         </div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
-      <button class="btn-submit" id="btn-submit" onclick="submit()" disabled>
+      <div class="divider"></div>
+
+      <button class="btn-submit" id="btn-submit" onclick="submitDocs()" disabled>
         3개 서류를 모두 선택해 주세요
       </button>
 
@@ -194,18 +214,22 @@
   }
 
   function show(state) {
-    ['loading','error','form','complete'].forEach(s =>
+    ['loading', 'error', 'form', 'complete'].forEach(s =>
       document.getElementById('s-' + s).classList.toggle('hidden', s !== state)
     );
   }
 
   function renderInfo(c) {
-    document.getElementById('c-name').textContent = c.name + ' 고객님';
+    const agentName = new URLSearchParams(location.search).get('agent') || c.partner || c.agent || '-';
+    document.getElementById('c-agent').textContent   = agentName;
+    document.getElementById('c-name').textContent    = c.name    || '-';
+    document.getElementById('c-birth').textContent   = c.birth   || '-';
+    document.getElementById('c-phone').textContent   = c.phone   || '-';
     document.getElementById('c-product').textContent = c.product || '-';
     const amt = Number(String(c.amount || '').replace(/[^0-9]/g, ''));
-    document.getElementById('c-amount').textContent = amt ? amt.toLocaleString('ko-KR') + '원' : '-';
-    document.getElementById('c-period').textContent = c.period || '-';
-    document.getElementById('c-debit').textContent  = c.debit  || '-';
+    document.getElementById('c-amount').textContent  = amt ? amt.toLocaleString('ko-KR') + '원' : '-';
+    document.getElementById('c-period').textContent  = c.period  || '-';
+    document.getElementById('c-debit').textContent   = c.debit   || '-';
   }
 
   function onSelect(n) {
@@ -220,18 +244,16 @@
 
   function updateUI() {
     const cnt = files.filter(Boolean).length;
-    document.getElementById('prog-fill').style.width = (cnt / 3 * 100) + '%';
-    document.getElementById('prog-text').textContent = cnt + ' / 3 선택됨';
     const btn = document.getElementById('btn-submit');
     btn.disabled = cnt < 3;
-    btn.textContent = cnt < 3 ? cnt + '/3 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
+    btn.textContent = cnt < 3 ? cnt + '/3 서류 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
   }
 
   async function pdfFirstPageToBase64(file) {
-    const ab = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    const ab   = await file.arrayBuffer();
+    const pdf  = await pdfjsLib.getDocument({ data: ab }).promise;
     const page = await pdf.getPage(1);
-    const vp = page.getViewport({ scale: 1.5 });
+    const vp   = page.getViewport({ scale: 1.5 });
     const canvas = document.createElement('canvas');
     canvas.width = vp.width; canvas.height = vp.height;
     await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
@@ -275,13 +297,13 @@
     const form = new FormData();
     form.append('key', IMGBB_KEY);
     form.append('image', base64);
-    const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
+    const res  = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
     const json = await res.json();
     if (!json.success) throw new Error('이미지 업로드 실패');
     return json.data.url;
   }
 
-  async function submit() {
+  async function submitDocs() {
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
 

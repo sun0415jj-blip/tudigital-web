@@ -48,11 +48,12 @@ function doGet(e) {
         if (String(allData[i][0]) === String(e.parameter.customerId)) {
           customerName  = allData[i][1] || '';
           customerPhone = allData[i][3] || '';
-          const docs = {
-            doc1: e.parameter.doc1 || '',
-            doc2: e.parameter.doc2 || '',
-            doc3: e.parameter.doc3 || ''
-          };
+          // 기존 docs 유지 (jobType 등 apply 단계에서 저장된 값 보존)
+          let docs = {};
+          try { if (allData[i][11]) docs = JSON.parse(allData[i][11]); } catch(err) {}
+          docs.doc1 = e.parameter.doc1 || '';
+          docs.doc2 = e.parameter.doc2 || '';
+          docs.doc3 = e.parameter.doc3 || '';
           s.getRange(i + 1, 12).setValue(JSON.stringify(docs));
           s.getRange(i + 1, 9).setValue('서류제출');
           break;
