@@ -24,6 +24,18 @@ function getSheet() {
 }
 
 function doGet(e) {
+  // proxyImage: 이미지를 서버에서 가져와 base64로 반환 (CORS 우회)
+  if (e.parameter && e.parameter.action === 'proxyImage') {
+    try {
+      const resp = UrlFetchApp.fetch(e.parameter.url, { muteHttpExceptions: true });
+      const blob = resp.getBlob();
+      const base64 = Utilities.base64Encode(blob.getBytes());
+      return jsonResponse({ ok: true, data: base64, type: blob.getContentType() || 'image/jpeg' });
+    } catch(err) {
+      return jsonResponse({ ok: false, error: String(err) });
+    }
+  }
+
   // saveAllDocUrls: 3개 imgbb URL을 한 번에 저장 (GET 방식, CORS 안전)
   if (e.parameter && e.parameter.action === 'saveAllDocUrls') {
     const lock = LockService.getScriptLock();

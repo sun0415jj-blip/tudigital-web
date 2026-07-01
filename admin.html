@@ -996,45 +996,28 @@
   }
 
   async function downloadDoc(url, filename) {
-    // 1차: fetch blob → <a download>
+    showToast('다운로드 준비 중...');
     try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error('fetch ' + res.status);
-      const blob = await res.blob();
+      // Apps Script 프록시: 서버에서 이미지 fetch → base64 반환
+      const params = new URLSearchParams({ action: 'proxyImage', url, t: Date.now() });
+      const res  = await fetch(SCRIPT_URL + '?' + params);
+      const json = await res.json();
+      if (!json.ok || !json.data) throw new Error('proxy failed');
+      const byteStr = atob(json.data);
+      const bytes   = new Uint8Array(byteStr.length);
+      for (let i = 0; i < byteStr.length; i++) bytes[i] = byteStr.charCodeAt(i);
+      const blob   = new Blob([bytes], { type: json.type || 'image/jpeg' });
       const objUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objUrl; a.download = filename;
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(objUrl); }, 2000);
-      return;
-    } catch(e) {}
-    // 2차: canvas 추출 (CORS 허용 시)
-    try {
-      const dataUrl = await new Promise((res, rej) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          c.width = img.naturalWidth; c.height = img.naturalHeight;
-          c.getContext('2d').drawImage(img, 0, 0);
-          res(c.toDataURL('image/jpeg', 0.92));
-        };
-        img.onerror = rej;
-        img.src = url;
-      });
-      const a = document.createElement('a');
-      a.href = dataUrl; a.download = filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
-    } catch(e) {}
-    // 3차: 새 탭에서 열기 → 우클릭 저장 안내
-    showToast('새 탭에서 이미지 우클릭 → 다른 이름으로 저장하세요');
-    window.open(url, '_blank');
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(objUrl); }, 3000);
+    } catch(e) {
+      showToast('새 탭에서 이미지 우클릭 → 다른 이름으로 저장하세요');
+      window.open(url, '_blank');
+    }
   }
 
   async function uploadFileToImgbb(file) {
