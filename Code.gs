@@ -46,6 +46,9 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  if (!e.postData || !e.postData.contents) {
+    return jsonResponse({ ok: false, error: 'no_body' });
+  }
   const body = JSON.parse(e.postData.contents);
 
   if (body.action === 'save') {

@@ -223,8 +223,13 @@
     btn.textContent = cnt < 3 ? cnt + '/3 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
   }
 
+  const MAX_PDF_MB = 2;
+
   function toBase64(file) {
     if (file.type === 'application/pdf') {
+      if (file.size > MAX_PDF_MB * 1024 * 1024) {
+        return Promise.reject(new Error('PDF 파일이 너무 큽니다 (' + (file.size / 1024 / 1024).toFixed(1) + 'MB).\n' + MAX_PDF_MB + 'MB 이하 파일을 사용하거나 JPG로 촬영해서 올려주세요.'));
+      }
       return new Promise((res, rej) => {
         const r = new FileReader();
         r.onload = e => res(e.target.result);
@@ -232,12 +237,12 @@
         r.readAsDataURL(file);
       });
     }
-    // 이미지: 최대 800px로 리사이즈 후 압축
+    // 이미지: 최대 600px로 리사이즈 후 강하게 압축
     return new Promise((res, rej) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        const MAX = 800;
+        const MAX = 600;
         let { width, height } = img;
         if (width > MAX || height > MAX) {
           if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
@@ -247,7 +252,7 @@
         canvas.width = width; canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         URL.revokeObjectURL(url);
-        res(canvas.toDataURL('image/jpeg', 0.72));
+        res(canvas.toDataURL('image/jpeg', 0.65));
       };
       img.onerror = rej;
       img.src = url;
