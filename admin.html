@@ -995,29 +995,43 @@
     });
   }
 
+  function _triggerDownload(objUrl, filename) {
+    const a = document.createElement('a');
+    a.href = objUrl; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(objUrl); }, 3000);
+  }
+
   async function downloadDoc(url, filename) {
     showToast('다운로드 준비 중...');
+
+    // 1차: 직접 fetch (캐시 버스터로 opaque cache 우회)
     try {
-      // Apps Script 프록시: 서버에서 이미지 fetch → base64 반환
+      const cbUrl = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+      const res = await fetch(cbUrl, { mode: 'cors', credentials: 'omit' });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      _triggerDownload(URL.createObjectURL(blob), filename);
+      return;
+    } catch(e) {}
+
+    // 2차: Apps Script 프록시
+    try {
       const params = new URLSearchParams({ action: 'proxyImage', url, t: Date.now() });
       const res  = await fetch(SCRIPT_URL + '?' + params);
       const json = await res.json();
-      if (!json.ok || !json.data) throw new Error('proxy failed');
+      if (!json.ok || !json.data) throw new Error();
       const byteStr = atob(json.data);
       const bytes   = new Uint8Array(byteStr.length);
       for (let i = 0; i < byteStr.length; i++) bytes[i] = byteStr.charCodeAt(i);
-      const blob   = new Blob([bytes], { type: json.type || 'image/jpeg' });
-      const objUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = objUrl; a.download = filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(objUrl); }, 3000);
-    } catch(e) {
-      showToast('새 탭에서 이미지 우클릭 → 다른 이름으로 저장하세요');
-      window.open(url, '_blank');
-    }
+      _triggerDownload(URL.createObjectURL(new Blob([bytes], { type: json.type || 'image/jpeg' })), filename);
+      return;
+    } catch(e) {}
+
+    // 3차: 새 탭
+    showToast('새 탭에서 이미지 우클릭 → 다른 이름으로 저장하세요');
+    window.open(url, '_blank');
   }
 
   async function uploadFileToImgbb(file) {
