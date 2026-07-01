@@ -852,7 +852,7 @@
         downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else if (isImgbbUrl) {
         previewHtml  = '<img src="' + docVal + '" alt="' + labels[i] + '" onclick="window.open(\'' + docVal + '\',\'_blank\')" />';
-        downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
+        downloadHtml = '<button onclick="downloadDoc(\'' + docVal + '\',\'doc' + (i+1) + '.jpg\')" style="' + dlStyle + 'border:none;cursor:pointer;">⬇ 다운로드</button>';
       } else if (sessionFile) {
         url = URL.createObjectURL(sessionFile);
         previewHtml  = sessionFile.type === 'application/pdf'
@@ -993,6 +993,24 @@
       img.onerror = rej;
       img.src = url;
     });
+  }
+
+  async function downloadDoc(url, filename) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+    } catch(e) {
+      window.open(url, '_blank');
+    }
   }
 
   async function uploadFileToImgbb(file) {
