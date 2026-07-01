@@ -18,17 +18,32 @@
     .wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 60px; }
     .card { background: #fff; border-radius: 16px; padding: 28px 22px; box-shadow: 0 2px 16px rgba(13,33,55,.08); }
 
-    /* 페이지 타이틀 */
     .page-title { font-size: 19px; font-weight: 900; color: #0d2137; margin-bottom: 18px; }
 
-    /* 고객 정보 박스 */
+    /* 고객 정보 */
     .info-card { background: #f0f4f8; border-radius: 12px; padding: 18px 16px; margin-bottom: 22px; }
     .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; }
     @media (max-width: 400px) { .info-grid { grid-template-columns: repeat(2, 1fr); } }
-    .info-item label { display: block; font-size: 11px; color: #888; font-weight: 700; margin-bottom: 3px; letter-spacing: .02em; }
+    .info-item label { display: block; font-size: 11px; color: #888; font-weight: 700; margin-bottom: 3px; }
     .info-item span  { font-size: 13px; font-weight: 800; color: #0d2137; word-break: break-all; }
 
-    /* 서류 안내 박스 */
+    /* 직업군 */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .form-label .req { color: #e53e3e; margin-left: 3px; }
+    .form-select {
+      width: 100%; padding: 13px 14px;
+      border: 1.5px solid #d1d9e0; border-radius: 10px;
+      font-size: 14px; font-family: inherit; color: #222;
+      background: #fafbfc; outline: none;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; background-color: #fafbfc;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-select:focus { border-color: #0d2137; box-shadow: 0 0 0 3px rgba(13,33,55,.08); background-color: #fff; }
+
+    /* 서류 안내 */
     .doc-info-box { background: #e8f0fe; border-radius: 10px; padding: 16px 18px; margin-bottom: 22px; }
     .doc-info-box .doc-info-title { font-size: 14px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
     .doc-info-box ul { margin-left: 18px; }
@@ -41,12 +56,19 @@
     .upload-group-label .req { color: #e53e3e; margin-left: 2px; }
     .upload-group-sub { font-size: 12px; color: #aaa; margin-bottom: 10px; line-height: 1.5; }
     .upload-group input[type="file"] { display: none; }
+
     .upload-row { display: flex; gap: 8px; align-items: center; }
     .btn-file { display: inline-flex; align-items: center; gap: 5px; padding: 10px 14px; background: #f0f4f8; border: 1.5px solid #d1d9e0; border-radius: 8px; font-size: 13px; font-weight: 700; color: #0d2137; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s; }
     .btn-file:hover { background: #e2e8f0; }
     .file-name-display { flex: 1; font-size: 12px; color: #aaa; background: #fafbfc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
     .file-name-display.has-file { color: #0d2137; font-weight: 700; border-color: #0d2137; background: #f0f9ff; }
     .upload-hint { font-size: 11px; color: #bbb; margin-top: 5px; }
+
+    /* 기존 서류 표시 */
+    .existing-doc { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 10px 12px; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 8px; }
+    .existing-doc .doc-status { font-size: 13px; font-weight: 700; color: #2e7d32; flex: 1; }
+    .btn-download { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; background: #0d2137; color: #fff; font-size: 12px; font-weight: 700; border: none; border-radius: 7px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s; font-family: inherit; }
+    .btn-download:hover { background: #1a3a5c; }
 
     .divider { height: 1px; background: #f0f4f8; margin: 22px 0; }
 
@@ -113,6 +135,38 @@
         </div>
       </div>
 
+      <!-- 직업군 -->
+      <div class="form-group">
+        <label class="form-label">직업군 <span class="req">*</span></label>
+        <select id="job-type" class="form-select" onchange="updateUI()">
+          <option value="">-- 직업군을 선택해 주세요 --</option>
+          <option>건설관련직</option>
+          <option>기계관련직</option>
+          <option>재료관련직</option>
+          <option>전기·전자관련직</option>
+          <option>정보통신관련직</option>
+          <option>화학관련직</option>
+          <option>환경·인쇄·목재·가구·공예및생산단순직</option>
+          <option>경영·회계·사무관련직</option>
+          <option>금융·보험관련직</option>
+          <option>관리직</option>
+          <option>군인</option>
+          <option>농림어업관련직</option>
+          <option>교육및자연과학·사회과학연구관련직</option>
+          <option>문화·예술·디자인·방송관련직</option>
+          <option>법률·경찰·소방·교도관련직</option>
+          <option>보건·의료관련직</option>
+          <option>사회복지및종교관련직</option>
+          <option>경비및청소관련직</option>
+          <option>미용·숙박·여행·오락·스포츠관련직</option>
+          <option>영업및판매관련직</option>
+          <option>운전및운송관련직</option>
+          <option>음식서비스관련직</option>
+          <option>주부</option>
+          <option>무직</option>
+        </select>
+      </div>
+
       <!-- 서류 안내 -->
       <div class="doc-info-box">
         <p class="doc-info-title">📋 아래 서류 3가지를 모두 업로드해 주세요</p>
@@ -129,6 +183,10 @@
       <div class="upload-group">
         <span class="upload-group-label">① 등기부등본 또는 매매계약서 <span class="req">*</span></span>
         <p class="upload-group-sub">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
+        <div id="existing-doc1" class="existing-doc hidden">
+          <span class="doc-status">✅ 업로드 완료</span>
+          <button class="btn-download" onclick="downloadDoc(1)">⬇ 다운로드</button>
+        </div>
         <input type="file" id="f1" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(1)" />
         <div class="upload-row">
           <label for="f1" class="btn-file">📂 파일 선택</label>
@@ -141,6 +199,10 @@
       <div class="upload-group">
         <span class="upload-group-label">② 주민등록증 또는 운전면허증 <span class="req">*</span></span>
         <p class="upload-group-sub">신분증 앞면 사본</p>
+        <div id="existing-doc2" class="existing-doc hidden">
+          <span class="doc-status">✅ 업로드 완료</span>
+          <button class="btn-download" onclick="downloadDoc(2)">⬇ 다운로드</button>
+        </div>
         <input type="file" id="f2" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(2)" />
         <div class="upload-row">
           <label for="f2" class="btn-file">📂 파일 선택</label>
@@ -153,6 +215,10 @@
       <div class="upload-group">
         <span class="upload-group-label">③ 통장 사본 <span class="req">*</span></span>
         <p class="upload-group-sub">자동이체 출금 계좌 통장 앞면</p>
+        <div id="existing-doc3" class="existing-doc hidden">
+          <span class="doc-status">✅ 업로드 완료</span>
+          <button class="btn-download" onclick="downloadDoc(3)">⬇ 다운로드</button>
+        </div>
         <input type="file" id="f3" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(3)" />
         <div class="upload-row">
           <label for="f3" class="btn-file">📂 파일 선택</label>
@@ -164,7 +230,7 @@
       <div class="divider"></div>
 
       <button class="btn-submit" id="btn-submit" onclick="submitDocs()" disabled>
-        3개 서류를 모두 선택해 주세요
+        직업군과 서류를 모두 선택해 주세요
       </button>
 
     </div>
@@ -192,6 +258,7 @@
   let customerId   = null;
   let customerData = null;
   let files        = [null, null, null];
+  let docUrls      = ['', '', ''];
 
   async function init() {
     customerId = new URLSearchParams(location.search).get('id');
@@ -207,6 +274,7 @@
       if (!c) { show('error'); return; }
       customerData = c;
       renderInfo(c);
+      renderExistingDocs(c);
       show('form');
     } catch(e) {
       show('error');
@@ -232,6 +300,26 @@
     document.getElementById('c-debit').textContent   = c.debit   || '-';
   }
 
+  function renderExistingDocs(c) {
+    const docs = c.docs || {};
+    // 기존에 저장된 직업군 자동 선택
+    if (docs.jobType) {
+      const sel = document.getElementById('job-type');
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === docs.jobType) { sel.selectedIndex = i; break; }
+      }
+    }
+    // 기존 서류 URL 표시
+    [1, 2, 3].forEach(n => {
+      const url = docs['doc' + n];
+      if (url) {
+        docUrls[n - 1] = url;
+        document.getElementById('existing-doc' + n).classList.remove('hidden');
+      }
+    });
+    updateUI();
+  }
+
   function onSelect(n) {
     const file = document.getElementById('f' + n).files[0];
     if (!file) return;
@@ -243,10 +331,54 @@
   }
 
   function updateUI() {
-    const cnt = files.filter(Boolean).length;
-    const btn = document.getElementById('btn-submit');
-    btn.disabled = cnt < 3;
-    btn.textContent = cnt < 3 ? cnt + '/3 서류 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
+    const cnt     = files.filter(Boolean).length;
+    const jobType = document.getElementById('job-type').value;
+    const btn     = document.getElementById('btn-submit');
+    const ready   = cnt === 3 && jobType !== '';
+    btn.disabled  = !ready;
+    if (!jobType) {
+      btn.textContent = '직업군을 선택해 주세요';
+    } else if (cnt < 3) {
+      btn.textContent = cnt + '/3 서류 선택됨 — 모두 선택해 주세요';
+    } else {
+      btn.textContent = '서류 제출하기 →';
+    }
+  }
+
+  async function downloadDoc(n) {
+    const url = docUrls[n - 1];
+    if (!url) return;
+    // 1차: 직접 다운로드
+    try {
+      const cbUrl = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+      const res = await fetch(cbUrl, { mode: 'cors', credentials: 'omit' });
+      if (res.ok) {
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'doc' + n + '.jpg';
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 3000);
+        return;
+      }
+    } catch(e) {}
+    // 2차: Apps Script 프록시
+    try {
+      const params = new URLSearchParams({ action: 'proxyImage', url, t: Date.now() });
+      const json = await (await fetch(SCRIPT_URL + '?' + params)).json();
+      if (json.ok && json.data) {
+        const bytes = new Uint8Array(atob(json.data).split('').map(c => c.charCodeAt(0)));
+        const blob = new Blob([bytes], { type: json.type || 'image/jpeg' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'doc' + n + '.jpg';
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 3000);
+        return;
+      }
+    } catch(e) {}
+    // 3차: 새 탭
+    window.open(url, '_blank');
   }
 
   async function pdfFirstPageToBase64(file) {
@@ -304,6 +436,9 @@
   }
 
   async function submitDocs() {
+    const jobType = document.getElementById('job-type').value;
+    if (!jobType) { alert('직업군을 선택해 주세요.'); return; }
+
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
 
@@ -322,6 +457,7 @@
         doc1: url1,
         doc2: url2,
         doc3: url3,
+        jobType,
         t: Date.now()
       });
       const res  = await fetch(SCRIPT_URL + '?' + params);
