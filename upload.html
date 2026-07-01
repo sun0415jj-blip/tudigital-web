@@ -162,8 +162,12 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
+  const IMGBB_KEY  = '1bf49204aa251a5fae9ff0f169901c8f';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
   let customerId   = null;
   let customerData = null;
@@ -223,26 +227,33 @@
     btn.textContent = cnt < 3 ? cnt + '/3 선택됨 — 모두 선택해 주세요' : '서류 제출하기 →';
   }
 
-  const MAX_PDF_MB = 2;
-
-  function toBase64(file) {
-    if (file.type === 'application/pdf') {
-      if (file.size > MAX_PDF_MB * 1024 * 1024) {
-        return Promise.reject(new Error('PDF 파일이 너무 큽니다 (' + (file.size / 1024 / 1024).toFixed(1) + 'MB).\n' + MAX_PDF_MB + 'MB 이하 파일을 사용하거나 JPG로 촬영해서 올려주세요.'));
-      }
-      return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = e => res(e.target.result);
-        r.onerror = rej;
-        r.readAsDataURL(file);
-      });
+  async function pdfFirstPageToBase64(file) {
+    const ab = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    const page = await pdf.getPage(1);
+    const vp = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement('canvas');
+    canvas.width = vp.width; canvas.height = vp.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    const MAX = 1200;
+    let w = canvas.width, h = canvas.height;
+    if (w > MAX || h > MAX) {
+      const ratio = Math.min(MAX/w, MAX/h);
+      const c2 = document.createElement('canvas');
+      c2.width = Math.round(w*ratio); c2.height = Math.round(h*ratio);
+      c2.getContext('2d').drawImage(canvas, 0, 0, c2.width, c2.height);
+      return c2.toDataURL('image/jpeg', 0.85).split(',')[1];
     }
-    // 이미지: 최대 600px로 리사이즈 후 강하게 압축
+    return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+  }
+
+  async function fileToImgbbBase64(file) {
+    if (file.type === 'application/pdf') return pdfFirstPageToBase64(file);
     return new Promise((res, rej) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        const MAX = 600;
+        const MAX = 1200;
         let { width, height } = img;
         if (width > MAX || height > MAX) {
           if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
@@ -252,37 +263,29 @@
         canvas.width = width; canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         URL.revokeObjectURL(url);
-        res(canvas.toDataURL('image/jpeg', 0.65));
+        res(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
       };
       img.onerror = rej;
       img.src = url;
     });
   }
 
-  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-  // 최대 3분 대기, 성공 시 true / 타임아웃 시 false 반환
-  async function pollUntilAllDone(maxAttempts = 60, interval = 3000) {
-    for (let i = 0; i < maxAttempts; i++) {
-      await sleep(interval);
-      try {
-        const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
-        const json = await res.json();
-        const c    = (json.data || []).find(c => String(c.id) === String(customerId));
-        if (c && c.docs && typeof c.docs === 'object') {
-          const driveUrls = Object.values(c.docs).filter(v => typeof v === 'string' && v.startsWith('https://drive.google.com'));
-          if (driveUrls.length >= 3) return true;
-        }
-      } catch(e) {}
-    }
-    return false;
+  async function uploadFileToImgbb(file) {
+    const base64 = await fileToImgbbBase64(file);
+    const form = new FormData();
+    form.append('key', IMGBB_KEY);
+    form.append('image', base64);
+    const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
+    const json = await res.json();
+    if (!json.success) throw new Error('이미지 업로드 실패');
+    return json.data.url;
   }
 
-  function sendOneFile(data, name, type, docKey) {
+  function saveDocUrl(url, docKey) {
     fetch(SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
-      body:   JSON.stringify({ action: 'uploadOneFile', customerId, data, name, type, docKey })
+      body:   JSON.stringify({ action: 'saveDocUrl', customerId, docKey, url })
     });
   }
 
@@ -291,26 +294,23 @@
     btn.disabled = true;
 
     try {
-      btn.innerHTML = '<span class="spinner"></span>파일 변환 중...';
-      const [b1, b2, b3] = await Promise.all([
-        toBase64(files[0]),
-        toBase64(files[1]),
-        toBase64(files[2])
+      btn.innerHTML = '<span class="spinner"></span>서류 업로드 중...';
+      const [url1, url2, url3] = await Promise.all([
+        uploadFileToImgbb(files[0]),
+        uploadFileToImgbb(files[1]),
+        uploadFileToImgbb(files[2])
       ]);
 
-      btn.innerHTML = '<span class="spinner"></span>서류 전송 중...';
-
-      // 3개를 병렬 전송 후 즉시 완료 화면 표시 (Drive 업로드는 백그라운드)
-      sendOneFile(b1, files[0].name, files[0].type, 'doc1');
-      sendOneFile(b2, files[1].name, files[1].type, 'doc2');
-      sendOneFile(b3, files[2].name, files[2].type, 'doc3');
+      saveDocUrl(url1, 'doc1');
+      saveDocUrl(url2, 'doc2');
+      saveDocUrl(url3, 'doc3');
 
       show('complete');
     } catch(e) {
       console.error(e);
       btn.disabled = false;
       btn.textContent = '서류 제출하기 →';
-      alert('업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      alert('업로드에 실패했습니다.\n' + e.message + '\n\n잠시 후 다시 시도해 주세요.');
     }
   }
 

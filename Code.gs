@@ -110,6 +110,28 @@ function doPost(e) {
         break;
       }
     }
+
+  } else if (body.action === 'saveDocUrl') {
+    const lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+    try {
+      const s = getSheet();
+      const allData = s.getDataRange().getValues();
+      for (let i = 1; i < allData.length; i++) {
+        if (String(allData[i][0]) === String(body.customerId)) {
+          let docs = {};
+          try { if (allData[i][11]) docs = JSON.parse(allData[i][11]); } catch(err) {}
+          docs[body.docKey] = body.url;
+          s.getRange(i + 1, 12).setValue(JSON.stringify(docs));
+          if (Object.keys(docs).length >= 3) {
+            s.getRange(i + 1, 9).setValue('서류제출');
+          }
+          break;
+        }
+      }
+    } finally {
+      lock.releaseLock();
+    }
   }
 
   return jsonResponse({ ok: true });
