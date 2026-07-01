@@ -293,23 +293,14 @@
         toBase64(files[2])
       ]);
 
-      btn.innerHTML = '<span class="spinner"></span>서류 업로드 중... (최대 3분)';
+      btn.innerHTML = '<span class="spinner"></span>서류 전송 중...';
 
-      // 3개를 병렬 전송 — 각각 별도 Apps Script 실행, 시트 쓰기만 lock 사용
+      // 3개를 병렬 전송 후 즉시 완료 화면 표시 (Drive 업로드는 백그라운드)
       sendOneFile(b1, files[0].name, files[0].type, 'doc1');
       sendOneFile(b2, files[1].name, files[1].type, 'doc2');
       sendOneFile(b3, files[2].name, files[2].type, 'doc3');
 
-      btn.innerHTML = '<span class="spinner"></span>처리 확인 중... 잠시만 기다려 주세요';
-      const done = await pollUntilAllDone();
-
-      if (done) {
-        show('complete');
-      } else {
-        btn.disabled = false;
-        btn.textContent = '서류 제출하기 →';
-        alert('처리가 지연되고 있습니다.\n잠시 후 이 페이지를 다시 열어 재시도해 주세요.\n문의: 1588-0883');
-      }
+      show('complete');
     } catch(e) {
       console.error(e);
       btn.disabled = false;
