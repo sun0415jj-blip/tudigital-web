@@ -837,7 +837,7 @@
     document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
       const docVal      = c.docs[key] || '';
       const isDriveUrl  = docVal.startsWith('https://drive.google.com');
-      const isImgbbUrl  = docVal.startsWith('https://i.ibb.co/') || docVal.startsWith('https://ibb.co/');
+      const isImgbbUrl  = docVal.startsWith('https://') && !isDriveUrl;
       const sessionFile = sessionFiles[key];
       const storedFile  = storedFiles[key];
       const displayName = (isDriveUrl || isImgbbUrl) ? labels[i] : (docVal || '-');
@@ -851,7 +851,7 @@
           : '<div class="doc-no-preview"><div class="doc-icon">☁️</div><div>Google Drive 파일</div></div>';
         downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else if (isImgbbUrl) {
-        previewHtml  = '<img src="' + docVal + '" alt="' + labels[i] + '" onclick="window.open(\'' + docVal + '\',\'_blank\')" />';
+        previewHtml  = '<img src="' + docVal + '" alt="' + labels[i] + '" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:6px;cursor:zoom-in;" onclick="window.open(\'' + docVal + '\',\'_blank\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" /><div style="display:none;text-align:center;color:#bbb;font-size:13px;padding:20px;">이미지를 불러올 수 없습니다<br><a href="' + docVal + '" target="_blank" style="color:#1a3a5c;font-size:12px;">링크 열기</a></div>';
         downloadHtml = '<button onclick="downloadDoc(\'' + docVal + '\',\'doc' + (i+1) + '.jpg\')" style="' + dlStyle + 'border:none;cursor:pointer;">⬇ 다운로드</button>';
       } else if (sessionFile) {
         url = URL.createObjectURL(sessionFile);
@@ -996,21 +996,45 @@
   }
 
   async function downloadDoc(url, filename) {
+    // 1차: fetch blob → <a download>
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error();
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('fetch ' + res.status);
       const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      const objUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = filename;
+      a.href = objUrl; a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(objUrl); }, 2000);
+      return;
+    } catch(e) {}
+    // 2차: canvas 추출 (CORS 허용 시)
+    try {
+      const dataUrl = await new Promise((res, rej) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = img.naturalWidth; c.height = img.naturalHeight;
+          c.getContext('2d').drawImage(img, 0, 0);
+          res(c.toDataURL('image/jpeg', 0.92));
+        };
+        img.onerror = rej;
+        img.src = url;
+      });
+      const a = document.createElement('a');
+      a.href = dataUrl; a.download = filename;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
-    } catch(e) {
-      window.open(url, '_blank');
-    }
+      return;
+    } catch(e) {}
+    // 3차: 새 탭에서 열기 → 우클릭 저장 안내
+    showToast('새 탭에서 이미지 우클릭 → 다른 이름으로 저장하세요');
+    window.open(url, '_blank');
   }
 
   async function uploadFileToImgbb(file) {
