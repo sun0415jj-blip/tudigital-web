@@ -257,6 +257,7 @@
       .dash-badge { display: none; }
     }
   </style>
+  <script src="dev-mock.js"></script>
 </head>
 <body>
 
@@ -308,6 +309,18 @@
         <div class="stat-num" id="stat-done">-</div>
         <div class="stat-label">확인완료</div>
       </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="stat-agree">-</div>
+        <div class="stat-label">약정완료</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="stat-built">-</div>
+        <div class="stat-label">시공완료</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="stat-paid">-</div>
+        <div class="stat-label">입금완료</div>
+      </div>
     </div>
 
     <!-- 고객 목록 -->
@@ -328,6 +341,10 @@
           <button class="filter-btn" onclick="setFilter(this,'서류대기')">서류대기</button>
           <button class="filter-btn" onclick="setFilter(this,'서류제출')">서류제출</button>
           <button class="filter-btn" onclick="setFilter(this,'확인완료')">확인완료</button>
+          <button class="filter-btn" onclick="setFilter(this,'약정완료')">약정완료</button>
+          <button class="filter-btn" onclick="setFilter(this,'시공완료')">시공완료</button>
+          <button class="filter-btn" onclick="setFilter(this,'녹취완료')">녹취완료</button>
+          <button class="filter-btn" onclick="setFilter(this,'입금완료')">입금완료</button>
         </div>
       </div>
 
@@ -371,7 +388,7 @@
         <div class="detail-section-title">구독 정보</div>
         <div class="detail-info-grid">
           <div class="detail-info-item"><div class="detail-info-label">상품명</div><div class="detail-info-value" id="d-product"></div></div>
-          <div class="detail-info-item"><div class="detail-info-label">구독금액</div><div class="detail-info-value" id="d-amount"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">일시불 금액</div><div class="detail-info-value" id="d-amount"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">구독기간</div><div class="detail-info-value" id="d-period"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">자동이체일</div><div class="detail-info-value" id="d-debit"></div></div>
         </div>
@@ -441,17 +458,28 @@
     showLoading(true);
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
+      const timer = setTimeout(() => controller.abort(), 30000);
       const res  = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: controller.signal });
       clearTimeout(timer);
       const json = await res.json();
       customersCache = (json.data || []).map(c => {
-        const docs = c.docs && typeof c.docs === 'object' ? c.docs : null;
+        let docs = c.docs;
+        if (typeof docs === 'string') { try { docs = JSON.parse(docs); } catch(e) { docs = null; } }
+        if (!(docs && typeof docs === 'object')) docs = null;
         const confirmed = c.confirmed === 'true' || c.confirmed === true;
+        // 3·4단계 진행상태는 docs JSON에 보관한다
+        const agreement = (docs && docs.agreement) || '';
+        const recording = (docs && docs.recording) || '';
+        const payment   = (docs && docs.payment)   || '';
+        const built     = !!(docs && docs.constructionAt);
         let status = c.status;
-        if (confirmed) status = '확인완료';
+        if (payment === 'done')        status = '입금완료';
+        else if (recording === 'done') status = '녹취완료';
+        else if (built)                status = '시공완료';
+        else if (agreement === 'done') status = '약정완료';
+        else if (confirmed)            status = '확인완료';
         else if (docs && status === '서류대기') status = '서류제출';
-        return { ...c, id: Number(c.id), confirmed, docs, status };
+        return { ...c, id: Number(c.id), confirmed, agreement, recording, payment, built, docs, status };
       });
     } catch(e) {
       console.error('로드 실패:', e);
@@ -491,6 +519,9 @@
     document.getElementById('stat-wait').textContent   = all.filter(c => c.status === '서류대기').length;
     document.getElementById('stat-submit').textContent = all.filter(c => c.status === '서류제출').length;
     document.getElementById('stat-done').textContent   = all.filter(c => c.status === '확인완료').length;
+    document.getElementById('stat-agree').textContent  = all.filter(c => c.status === '약정완료').length;
+    document.getElementById('stat-built').textContent  = all.filter(c => c.status === '시공완료').length;
+    document.getElementById('stat-paid').textContent   = all.filter(c => c.status === '입금완료').length;
   }
 
   /* ════ 검색 / 필터 ════ */
@@ -542,7 +573,9 @@
       return;
     }
 
-    const statusClass = s => s === '확인완료' ? 'status-done' : (s === '서류제출' ? 'status-submit' : 'status-pending');
+    const DONE_SET = ['확인완료', '약정완료', '시공완료', '녹취완료', '입금완료'];
+    const statusClass = s => DONE_SET.indexOf(s) !== -1 ? 'status-done'
+                           : (s === '서류제출' ? 'status-submit' : 'status-pending');
 
     const rows = list.map(c => {
       let docsCell, actionCell;
@@ -559,6 +592,29 @@
           + '<label class="confirm-label">'
           + '<input type="checkbox" ' + chk + ' onchange="toggleConfirm(' + c.id + ',this.checked)" />'
           + '서류확인</label>'
+          // 3단계 온라인 약정 — 서류확인이 끝난 건에만 노출
+          + (c.confirmed
+              ? '<label class="confirm-label">'
+                + '<input type="checkbox" ' + (c.agreement === 'done' ? 'checked' : '')
+                + ' onchange="toggleAgreement(' + c.id + ',this.checked)" />'
+                + '약정완료</label>'
+              : '')
+          // 4단계 — 약정완료 건에는 시공서류 링크, 시공완료 건에는 녹취·입금 체크
+          + (c.agreement === 'done' && !c.built
+              ? '<button class="btn-link-send" onclick="copyConstructionLink(' + c.id + ')">🔗 시공서류 링크</button>'
+              : '')
+          + (c.built
+              ? '<label class="confirm-label">'
+                + '<input type="checkbox" ' + (c.recording === 'done' ? 'checked' : '')
+                + ' onchange="toggleRecording(' + c.id + ',this.checked)" />'
+                + '녹취완료</label>'
+              : '')
+          + (c.recording === 'done'
+              ? '<label class="confirm-label">'
+                + '<input type="checkbox" ' + (c.payment === 'done' ? 'checked' : '')
+                + ' onchange="togglePayment(' + c.id + ',this.checked)" />'
+                + '입금완료</label>'
+              : '')
           + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
       }
 
@@ -578,7 +634,7 @@
 
     wrap.innerHTML = '<table class="customer-table">'
       + '<thead><tr>'
-      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>상품명</th><th>구독금액</th><th>상태</th><th>첨부서류</th><th>구독기간</th><th style="min-width:200px;">관리</th>'
+      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>상품명</th><th>일시불 금액</th><th>상태</th><th>첨부서류</th><th>구독기간</th><th style="min-width:200px;">관리</th>'
       + '</tr></thead>'
       + '<tbody>' + rows + '</tbody>'
       + '</table>';
@@ -630,6 +686,24 @@
             <button type="button" class="btn-file-remove" id="pr-doc3" onclick="removeFile('p-doc3','pn-doc3','pr-doc3')">✕</button>
           </div>
         </div>
+        <div class="upload-group">
+          <span class="upload-label">견적서 <span class="req">*</span></span>
+          <input type="file" id="p-doc4" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-doc4','pn-doc4','pr-doc4')" />
+          <div class="upload-row">
+            <label for="p-doc4" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-doc4">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-doc4" onclick="removeFile('p-doc4','pn-doc4','pr-doc4')">✕</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <span class="upload-label">가족관계증명서 <span style="color:#888;font-weight:500;">(가족 명의 거주주택인 경우)</span></span>
+          <input type="file" id="p-doc5" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-doc5','pn-doc5','pr-doc5')" />
+          <div class="upload-row">
+            <label for="p-doc5" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-doc5">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-doc5" onclick="removeFile('p-doc5','pn-doc5','pr-doc5')">✕</button>
+          </div>
+        </div>
         <div class="panel-actions">
           <button class="btn-panel-cancel" onclick="closeUploadPanel()">취소</button>
           <button class="btn-panel-submit" onclick="submitUpload()">제출하기</button>
@@ -675,13 +749,16 @@
   }
 
   async function submitUpload() {
-    const doc1 = document.getElementById('p-doc1')?.files[0];
-    const doc2 = document.getElementById('p-doc2')?.files[0];
-    const doc3 = document.getElementById('p-doc3')?.files[0];
+    const picked = {};
+    [1, 2, 3, 4, 5].forEach(n => { picked['doc' + n] = document.getElementById('p-doc' + n)?.files[0] || null; });
 
-    if (!doc1) { alert('등기부등본 또는 매매계약서를 업로드해 주세요.'); return; }
-    if (!doc2) { alert('신분증 사본을 업로드해 주세요.'); return; }
-    if (!doc3) { alert('통장 사본을 업로드해 주세요.'); return; }
+    // 가족관계증명서를 올렸으면 '가족 명의 거주주택' 건으로 저장
+    const ownership = picked.doc5 ? 'family' : 'self';
+    const REQ = { doc1: '등기부등본 또는 매매계약서', doc2: '신분증 사본', doc3: '통장 사본', doc4: '견적서' };
+    for (const k of Object.keys(REQ)) {
+      if (!picked[k]) { alert(REQ[k] + '를 업로드해 주세요.'); return; }
+    }
+    const keys = Object.keys(REQ).concat(ownership === 'family' ? ['doc5'] : []);
 
     const submitBtn = document.querySelector('#panel-' + uploadTargetId + ' .btn-panel-submit');
     const setMsg = m => { if (submitBtn) submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>' + m; };
@@ -692,26 +769,22 @@
 
     try {
       setMsg('서류 업로드 중...');
-      const [url1, url2, url3] = await Promise.all([
-        uploadFileToImgbb(doc1),
-        uploadFileToImgbb(doc2),
-        uploadFileToImgbb(doc3)
-      ]);
+      const urls = await Promise.all(keys.map(k => uploadFileToImgbb(picked[k])));
 
       setMsg('저장 중...');
       const params = new URLSearchParams({
         action: 'saveAllDocUrls',
         customerId: targetId,
-        doc1: url1,
-        doc2: url2,
-        doc3: url3,
+        ownership,
         t: Date.now()
       });
+      keys.forEach((k, i) => params.set(k, urls[i]));
       const saveRes  = await fetch(SCRIPT_URL + '?' + params);
       const saveJson = await saveRes.json();
       if (!saveJson.ok) throw new Error('저장 실패');
 
-      const docs = { doc1: url1, doc2: url2, doc3: url3 };
+      const docs = { ownership };
+      keys.forEach((k, i) => { docs[k] = urls[i]; });
       const idx = customersCache.findIndex(c => c.id === targetId);
       if (idx !== -1) {
         customersCache[idx].docs      = docs;
@@ -744,11 +817,81 @@
     const idx = customersCache.findIndex(c => c.id === id);
     if (idx !== -1) {
       customersCache[idx].confirmed = checked;
-      customersCache[idx].status    = checked ? '확인완료' : '서류제출';
+      // 서류확인을 해제하면 그 뒤 단계(약정)도 함께 되돌린다
+      if (!checked && customersCache[idx].agreement) {
+        customersCache[idx].agreement = '';
+        if (customersCache[idx].docs) delete customersCache[idx].docs.agreement;
+      }
+      customersCache[idx].status = checked
+        ? (customersCache[idx].agreement === 'done' ? '약정완료' : '확인완료')
+        : '서류제출';
       apiPost({ action: 'update', customer: customersCache[idx] });
       updateStats();
       renderCustomerList();
     }
+  }
+
+  /* ════ 3단계 : 온라인 약정 완료 체크박스 ════ */
+  function toggleAgreement(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.agreement       = checked ? 'done' : '';
+    c.docs.agreement  = c.agreement;
+    if (checked) c.docs.agreementAt = new Date().toISOString();
+    else delete c.docs.agreementAt;
+    c.status = checked ? '약정완료' : '확인완료';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
+  /* ════ 4단계 : 녹취 / 입금 체크박스 ════ */
+  function toggleRecording(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.recording      = checked ? 'done' : '';
+    c.docs.recording = c.recording;
+    if (checked) { c.docs.recordingAt = new Date().toISOString(); }
+    else {
+      delete c.docs.recordingAt;
+      // 녹취를 되돌리면 그 뒤 입금도 함께 롤백
+      c.payment = ''; c.docs.payment = ''; delete c.docs.paymentAt;
+    }
+    c.status = checked ? '녹취완료' : '시공완료';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
+  function togglePayment(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.payment      = checked ? 'done' : '';
+    c.docs.payment = c.payment;
+    if (checked) c.docs.paymentAt = new Date().toISOString();
+    else delete c.docs.paymentAt;
+    c.status = checked ? '입금완료' : '녹취완료';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
+  /* 4단계 시공완료 서류 제출 링크 복사 */
+  function copyConstructionLink(id) {
+    const h = location.hostname;
+    const base = (h === 'localhost' || h === '127.0.0.1') ? location.origin
+               : location.protocol === 'file:' ? location.href.replace(/[^/]*$/, '').replace(/\/$/, '')
+               : 'https://www.tudigital.co.kr';
+    const url = base + '/construction.html?id=' + id;
+    navigator.clipboard.writeText(url)
+      .then(() => showToast('🔗 시공서류 링크 복사 완료!'))
+      .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
   }
 
   /* ════ 고객 상세 팝업 ════ */
@@ -768,18 +911,27 @@
     document.getElementById('d-debit').textContent   = c.debit || '-';
 
     const steps = [
-      { key: '신청접수',   sub: '기본정보 제출 완료'     },
-      { key: '신용조회중', sub: '담당자 신용조회 진행 중' },
-      { key: '서류제출',   sub: '서류 업로드 완료'        },
-      { key: '확인완료',   sub: '서류 검토 및 최종 확인'  },
+      { key: '신청접수',    sub: '기본정보 제출 완료'                 },
+      { key: '신용조회중',  sub: '담당자 신용조회 진행 중'             },
+      { key: '서류제출',    sub: '서류 업로드 완료'                    },
+      { key: '확인완료',    sub: '서류 검토 · 한국캐피탈 최종 승인'     },
+      { key: '온라인 약정', sub: '한국캐피탈 → 고객 휴대폰 약정 (시공 전)' },
+      { key: '시공완료',    sub: '시공계약서 · 시공확인서 · 시공사진 제출' },
+      { key: '녹취완료',    sub: '한국캐피탈 → 고객 연락 녹취' },
+      { key: '입금완료',    sub: '한국캐피탈 → 판매점 (녹취 후 1~2일)' },
     ];
 
-    // 현재 진행 단계 인덱스 (0~3), 4=전체완료
-    const stepIdx = c.confirmed ? 4 : c.docs ? 3 : 1;
+    // 현재 진행 단계 인덱스 (0~7), 8=전체완료
+    const stepIdx = c.payment === 'done'   ? 8
+                  : c.recording === 'done' ? 7
+                  : c.built                ? 6
+                  : c.agreement === 'done' ? 5
+                  : c.confirmed            ? 4
+                  : c.docs                 ? 3 : 1;
 
     document.getElementById('d-timeline').innerHTML = steps.map((s, i) => {
       const isDone    = i < stepIdx;
-      const isCurrent = i === stepIdx && stepIdx < 4;
+      const isCurrent = i === stepIdx && stepIdx < steps.length;
       const dotClass  = isDone ? 'done' : isCurrent ? 'current' : 'pending';
       const lblClass  = isDone ? 'done' : isCurrent ? '' : 'pending';
       const icon      = isDone ? '✓' : isCurrent ? '●' : '○';
@@ -828,11 +980,16 @@
       if (raw) storedFiles = JSON.parse(raw);
     } catch(e) {}
 
-    const labels  = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본'];
-    const keys    = ['doc1', 'doc2', 'doc3'];
+    // 가족 명의 거주주택이면 가족관계증명서가 추가된다.
+    // ①번은 '거주 중이면 등기부등본 / 이사 예정이면 매매계약서'라 소유형태와 무관하다.
+    const isFamily = (c.docs || {}).ownership === 'family';
+    const labels  = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본', '견적서']
+                    .concat(isFamily ? ['가족관계증명서'] : []);
+    const keys    = ['doc1', 'doc2', 'doc3', 'doc4'].concat(isFamily ? ['doc5'] : []);
     const dlStyle = 'display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;';
 
-    document.getElementById('doc-modal-title').textContent = c.name + ' 고객 서류';
+    document.getElementById('doc-modal-title').textContent =
+      c.name + ' 고객 서류 (' + (isFamily ? '가족 소유' : '본인 소유') + ')';
 
     document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
       const docVal      = c.docs[key] || '';
@@ -852,7 +1009,7 @@
         downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else if (isImgbbUrl) {
         previewHtml  = '<img src="' + docVal + '" alt="' + labels[i] + '" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:6px;cursor:zoom-in;" onclick="window.open(\'' + docVal + '\',\'_blank\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" /><div style="display:none;text-align:center;color:#bbb;font-size:13px;padding:20px;">이미지를 불러올 수 없습니다<br><a href="' + docVal + '" target="_blank" style="color:#1a3a5c;font-size:12px;">링크 열기</a></div>';
-        downloadHtml = '<button onclick="downloadDoc(\'' + docVal + '\',\'doc' + (i+1) + '.jpg\')" style="' + dlStyle + 'border:none;cursor:pointer;">⬇ 다운로드</button>';
+        downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else if (sessionFile) {
         url = URL.createObjectURL(sessionFile);
         previewHtml  = sessionFile.type === 'application/pdf'
@@ -865,6 +1022,9 @@
           ? '<iframe src="' + url + '#toolbar=0"></iframe>'
           : '<img src="' + url + '" alt="' + displayName + '" onclick="window.open(this.src,\'_blank\')" />';
         downloadHtml = '<a href="' + url + '" download="' + displayName + '" style="' + dlStyle + '">⬇ 다운로드</a>';
+      } else if (docVal && docVal.startsWith('http')) {
+        previewHtml  = '<img src="' + docVal + '" alt="' + labels[i] + '" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:6px;cursor:zoom-in;" onclick="window.open(\'' + docVal + '\',\'_blank\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" /><div style="display:none;text-align:center;color:#bbb;font-size:13px;padding:20px;">이미지를 불러올 수 없습니다<br><a href="' + docVal + '" target="_blank" style="color:#1a3a5c;font-size:12px;">링크 열기</a></div>';
+        downloadHtml = '<a href="' + docVal + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>';
       } else {
         previewHtml  = '<div class="doc-no-preview"><div class="doc-icon">📄</div><div>' + displayName + '</div><small style="color:#ccc;margin-top:4px;display:block;">재업로드 시 다운로드 가능</small></div>';
         downloadHtml = '<span style="font-size:12px;color:#bbb;">재업로드 후 다운로드 가능</span>';
@@ -876,10 +1036,45 @@
         + '</div>'
         + '<div class="doc-preview-body">' + previewHtml + '</div>'
         + '</div>';
-    }).join('');
+    }).join('') + buildConstructionSection(c, dlStyle);
 
     document.getElementById('doc-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+  }
+
+  /* ════ 4단계 · 시공완료 서류 (시공계약서 · 시공확인서 · 시공사진) ════ */
+  function buildConstructionSection(c, dlStyle) {
+    const d = c.docs || {};
+    const photos = Array.isArray(d.photos) ? d.photos : [];
+    if (!d.cdoc1 && !d.cdoc2 && !photos.length) return '';
+
+    const shot = (url, label) =>
+      '<div class="doc-preview-item">'
+      + '<div class="doc-preview-label" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+      + '<span>' + label + '</span>'
+      + '<a href="' + url + '" target="_blank" style="' + dlStyle + '">⬇ 다운로드</a>'
+      + '</div>'
+      + '<div class="doc-preview-body">'
+      + '<img src="' + url + '" alt="' + label + '" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:6px;cursor:zoom-in;"'
+      + ' onclick="window.open(\'' + url + '\',\'_blank\')"'
+      + ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" />'
+      + '<div style="display:none;text-align:center;color:#bbb;font-size:13px;padding:20px;">이미지를 불러올 수 없습니다'
+      + '<br><a href="' + url + '" target="_blank" style="color:#1a3a5c;font-size:12px;">링크 열기</a></div>'
+      + '</div></div>';
+
+    let html = '<div style="grid-column:1/-1;margin:22px 0 4px;padding-top:18px;border-top:2px solid #e2e8f0;">'
+      + '<div style="font-size:15px;font-weight:900;color:#0d2137;">🏗 시공완료 서류'
+      + '<span style="margin-left:8px;font-size:12px;font-weight:700;color:#888;">사진 ' + photos.length + '장</span></div>'
+      + (d.constructionAt
+          ? '<div style="font-size:12px;color:#aaa;margin-top:3px;">제출: '
+            + new Date(d.constructionAt).toLocaleString('ko-KR') + '</div>'
+          : '')
+      + '</div>';
+
+    if (d.cdoc1) html += shot(d.cdoc1, '시공계약서');
+    if (d.cdoc2) html += shot(d.cdoc2, '시공확인서');
+    photos.forEach((u, i) => { html += shot(u, '시공사진 ' + (i + 1)); });
+    return html;
   }
 
   function closeDocModal() {
@@ -902,7 +1097,11 @@
 
   /* ════ 업로드 링크 복사 ════ */
   function copyUploadLink(id) {
-    const url = 'https://www.tudigital.co.kr/upload.html?id=' + id;
+    const h = location.hostname;
+    const base = (h === 'localhost' || h === '127.0.0.1') ? location.origin
+               : location.protocol === 'file:' ? location.href.replace(/[^/]*$/, '').replace(/\/$/, '')
+               : 'https://www.tudigital.co.kr';
+    const url = base + '/upload.html?id=' + id;
     navigator.clipboard.writeText(url).then(() => {
       showToast('📋 링크 복사 완료! 카톡으로 붙여넣기 해주세요');
     }).catch(() => {
