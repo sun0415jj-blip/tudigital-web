@@ -43,6 +43,20 @@
     }
     .form-select:focus { border-color: #0d2137; box-shadow: 0 0 0 3px rgba(13,33,55,.08); background-color: #fff; }
 
+    /* 소유형태 선택 */
+    .own-row { display: flex; gap: 10px; }
+    .own-btn {
+      flex: 1; padding: 13px 10px;
+      border: 1.5px solid #d1d9e0; border-radius: 10px;
+      background: #fafbfc; color: #555;
+      font-family: inherit; font-size: 13.5px; font-weight: 700;
+      cursor: pointer; text-align: center; line-height: 1.4;
+      transition: all .15s;
+    }
+    .own-btn small { display: block; font-size: 11px; font-weight: 500; color: #aaa; margin-top: 2px; }
+    .own-btn.active { background: #0d2137; border-color: #0d2137; color: #fff; }
+    .own-btn.active small { color: rgba(255,255,255,.65); }
+
     /* 서류 안내 */
     .doc-info-box { background: #e8f0fe; border-radius: 10px; padding: 16px 18px; margin-bottom: 22px; }
     .doc-info-box .doc-info-title { font-size: 14px; font-weight: 800; color: #1a3a5c; margin-bottom: 10px; }
@@ -88,10 +102,19 @@
     .complete-sub     { font-size: 14px; color: #666; line-height: 1.8; }
     .complete-contact { margin-top: 24px; padding: 14px 18px; background: #f0f4f8; border-radius: 10px; font-size: 14px; color: #555; font-weight: 600; }
 
+    /* 다음 단계 안내 (온라인 약정) */
+    .next-step      { margin-top: 26px; text-align: left; border: 1.5px solid #ffe0a3; background: #fffaf0; border-radius: 12px; padding: 18px 18px 16px; }
+    .next-step-tag  { display: inline-block; background: #f0a500; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: .04em; }
+    .next-step-title{ font-size: 15px; font-weight: 900; color: #8a5a00; margin: 10px 0 8px; }
+    .next-step ul   { margin-left: 17px; }
+    .next-step li   { font-size: 13px; color: #6b4e12; line-height: 1.65; margin-bottom: 5px; }
+    .next-step .warn{ margin-top: 12px; padding: 10px 12px; background: #fff0f0; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: #c0392b; line-height: 1.55; }
+
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
     .hidden { display: none !important; }
   </style>
+  <script src="dev-mock.js"></script>
 </head>
 <body>
 
@@ -129,7 +152,7 @@
           <div class="info-item"><label>생년월일</label><span id="c-birth">-</span></div>
           <div class="info-item"><label>연락처</label><span id="c-phone">-</span></div>
           <div class="info-item"><label>상품명</label><span id="c-product">-</span></div>
-          <div class="info-item"><label>금액</label><span id="c-amount">-</span></div>
+          <div class="info-item"><label>일시불 금액</label><span id="c-amount">-</span></div>
           <div class="info-item"><label>구독기간</label><span id="c-period">-</span></div>
           <div class="info-item"><label>자동이체일</label><span id="c-debit">-</span></div>
         </div>
@@ -167,13 +190,24 @@
         </select>
       </div>
 
+      <!-- 주택 소유형태 -->
+      <div class="form-group">
+        <label class="form-label">주택 소유형태 <span class="req">*</span></label>
+        <div class="own-row">
+          <button type="button" class="own-btn active" id="own-self"   onclick="setOwnership('self')">본인 소유<small>본인 명의 주택</small></button>
+          <button type="button" class="own-btn"        id="own-family" onclick="setOwnership('family')">가족 소유<small>가족 명의 거주주택</small></button>
+        </div>
+      </div>
+
       <!-- 서류 안내 -->
       <div class="doc-info-box">
-        <p class="doc-info-title">📋 아래 서류 3가지를 모두 업로드해 주세요</p>
+        <p class="doc-info-title" id="doc-info-title">📋 아래 서류 4가지를 모두 업로드해 주세요</p>
         <ul>
-          <li>등기부등본 또는 매매계약서</li>
+          <li id="info-1">등기부등본 또는 매매계약서</li>
           <li>주민등록증 또는 운전면허증 (신분증 앞면 사본)</li>
           <li>통장 사본 (자동이체 출금 계좌 앞면)</li>
+          <li>견적서</li>
+          <li id="info-5" class="hidden">가족관계증명서</li>
         </ul>
       </div>
 
@@ -181,8 +215,8 @@
 
       <!-- 서류 1 -->
       <div class="upload-group">
-        <span class="upload-group-label">① 등기부등본 또는 매매계약서 <span class="req">*</span></span>
-        <p class="upload-group-sub">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
+        <span class="upload-group-label" id="lbl-1">① 등기부등본 또는 매매계약서 <span class="req">*</span></span>
+        <p class="upload-group-sub" id="sub-1">거주 주택 → 등기부등본 &nbsp;|&nbsp; 이사 예정 → 매매계약서</p>
         <div id="existing-doc1" class="existing-doc hidden">
           <span class="doc-status">✅ 업로드 완료</span>
           <button class="btn-download" onclick="downloadDoc(1)">⬇ 다운로드</button>
@@ -227,6 +261,38 @@
         <p class="upload-hint">JPG, PNG, PDF 가능</p>
       </div>
 
+      <!-- 서류 4 : 견적서 -->
+      <div class="upload-group">
+        <span class="upload-group-label">④ 견적서 <span class="req">*</span></span>
+        <p class="upload-group-sub">고객에게 제시한 최종 견적서</p>
+        <div id="existing-doc4" class="existing-doc hidden">
+          <span class="doc-status">✅ 업로드 완료</span>
+          <button class="btn-download" onclick="downloadDoc(4)">⬇ 다운로드</button>
+        </div>
+        <input type="file" id="f4" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(4)" />
+        <div class="upload-row">
+          <label for="f4" class="btn-file">📂 파일 선택</label>
+          <span class="file-name-display" id="fn4">선택된 파일 없음</span>
+        </div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
+      </div>
+
+      <!-- 서류 5 : 가족관계증명서 (가족 소유일 때만) -->
+      <div class="upload-group hidden" id="group-5">
+        <span class="upload-group-label">⑤ 가족관계증명서 <span class="req">*</span></span>
+        <p class="upload-group-sub">주택 명의자와의 가족관계 확인용</p>
+        <div id="existing-doc5" class="existing-doc hidden">
+          <span class="doc-status">✅ 업로드 완료</span>
+          <button class="btn-download" onclick="downloadDoc(5)">⬇ 다운로드</button>
+        </div>
+        <input type="file" id="f5" accept=".jpg,.jpeg,.png,.pdf" onchange="onSelect(5)" />
+        <div class="upload-row">
+          <label for="f5" class="btn-file">📂 파일 선택</label>
+          <span class="file-name-display" id="fn5">선택된 파일 없음</span>
+        </div>
+        <p class="upload-hint">JPG, PNG, PDF 가능</p>
+      </div>
+
       <div class="divider"></div>
 
       <button class="btn-submit" id="btn-submit" onclick="submitDocs()" disabled>
@@ -241,7 +307,20 @@
     <div class="complete-card">
       <div class="complete-icon">✅</div>
       <div class="complete-title">서류 제출 완료!</div>
-      <div class="complete-sub">서류가 성공적으로 접수되었습니다.<br>담당자 검토 후 연락드리겠습니다.</div>
+      <div class="complete-sub">서류가 접수되었습니다.<br>한국캐피탈 최종 승인 여부를 확인한 뒤 연락드립니다.</div>
+
+      <!-- 3단계 : 온라인 약정 안내 -->
+      <div class="next-step">
+        <span class="next-step-tag">다음 단계 · 온라인 약정</span>
+        <div class="next-step-title">고객님 휴대폰으로 약정서가 발송됩니다</div>
+        <ul>
+          <li>승인이 완료되면 <b>한국캐피탈</b>에서 고객 휴대폰으로 약정서를 발송합니다.</li>
+          <li>약정은 <b>고객이 직접</b> 진행합니다. 파트너가 대신할 수 없습니다.</li>
+          <li>고객이 약정을 완료했는지 확인한 뒤 시공 일정을 잡아 주세요.</li>
+        </ul>
+        <div class="warn">⚠ 온라인 약정은 반드시 <u>시공 전에</u> 완료되어야 합니다.<br>약정 없이 시공하면 대금 지급이 지연될 수 있습니다.</div>
+      </div>
+
       <div class="complete-contact">📞 문의: 1588-0883</div>
     </div>
   </div>
@@ -257,8 +336,41 @@
 
   let customerId   = null;
   let customerData = null;
-  let files        = [null, null, null];
-  let docUrls      = ['', '', ''];
+  let files        = [null, null, null, null, null];
+  let docUrls      = ['', '', '', '', ''];
+  let ownership    = 'self';            // 'self' = 본인 소유 / 'family' = 가족 소유 거주주택
+
+  // 소유형태별 필수 서류 번호
+  function requiredDocs() {
+    return ownership === 'family' ? [1, 2, 3, 4, 5] : [1, 2, 3, 4];
+  }
+
+  function setOwnership(type) {
+    ownership = type;
+    document.getElementById('own-self').classList.toggle('active',   type === 'self');
+    document.getElementById('own-family').classList.toggle('active', type === 'family');
+
+    const isFamily = type === 'family';
+    // 등기부등본 / 매매계약서 선택은 '이미 사는 집이냐, 이사 예정이냐'로 갈린다.
+    // 소유형태(본인/가족)와는 무관하다 — 가족 소유여도 이사 예정이면 매매계약서를 낸다.
+    document.getElementById('sub-1').textContent = isFamily
+      ? '가족이 사는 집 → 등기부등본  |  이사 예정 → 매매계약서'
+      : '거주 주택 → 등기부등본  |  이사 예정 → 매매계약서';
+
+    document.getElementById('doc-info-title').textContent =
+      '📋 아래 서류 ' + requiredDocs().length + '가지를 모두 업로드해 주세요';
+
+    document.getElementById('info-5').classList.toggle('hidden',  !isFamily);
+    document.getElementById('group-5').classList.toggle('hidden', !isFamily);
+    if (!isFamily) {                     // 본인 소유로 되돌리면 5번 선택 초기화
+      files[4] = null;
+      document.getElementById('f5').value = '';
+      const el = document.getElementById('fn5');
+      el.textContent = '선택된 파일 없음';
+      el.classList.remove('has-file');
+    }
+    updateUI();
+  }
 
   async function init() {
     customerId = new URLSearchParams(location.search).get('id');
@@ -309,8 +421,11 @@
         if (sel.options[i].value === docs.jobType) { sel.selectedIndex = i; break; }
       }
     }
+    // 기존에 저장된 소유형태 복원 (없으면 본인 소유)
+    setOwnership(docs.ownership === 'family' ? 'family' : 'self');
+
     // 기존 서류 URL 표시
-    [1, 2, 3].forEach(n => {
+    [1, 2, 3, 4, 5].forEach(n => {
       const url = docs['doc' + n];
       if (url) {
         docUrls[n - 1] = url;
@@ -331,15 +446,16 @@
   }
 
   function updateUI() {
-    const cnt     = files.filter(Boolean).length;
+    const req     = requiredDocs();
+    const cnt     = req.filter(n => files[n - 1]).length;
     const jobType = document.getElementById('job-type').value;
     const btn     = document.getElementById('btn-submit');
-    const ready   = cnt === 3 && jobType !== '';
+    const ready   = cnt === req.length && jobType !== '';
     btn.disabled  = !ready;
     if (!jobType) {
       btn.textContent = '직업군을 선택해 주세요';
-    } else if (cnt < 3) {
-      btn.textContent = cnt + '/3 서류 선택됨 — 모두 선택해 주세요';
+    } else if (cnt < req.length) {
+      btn.textContent = cnt + '/' + req.length + ' 서류 선택됨 — 모두 선택해 주세요';
     } else {
       btn.textContent = '서류 제출하기 →';
     }
@@ -443,23 +559,19 @@
     btn.disabled = true;
 
     try {
+      const req = requiredDocs();
       btn.innerHTML = '<span class="spinner"></span>서류 업로드 중...';
-      const [url1, url2, url3] = await Promise.all([
-        uploadFileToImgbb(files[0]),
-        uploadFileToImgbb(files[1]),
-        uploadFileToImgbb(files[2])
-      ]);
+      const urls = await Promise.all(req.map(n => uploadFileToImgbb(files[n - 1])));
 
       btn.innerHTML = '<span class="spinner"></span>저장 중...';
       const params = new URLSearchParams({
         action: 'saveAllDocUrls',
         customerId,
-        doc1: url1,
-        doc2: url2,
-        doc3: url3,
         jobType,
+        ownership,
         t: Date.now()
       });
+      req.forEach((n, i) => params.set('doc' + n, urls[i]));
       const res  = await fetch(SCRIPT_URL + '?' + params);
       const json = await res.json();
       if (!json.ok) throw new Error('저장 실패');
