@@ -1,0 +1,7 @@
+# Office 임시 잠금 파일 (문서를 열어두면 생김)
+~$*
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
