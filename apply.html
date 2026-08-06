@@ -90,6 +90,7 @@
     .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
     .hidden { display: none !important; }
   </style>
+  <script src="dev-mock.js"></script>
 </head>
 <body>
 
@@ -224,7 +225,7 @@
 
       <div class="divider"></div>
 
-      <!-- 상품명 / 구독금액 -->
+      <!-- 상품명 / 최종견적 일시불 금액 -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">상품명</label>
@@ -235,9 +236,9 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">구독금액</label>
-          <input type="number" id="f-amount" class="form-input" placeholder="59000" />
-          <p class="form-hint">원/월</p>
+          <label class="form-label">최종견적 일시불 금액</label>
+          <input type="number" id="f-amount" class="form-input" placeholder="1500000" />
+          <p class="form-hint">최종 견적 기준 일시불 금액 (원)</p>
         </div>
       </div>
 
@@ -286,10 +287,13 @@
       <div class="complete-notice">
         📋 다음 단계<br>
         담당자로부터 서류 업로드 링크를 받으시면<br>
-        아래 서류 3가지를 준비해 업로드해 주세요.<br><br>
+        아래 서류를 준비해 업로드해 주세요.<br><br>
         · 등기부등본 또는 매매계약서<br>
         · 신분증 앞면 사본<br>
-        · 통장 사본 (자동이체 계좌)
+        · 통장 사본 (자동이체 계좌)<br>
+        · 견적서<br><br>
+        ※ 가족 명의 거주주택이면 <b>가족관계증명서</b>가 추가로 필요합니다.<br>
+        ※ 이사 예정이라 등기부등본이 없으면 <b>매매계약서</b>를 제출해 주세요.
       </div>
       <div class="complete-contact">📞 문의: 1588-0883</div>
     </div>

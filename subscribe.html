@@ -121,6 +121,7 @@
       .form-section{padding:48px 0 60px}
     }
   </style>
+  <script src="dev-mock.js"></script>
 </head>
 <body>
 
@@ -237,106 +238,28 @@
         <div class="summary-item"><label>생년월일</label><span id="s2-birth">-</span></div>
         <div class="summary-item"><label>연락처</label><span id="s2-phone">-</span></div>
         <div class="summary-item"><label>상품명</label><span id="s2-product">-</span></div>
-        <div class="summary-item"><label>금액</label><span id="s2-amount">-</span></div>
+        <div class="summary-item"><label>일시불 금액</label><span id="s2-amount">-</span></div>
         <div class="summary-item"><label>구독기간</label><span id="s2-period">-</span></div>
         <div class="summary-item"><label>자동이체일</label><span id="s2-debit">-</span></div>
       </div>
 
-      <div class="form-group" style="margin-bottom:20px;">
-        <label style="display:block;font-size:14px;font-weight:700;color:#333;margin-bottom:8px;">직업군 <span style="color:#e53e3e;margin-left:3px;">*</span></label>
-        <select id="job-category" style="width:100%;padding:13px 16px;border:1.5px solid #d1d9e0;border-radius:10px;font-size:15px;font-family:inherit;color:#222;background:#fafbfc;outline:none;box-sizing:border-box;appearance:auto;-webkit-appearance:auto;cursor:pointer;">
-          <option value="">-- 직업군을 선택해 주세요 --</option>
-          <option>건설관련직</option>
-          <option>기계관련직</option>
-          <option>섬유및의복관련직</option>
-          <option>식품가공관련직</option>
-          <option>재료관련직</option>
-          <option>전기·전자관련직</option>
-          <option>정보통신관련직</option>
-          <option>화학관련직</option>
-          <option>환경·인쇄·목재·가구·공예및생산단순직</option>
-          <option>경영·회계·사무관련직</option>
-          <option>금융·보험관련직</option>
-          <option>관리직</option>
-          <option>군인</option>
-          <option>농림어업관련직</option>
-          <option>교육및자연과학·사회과학연구관련직</option>
-          <option>문화·예술·디자인·방송관련직</option>
-          <option>법률·경찰·소방·교도관련직</option>
-          <option>보건·의료관련직</option>
-          <option>사회복지및종교관련직</option>
-          <option>경비및청소관련직</option>
-          <option>미용·숙박·여행·오락·스포츠관련직</option>
-          <option>영업및판매관련직</option>
-          <option>운전및운송관련직</option>
-          <option>음식서비스관련직</option>
-          <option>주부</option>
-          <option>무직</option>
-        </select>
-      </div>
-
+      <!-- 서류는 전용 업로드 화면(upload.html)에서 처리한다.
+           직업군·소유형태·서류 검증이 모두 그쪽에 있으므로 여기서 중복 구현하지 않는다. -->
       <div class="upload-guide">
-        📎 각 서류를 업로드하고 저장해 주세요. 3개 모두 저장하면 제출 가능합니다.
+        📎 서류는 <b>업로드 화면</b>에서 진행합니다. 주택 소유형태에 따라 4~5종이 필요합니다.
         <ul>
-          <li>(거주 주택) 본인 소유 등기부등본</li>
-          <li>(신규 매매) 부동산 매매계약서</li>
-          <li>신분증 사본</li>
-          <li>(자동이체) 통장 사본</li>
+          <li>등기부등본 또는 매매계약서</li>
+          <li>신분증 사본 (앞면)</li>
+          <li>통장 사본 (자동이체 출금 계좌)</li>
+          <li>견적서</li>
         </ul>
+        <p style="margin-top:10px;padding:10px 12px;background:#fff8e6;border-radius:8px;font-size:13px;color:#8a5a00;line-height:1.6;">
+          ※ 가족 명의 거주주택이면 <b>가족관계증명서</b>가 추가로 필요합니다.<br>&nbsp;&nbsp;&nbsp;등기부등본이 없는 <b>이사 예정</b>인 경우에는 매매계약서를 제출합니다.
+        </p>
       </div>
 
-      <!-- 서류 1 -->
-      <div class="upload-group">
-        <span class="upload-label">등기부등본 또는 매매계약서</span>
-        <p class="upload-sub-label">거주 주택 → 등기부등본 &nbsp;|&nbsp; 신규 매매 → 매매계약서</p>
-        <input type="file" id="doc1" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(1)" />
-        <div id="input-area-doc1">
-          <div class="upload-row">
-            <label for="doc1" class="btn-file-upload">📂 파일 올리기</label>
-            <span class="file-name-display" id="name-doc1">선택된 파일 없음</span>
-            <button type="button" class="btn-file-remove" id="remove-doc1" onclick="removeDoc(1)">✕</button>
-          </div>
-          <button class="btn-save-each hidden" id="save-doc1" onclick="saveDoc(1)">저장하기</button>
-        </div>
-        <div class="save-confirm hidden" id="confirm-doc1"></div>
-        <p class="upload-hint">JPG, PNG, PDF 가능</p>
-      </div>
-
-      <!-- 서류 2 -->
-      <div class="upload-group">
-        <span class="upload-label">주민등록증 또는 운전면허증</span>
-        <p class="upload-sub-label">신분증 앞면 사본</p>
-        <input type="file" id="doc2" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(2)" />
-        <div id="input-area-doc2">
-          <div class="upload-row">
-            <label for="doc2" class="btn-file-upload">📂 파일 올리기</label>
-            <span class="file-name-display" id="name-doc2">선택된 파일 없음</span>
-            <button type="button" class="btn-file-remove" id="remove-doc2" onclick="removeDoc(2)">✕</button>
-          </div>
-          <button class="btn-save-each hidden" id="save-doc2" onclick="saveDoc(2)">저장하기</button>
-        </div>
-        <div class="save-confirm hidden" id="confirm-doc2"></div>
-        <p class="upload-hint">JPG, PNG, PDF 가능</p>
-      </div>
-
-      <!-- 서류 3 -->
-      <div class="upload-group">
-        <span class="upload-label">통장 사본</span>
-        <p class="upload-sub-label">자동이체 출금 계좌 통장 앞면</p>
-        <input type="file" id="doc3" accept=".jpg,.jpeg,.png,.pdf" onchange="onDocSelected(3)" />
-        <div id="input-area-doc3">
-          <div class="upload-row">
-            <label for="doc3" class="btn-file-upload">📂 파일 올리기</label>
-            <span class="file-name-display" id="name-doc3">선택된 파일 없음</span>
-            <button type="button" class="btn-file-remove" id="remove-doc3" onclick="removeDoc(3)">✕</button>
-          </div>
-          <button class="btn-save-each hidden" id="save-doc3" onclick="saveDoc(3)">저장하기</button>
-        </div>
-        <div class="save-confirm hidden" id="confirm-doc3"></div>
-        <p class="upload-hint">JPG, PNG, PDF 가능</p>
-      </div>
-
-      <button class="btn-submit hidden" id="btn-final-submit" onclick="submitApplication()">제출하기</button>
+      <button class="btn-submit" id="btn-open-upload" onclick="openUploadPage()">📤 서류 업로드 화면 열기</button>
+      <button class="btn-back" id="btn-copy-link" onclick="copyUploadLink()" style="margin-top:12px;">🔗 링크 복사해서 전달하기</button>
       <button class="btn-back" onclick="backToStep1()" style="margin-top:12px;">← 이전으로</button>
     </div>
   </div>
@@ -377,8 +300,6 @@
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec';
   let pendingCustomer = null;
 
-  let docFiles = [null, null, null]; // { url, name } 또는 null
-  let docSaved = [false, false, false];
 
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -466,7 +387,6 @@
     document.getElementById('s2-period').textContent  = pendingCustomer.period;
     document.getElementById('s2-debit').textContent   = pendingCustomer.debit;
 
-    initDocUpload();
 
     document.getElementById('section-step1').classList.add('hidden');
     document.getElementById('section-step2').classList.remove('hidden');
@@ -481,112 +401,53 @@
   }
 
   /* 서류 업로드 초기화 */
-  function initDocUpload() {
-    docFiles = [null, null, null];
-    docSaved = [false, false, false];
-    [1, 2, 3].forEach(n => {
-      document.getElementById('doc' + n).value = '';
-      document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
-      document.getElementById('name-doc' + n).classList.remove('has-file');
-      document.getElementById('remove-doc' + n).classList.remove('visible');
-      document.getElementById('save-doc' + n).classList.add('hidden');
-      document.getElementById('input-area-doc' + n).classList.remove('hidden');
-      const confirm = document.getElementById('confirm-doc' + n);
-      if (confirm.dataset.objectUrl) { URL.revokeObjectURL(confirm.dataset.objectUrl); confirm.dataset.objectUrl = ''; }
-      confirm.innerHTML = '';
-      confirm.classList.add('hidden');
-    });
-    document.getElementById('btn-final-submit').classList.add('hidden');
-    document.getElementById('job-category').value = '';
+  /* ── 서류 업로드 화면(upload.html)으로 넘기기 ────────────── */
+  /* 로컬(127.0.0.1)에서는 같은 서버를, 운영에서는 실제 도메인을 쓴다.
+     하드코딩하면 로컬 테스트 중에도 운영 서버로 튄다. */
+  function uploadBaseUrl() {
+    var h = location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return location.origin;
+    // 파일을 직접 열었을 때(file://)는 같은 폴더를 기준으로 삼는다
+    if (location.protocol === 'file:') return location.href.replace(/[^/]*$/, '').replace(/\/$/, '');
+    return 'https://www.tudigital.co.kr';
   }
 
-  function onDocSelected(n) {
-    const file = document.getElementById('doc' + n).files[0];
-    if (!file) return;
-    document.getElementById('name-doc' + n).textContent = file.name;
-    document.getElementById('name-doc' + n).classList.add('has-file');
-    document.getElementById('remove-doc' + n).classList.add('visible');
-    document.getElementById('save-doc' + n).classList.remove('hidden');
+  function uploadPageUrl() {
+    return uploadBaseUrl() + '/upload.html?id=' + pendingCustomer.id;
   }
 
-  function removeDoc(n) {
-    document.getElementById('doc' + n).value = '';
-    document.getElementById('name-doc' + n).textContent = '선택된 파일 없음';
-    document.getElementById('name-doc' + n).classList.remove('has-file');
-    document.getElementById('remove-doc' + n).classList.remove('visible');
-    document.getElementById('save-doc' + n).classList.add('hidden');
+  function openUploadPage() {
+    if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
+    window.open(uploadPageUrl(), '_blank');
+    showHandoffComplete();
   }
 
-  async function saveDoc(n) {
-    const file = document.getElementById('doc' + n).files[0];
-    if (!file) { alert('파일을 선택해 주세요.'); return; }
-
-    const btn = document.getElementById('save-doc' + n);
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> 업로드 중...';
-
-    try {
-      const base64 = await fileToBase64(file);
-      const json   = await apiUpload({
-        action:     'uploadFile',
-        base64:     base64,
-        fileName:   file.name,
-        mimeType:   file.type,
-        customerId: pendingCustomer ? pendingCustomer.id : Date.now(),
-        docKey:     'doc' + n
-      });
-
-      if (!json.ok || !json.url) throw new Error('서버 응답 오류');
-
-      docFiles[n - 1] = { url: json.url, name: file.name };
-      docSaved[n - 1] = true;
-
-      document.getElementById('input-area-doc' + n).classList.add('hidden');
-      btn.classList.add('hidden');
-
-      const confirm = document.getElementById('confirm-doc' + n);
-      confirm.innerHTML =
-        '✅ 저장완료 — <span style="font-weight:400;font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + file.name + '</span>' +
-        '<a href="' + json.url + '" target="_blank" style="margin-left:8px;padding:6px 14px;background:#e8f0fe;border:1.5px solid #4a90d9;border-radius:8px;font-size:13px;font-weight:700;color:#1a5276;text-decoration:none;white-space:nowrap;flex-shrink:0;">⬇ 다운로드</a>';
-      confirm.style.cssText = 'display:flex;align-items:center;gap:6px;padding:12px 14px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:14px;font-weight:600;color:#2e7d32;margin-top:8px;';
-      confirm.classList.remove('hidden');
-
-      if (docSaved.some(s => s)) {
-        document.getElementById('btn-final-submit').classList.remove('hidden');
-      }
-    } catch(e) {
-      console.error(e);
-      btn.disabled = false;
-      btn.textContent = '저장하기';
-      alert('업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+  function copyUploadLink() {
+    if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
+    const url = uploadPageUrl();
+    const done = () => {
+      const btn = document.getElementById('btn-copy-link');
+      const old = btn.textContent;
+      btn.textContent = '✅ 링크 복사됨';
+      setTimeout(() => { btn.textContent = old; }, 2500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done)
+        .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
+    } else {
+      prompt('아래 링크를 복사해 전달해 주세요:', url);
     }
   }
 
-  /* 최종 제출 */
-  function submitApplication() {
-    const job = document.getElementById('job-category').value;
-    if (!job) { alert('직업군을 선택해 주세요.'); document.getElementById('job-category').focus(); return; }
-    if (!docSaved.some(s => s)) { alert('서류를 최소 1개 이상 저장해 주세요.'); return; }
-
-    const btn = document.getElementById('btn-final-submit');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> 제출 중...';
-
-    pendingCustomer.job = job;
-    pendingCustomer.docs = {
-      doc1: docFiles[0] ? (docFiles[0].url || docFiles[0].name || '') : '',
-      doc2: docFiles[1] ? (docFiles[1].url || docFiles[1].name || '') : '',
-      doc3: docFiles[2] ? (docFiles[2].url || docFiles[2].name || '') : ''
-    };
-    pendingCustomer.status = '서류제출';
-
-    apiPost({ action: 'update', customer: pendingCustomer });
-
-    setTimeout(() => {
-      document.getElementById('section-step2').classList.add('hidden');
-      document.getElementById('section-complete').classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 800);
+  function showHandoffComplete() {
+    const msg = document.getElementById('complete-msg');
+    if (msg) {
+      msg.innerHTML = '<strong>' + pendingCustomer.name + '</strong> 고객 기본정보가 접수되었습니다.<br>'
+                    + '새 창에서 서류 업로드를 마쳐 주세요.';
+    }
+    document.getElementById('section-step2').classList.add('hidden');
+    document.getElementById('section-complete').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
 </body>
