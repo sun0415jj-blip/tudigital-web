@@ -321,6 +321,10 @@
         <div class="stat-num" id="stat-paid">-</div>
         <div class="stat-label">입금완료</div>
       </div>
+      <div class="stat-card c-wait">
+        <div class="stat-num" id="stat-overdue" style="color:#c0392b;">-</div>
+        <div class="stat-label">⚠ 독촉대상</div>
+      </div>
     </div>
 
     <!-- 고객 목록 -->
@@ -345,7 +349,9 @@
           <button class="filter-btn" onclick="setFilter(this,'시공완료')">시공완료</button>
           <button class="filter-btn" onclick="setFilter(this,'녹취완료')">녹취완료</button>
           <button class="filter-btn" onclick="setFilter(this,'입금완료')">입금완료</button>
+          <button class="filter-btn" style="border-color:#e53e3e;color:#c0392b;" onclick="setFilter(this,'독촉대상')">⚠ 독촉대상</button>
         </div>
+        <div class="search-filter-row" id="org-filter-row" style="margin-top:8px;"></div>
       </div>
 
       <div id="list-loading" class="loading-row" style="display:none;">
@@ -381,6 +387,7 @@
           <div class="detail-info-item"><div class="detail-info-label">이름</div><div class="detail-info-value" id="d-name"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">생년월일</div><div class="detail-info-value" id="d-birth"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">연락처</div><div class="detail-info-value" id="d-phone"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">업체 / 담당자</div><div class="detail-info-value" id="d-org"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">신청일시</div><div class="detail-info-value" id="d-created" style="font-size:12px;"></div></div>
         </div>
       </div>
@@ -391,6 +398,7 @@
           <div class="detail-info-item"><div class="detail-info-label">일시불 금액</div><div class="detail-info-value" id="d-amount"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">구독기간</div><div class="detail-info-value" id="d-period"></div></div>
           <div class="detail-info-item"><div class="detail-info-label">자동이체일</div><div class="detail-info-value" id="d-debit"></div></div>
+          <div class="detail-info-item"><div class="detail-info-label">시공예정일</div><div class="detail-info-value" id="d-scheduled"></div></div>
         </div>
       </div>
       <div>
@@ -522,6 +530,7 @@
     document.getElementById('stat-agree').textContent  = all.filter(c => c.status === '약정완료').length;
     document.getElementById('stat-built').textContent  = all.filter(c => c.status === '시공완료').length;
     document.getElementById('stat-paid').textContent   = all.filter(c => c.status === '입금완료').length;
+    document.getElementById('stat-overdue').textContent = all.filter(isOverdue).length;
   }
 
   /* ════ 검색 / 필터 ════ */
@@ -536,6 +545,47 @@
     filterList('');
   }
 
+
+  /* ════ 시공예정일 · 지연(독촉대상) 판정 ════
+     시공예정일이 지났는데 아직 시공완료 서류가 안 들어온 건을 골라낸다. */
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function overdueDays(c) {
+    const due = c.docs && c.docs.scheduledAt;
+    if (!due || c.built) return 0;                 // 예정일 없거나 이미 서류 제출됨
+    const ms = new Date(todayStr()) - new Date(due);
+    const d  = Math.floor(ms / 86400000);
+    return d > 0 ? d : 0;
+  }
+
+  function isOverdue(c) { return overdueDays(c) > 0; }
+
+  // 일정이 바뀐 경우에만 사용. 기본값은 파트너가 2단계에서 넣은 값이다.
+  function editScheduledDate(id) {
+    const c = customersCache.find(x => x.id === id);
+    if (!c) return;
+    const cur = (c.docs && c.docs.scheduledAt) || '';
+    const v = prompt('시공예정일을 변경합니다 (YYYY-MM-DD). 비우면 삭제됩니다.', cur);
+    if (v === null) return;
+    const t = v.trim();
+    if (t && !/^\d{4}-\d{2}-\d{2}$/.test(t)) { alert('YYYY-MM-DD 형식으로 입력해 주세요.'); return; }
+    setScheduledDate(id, t);
+  }
+
+  function setScheduledDate(id, value) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    if (value) c.docs.scheduledAt = value; else delete c.docs.scheduledAt;
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
   function setFilter(btn, filter) {
     statusFilter = filter;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -543,21 +593,61 @@
     renderCustomerList();
   }
 
+  /* ════ 업체 필터 (데이터에 있는 업체로 자동 구성) ════ */
+  let orgFilter = 'all';
+
+  function setOrgFilter(btn, org) {
+    orgFilter = org;
+    document.querySelectorAll('#org-filter-row .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCustomerList();
+  }
+
+  function renderOrgFilters() {
+    const row = document.getElementById('org-filter-row');
+    if (!row) return;
+    const orgs = [...new Set(customersCache.map(c => c.agentOrg).filter(Boolean))].sort();
+    row.innerHTML = '';
+    if (!orgs.length) return;
+
+    const label = document.createElement('span');
+    label.textContent = '업체';
+    label.style.cssText = 'align-self:center;font-size:12px;font-weight:700;color:#888;margin-right:2px;';
+    row.appendChild(label);
+
+    const mkBtn = (text, value, count) => {
+      const b = document.createElement('button');
+      b.className = 'filter-btn' + (orgFilter === value ? ' active' : '');
+      b.textContent = text + (count === undefined ? '' : ' ' + count);
+      b.onclick = () => setOrgFilter(b, value);
+      row.appendChild(b);
+    };
+
+    mkBtn('전체', 'all');
+    orgs.forEach(o => mkBtn(o, o, customersCache.filter(c => c.agentOrg === o).length));
+  }
+
+
   /* ════ 목록 렌더링 ════ */
   function renderCustomerList() {
+    renderOrgFilters();
     const wrap    = document.getElementById('customer-table-body');
     const countEl = document.getElementById('list-count');
     const all     = customersCache;
 
     const q    = searchQuery.toLowerCase();
     const list = all.filter(c => {
-      const ms = statusFilter === 'all' || c.status === statusFilter;
+      const ms = statusFilter === 'all' ? true
+               : statusFilter === '독촉대상' ? isOverdue(c)
+               : c.status === statusFilter;
+      const mo = orgFilter === 'all' || c.agentOrg === orgFilter;
       const mq = !q
         || c.name.toLowerCase().includes(q)
         || (c.phone || '').replace(/-/g,'').includes(q.replace(/-/g,''))
         || (c.birth || '').includes(q)
-        || (c.status || '').includes(q);
-      return ms && mq;
+        || (c.status || '').includes(q)
+        || (c.agentOrg || '').toLowerCase().includes(q);
+      return ms && mo && mq;
     });
 
     countEl.textContent = (q || statusFilter !== 'all')
@@ -579,6 +669,8 @@
 
     const rows = list.map(c => {
       let docsCell, actionCell;
+      const od  = overdueDays(c);
+      const due = (c.docs && c.docs.scheduledAt) || '';
 
       if (!c.docs) {
         docsCell   = '<span style="color:#bbb;font-size:12px;">미첨부</span>';
@@ -620,6 +712,12 @@
 
       return '<tr id="row-' + c.id + '">'
         + '<td style="cursor:pointer;" onclick="openDetail(' + c.id + ')"><strong style="color:#0d2137;text-decoration:underline;text-underline-offset:2px;">' + c.name + '</strong></td>'
+        + '<td style="white-space:nowrap;">'
+          + (c.agentOrg
+              ? '<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#eef2f7;color:#0d2137;font-size:12px;font-weight:800;">' + c.agentOrg + '</span>'
+              : '<span style="color:#ccc;font-size:12px;">-</span>')
+          + (c.agentName ? '<div style="font-size:11px;color:#999;margin-top:3px;">' + c.agentName + '</div>' : '')
+        + '</td>'
         + '<td>' + c.birth + '</td>'
         + '<td>' + fmtPhone(c.phone) + '</td>'
         + '<td>' + (c.product || '-') + '</td>'
@@ -627,14 +725,26 @@
         + '<td><span class="status-badge ' + statusClass(c.status) + '">' + c.status + '</span></td>'
         + '<td style="text-align:center;">' + docsCell + '</td>'
         + '<td>' + (c.period || '-') + '</td>'
+        // 시공예정일은 파트너가 2단계 서류 제출 때 입력한 값을 그대로 보여준다.
+        // 일정이 바뀐 경우에만 '변경'으로 수정한다.
+        + '<td style="white-space:nowrap;">'
+          + (due
+              ? '<div style="font-size:13px;font-weight:800;color:' + (od ? '#c0392b' : '#0d2137') + ';">' + due + '</div>'
+                + (od ? '<div style="margin-top:2px;font-size:11px;font-weight:800;color:#c0392b;">⚠ ' + od + '일 경과 · 독촉</div>' : '')
+              : '<span style="font-size:12px;color:#bbb;">미입력</span>'
+                + '<div style="font-size:11px;color:#ccc;margin-top:2px;">서류 제출 시 자동 기재</div>')
+          + '<button onclick="editScheduledDate(' + c.id + ')" title="일정 변경"'
+          + ' style="margin-top:4px;display:block;background:none;border:none;padding:0;'
+          + 'font-size:11px;color:#8aa;text-decoration:underline;cursor:pointer;font-family:inherit;">변경</button>'
+        + '</td>'
         + '<td style="white-space:nowrap;">' + actionCell + '</td>'
         + '</tr>'
-        + '<tr id="panel-' + c.id + '" style="display:none;"><td colspan="9" style="padding:0 10px 16px;"></td></tr>';
+        + '<tr id="panel-' + c.id + '" style="display:none;"><td colspan="11" style="padding:0 10px 16px;"></td></tr>';
     }).join('');
 
     wrap.innerHTML = '<table class="customer-table">'
       + '<thead><tr>'
-      + '<th>이름</th><th>생년월일</th><th>연락처</th><th>상품명</th><th>일시불 금액</th><th>상태</th><th>첨부서류</th><th>구독기간</th><th style="min-width:200px;">관리</th>'
+      + '<th>이름</th><th>업체</th><th>생년월일</th><th>연락처</th><th>상품명</th><th>일시불 금액</th><th>상태</th><th>첨부서류</th><th>구독기간</th><th>시공예정일</th><th style="min-width:200px;">관리</th>'
       + '</tr></thead>'
       + '<tbody>' + rows + '</tbody>'
       + '</table>';
@@ -904,11 +1014,18 @@
     document.getElementById('d-name').textContent    = c.name;
     document.getElementById('d-birth').textContent   = c.birth || '-';
     document.getElementById('d-phone').textContent   = fmtPhone(c.phone);
+    document.getElementById('d-org').textContent =
+      (c.agentOrg || '-') + (c.agentName ? ' / ' + c.agentName : '');
     document.getElementById('d-created').textContent = c.createdAt || '-';
     document.getElementById('d-product').textContent = c.product || '-';
     document.getElementById('d-amount').textContent  = fmtAmount(c.amount);
     document.getElementById('d-period').textContent  = c.period || '-';
     document.getElementById('d-debit').textContent   = c.debit || '-';
+    const due = (c.docs && c.docs.scheduledAt) || '';
+    const od  = overdueDays(c);
+    const dEl = document.getElementById('d-scheduled');
+    dEl.textContent = due ? (due + (od ? '  (' + od + '일 경과)' : '')) : '-';
+    dEl.style.color = od ? '#c0392b' : '';
 
     const steps = [
       { key: '신청접수',    sub: '기본정보 제출 완료'                 },
