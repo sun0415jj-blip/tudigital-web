@@ -78,7 +78,8 @@
         row.docs.ownership = ownership;
         if (ownership === 'self') delete row.docs.doc5;
       }
-      if (p.get('jobType')) row.docs.jobType = p.get('jobType');
+      if (p.get('jobType'))     row.docs.jobType     = p.get('jobType');
+      if (p.get('scheduledAt')) row.docs.scheduledAt = p.get('scheduledAt');
       row.status = '서류제출';
       save(list);
       console.log('[devMock] 서류 저장 완료 (' + (ownership === 'family' ? '가족 소유 5종' : '본인 소유 4종') + ')', row.docs);

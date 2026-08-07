@@ -151,6 +151,7 @@ function doGet(e) {
   if (action === 'saveAllDocUrls') {
     const customerId = String(e.parameter.customerId || '');
     const jobType    = e.parameter.jobType   || '';
+    const scheduled  = e.parameter.scheduledAt || '';   // 계약서 기재 시공예정일
 
     // ownership 이 없으면 구버전 화면 → 예전 규칙(doc1~3)으로 받는다
     const rawOwn    = e.parameter.ownership || '';
@@ -190,7 +191,8 @@ function doGet(e) {
             docs.ownership = ownership;
             if (ownership === 'self') delete docs.doc5;   // 본인 소유면 가족관계증명서 불필요
           }
-          if (jobType) docs.jobType = jobType;
+          if (jobType)   docs.jobType     = jobType;
+          if (scheduled) docs.scheduledAt = scheduled;
 
           s.getRange(i + 1, 12).setValue(JSON.stringify(docs));
           s.getRange(i + 1, 9).setValue('서류제출');
@@ -297,6 +299,7 @@ function doGet(e) {
     return jsonResponse({ ok: true });
   }
 
+
   // ── 기본: 전체 고객 목록 반환 ─────────────────
   try {
     const rows = getAllCustomers();
@@ -305,6 +308,7 @@ function doGet(e) {
     return jsonResponse({ ok: false, error: String(err), data: [] });
   }
 }
+
 
 function doPost(e) {
   if (!e.postData || !e.postData.contents) {
@@ -325,7 +329,7 @@ function doPost(e) {
     sheet.appendRow([
       c.id, c.name, c.birth, c.phone, c.product || '', c.amount || '',
       c.period, c.debit, c.status, String(c.confirmed || false), c.createdAt,
-      c.docs ? JSON.stringify(c.docs) : ''
+      c.docs ? JSON.stringify(c.docs) : '', c.agentName || '', c.agentOrg || ''
     ]);
     invalidateCache();
     try { notifyManager(c); } catch(err) {}
@@ -503,10 +507,10 @@ function updateRow(sheet, c) {
   const data = sheet.getDataRange().getValues();
   for (let i = 1; i < data.length; i++) {
     if (String(data[i][0]) === String(c.id)) {
-      sheet.getRange(i + 1, 1, 1, 12).setValues([[
+      sheet.getRange(i + 1, 1, 1, 14).setValues([[
         c.id, c.name, c.birth, c.phone, c.product || '', c.amount || '',
         c.period, c.debit, c.status, String(c.confirmed || false), c.createdAt,
-        c.docs ? JSON.stringify(c.docs) : ''
+        c.docs ? JSON.stringify(c.docs) : '', c.agentName || '', c.agentOrg || ''
       ]]);
       return;
     }
@@ -526,8 +530,33 @@ function deleteRow(sheet, id) {
 // 최초 1회 실행 - 헤더 설정
 function setupSheet() {
   const sheet   = getSheet();
-  const headers = ['id','name','birth','phone','product','amount','period','debit','status','confirmed','createdAt','docs'];
+  const headers = ['id','name','birth','phone','product','amount','period','debit','status','confirmed','createdAt','docs','agentName','agentOrg'];
   sheet.setName('고객목록');
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
   sheet.setFrozenRows(1);
+}
+
+// 최초 1회 실행 — 기존 데이터의 담당자/업체를 새 컬럼으로 옮긴다.
+// 예전에는 createdAt 에 '2026. 8. 1. 오후 2:15 [이영자/현대창호]' 형태로 섞여 있었다.
+function migrateAgentColumns() {
+  const sh = getSheet();
+  const data = sh.getDataRange().getValues();
+  const head = data[0];
+  let iName = head.indexOf('agentName'), iOrg = head.indexOf('agentOrg');
+  if (iName === -1 || iOrg === -1) {
+    sh.getRange(1, head.length + 1, 1, 2).setValues([['agentName', 'agentOrg']]).setFontWeight('bold');
+    iName = head.length; iOrg = head.length + 1;
+  }
+  let moved = 0;
+  for (let i = 1; i < data.length; i++) {
+    if (!data[i][0]) continue;
+    if (data[i][iOrg]) continue;                    // 이미 채워진 건 건너뜀
+    const m = String(data[i][10] || '').match(/\[([^\/\]]+)\/([^\]]+)\]/);
+    if (!m) continue;
+    sh.getRange(i + 1, iName + 1).setValue(m[1].trim());
+    sh.getRange(i + 1, iOrg  + 1).setValue(m[2].trim());
+    moved++;
+  }
+  invalidateCache();
+  Logger.log('이관 완료: ' + moved + '건');
 }
