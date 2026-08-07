@@ -267,9 +267,58 @@
     <div class="login-logo">🔐</div>
     <h1>관리자 로그인</h1>
     <p>티유디지털 구독신청 관리 시스템</p>
-    <input type="password" id="admin-pw" class="login-input" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()" />
+    <input type="text" id="admin-id" class="login-input" placeholder="아이디" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('admin-pw').focus()" />
+    <input type="password" id="admin-pw" class="login-input" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
     <button class="btn-login" onclick="doLogin()">로그인</button>
-    <p class="login-error" id="login-error">비밀번호가 틀렸습니다.</p>
+    <p class="login-error" id="login-error">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+  </div>
+</div>
+
+
+<!-- 업체 관리 (마스터 전용) -->
+<div class="doc-modal-overlay" id="org-modal-overlay" onclick="if(event.target===this)closeOrgModal()">
+  <div class="doc-modal" style="max-width:620px;">
+    <div class="doc-modal-header">
+      <h3>업체 관리</h3>
+      <button class="doc-modal-close" onclick="closeOrgModal()">✕</button>
+    </div>
+    <div style="padding:20px 24px 24px;">
+
+      <div style="background:#f5f7fa;border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:800;color:#0d2137;margin-bottom:12px;">업체 추가</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input id="new-org-name" class="login-input" style="margin:0;" placeholder="업체명 (예: 창호홈)" />
+          <input id="new-org-id"   class="login-input" style="margin:0;" placeholder="아이디 (영문소문자·숫자)" />
+        </div>
+        <input id="new-org-pw" type="text" class="login-input" style="margin:0 0 10px;" placeholder="초기 비밀번호" />
+        <button class="btn-login" style="padding:11px;" onclick="addOrg()">업체 추가</button>
+        <p style="font-size:12px;color:#888;margin-top:10px;line-height:1.6;">
+          업체명은 <b>신청 링크의 ?org= 값과 정확히 같아야</b> 그 업체 건이 보입니다.<br>
+          추가 후 아래 목록에서 전용 신청 링크를 복사해 전달하세요.
+        </p>
+      </div>
+
+      <div id="org-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 비밀번호 변경 -->
+<div class="doc-modal-overlay" id="pw-modal-overlay" onclick="if(event.target===this)closePwModal()">
+  <div class="doc-modal" style="max-width:420px;">
+    <div class="doc-modal-header">
+      <h3>비밀번호 변경</h3>
+      <button class="doc-modal-close" onclick="closePwModal()">✕</button>
+    </div>
+    <div style="padding:22px 24px 26px;">
+      <input type="password" id="pw-old"  class="login-input" placeholder="현재 비밀번호" autocomplete="current-password" />
+      <input type="password" id="pw-new"  class="login-input" placeholder="새 비밀번호" autocomplete="new-password" />
+      <input type="password" id="pw-new2" class="login-input" placeholder="새 비밀번호 확인" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter')submitPwChange()" />
+      <p class="login-error" id="pw-error" style="text-align:left;margin:0 0 12px;"></p>
+      <button class="btn-login" onclick="submitPwChange()">변경하기</button>
+    </div>
   </div>
 </div>
 
@@ -282,6 +331,9 @@
       <span class="dash-badge">관리자</span>
     </div>
     <div class="dash-header-right">
+      <span id="who-am-i" style="color:rgba(255,255,255,.85);font-size:13px;font-weight:700;margin-right:4px;"></span>
+      <button class="btn-logout" id="btn-org-manage" onclick="openOrgModal()" style="display:none;">업체 관리</button>
+      <button class="btn-logout" onclick="openPwModal()">비밀번호 변경</button>
       <button class="btn-refresh" onclick="reloadData()">
         <span id="refresh-icon">🔄</span> 새로고침
       </button>
@@ -425,7 +477,6 @@
   /* ════════════════════════════════
      설정값 — 변경 가능
   ════════════════════════════════ */
-  const ADMIN_PASSWORD = 'tu2025!';       // 관리자 비밀번호
   const SCRIPT_URL     = 'https://script.google.com/macros/s/AKfycbx8r98-UEjobxalpyqk-sVDpJCTBhN-8Yr99wt6ikW2ybeWEcfdOQBfBI-LEIcMeSIO/exec'; // Google Apps Script URL
   const IMGBB_KEY      = '1bf49204aa251a5fae9ff0f169901c8f';
 
@@ -436,30 +487,78 @@
   const sessionFileStore = {};
   let uploadTargetId = null;
 
+  /* 로그인 세션 — 토큰은 sessionStorage 에만 둔다 (탭을 닫으면 사라짐) */
+  let auth = null;   // { token, orgId, orgName, isMaster }
+  function loadSession() {
+    try { auth = JSON.parse(sessionStorage.getItem('tud_auth') || 'null'); } catch(e) { auth = null; }
+    return auth;
+  }
+  function saveSession(a) { auth = a; sessionStorage.setItem('tud_auth', JSON.stringify(a)); }
+  function clearSession() { auth = null; sessionStorage.removeItem('tud_auth'); }
+
+  /* 비밀번호 원문은 서버로 보내지 않는다. SHA-256 해시만 보낸다. */
+  async function pwHash(orgId, pw) {
+    const buf = new TextEncoder().encode(orgId + ':' + pw);
+    const d = await crypto.subtle.digest('SHA-256', buf);
+    return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function api(params) {
+    const q = new URLSearchParams(Object.assign({ t: Date.now() }, params));
+    if (auth && auth.token) q.set('token', auth.token);
+    return fetch(SCRIPT_URL + '?' + q).then(r => r.json());
+  }
+
   const fmtPhone  = p => { if (!p && p !== 0) return '-'; const s = String(p); return s.startsWith('0') ? s : '0' + s; };
   const fmtAmount = a => { const n = Number(String(a || '').replace(/[^0-9]/g, '')); return n ? n.toLocaleString('ko-KR') + '원' : '-'; };
 
   /* ════ 로그인 ════ */
-  function doLogin() {
+  async function doLogin() {
+    const id = document.getElementById('admin-id').value.trim();
     const pw = document.getElementById('admin-pw').value;
-    if (pw === ADMIN_PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('dashboard').classList.add('active');
-      loadCustomers();
-    } else {
-      document.getElementById('login-error').style.display = 'block';
+    const err = document.getElementById('login-error');
+    if (!id || !pw) { err.textContent = '아이디와 비밀번호를 입력해 주세요.'; err.style.display = 'block'; return; }
+
+    const btn = document.querySelector('.btn-login');
+    btn.disabled = true; btn.textContent = '확인 중...';
+    try {
+      const h = await pwHash(id, pw);
+      const j = await fetch(SCRIPT_URL + '?' + new URLSearchParams({ action: 'login', orgId: id, h, t: Date.now() }))
+                      .then(r => r.json());
+      if (!j.ok) throw new Error('invalid');
+      saveSession({ token: j.token, orgId: j.orgId, orgName: j.orgName, isMaster: j.isMaster });
+      enterDashboard();
+    } catch (e) {
+      err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
+      err.style.display = 'block';
       document.getElementById('admin-pw').value = '';
       document.getElementById('admin-pw').focus();
+    } finally {
+      btn.disabled = false; btn.textContent = '로그인';
     }
   }
 
+  function enterDashboard() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('who-am-i').textContent =
+      auth.orgName + (auth.isMaster ? ' (전체)' : '');
+    document.getElementById('btn-org-manage').style.display = auth.isMaster ? '' : 'none';
+    loadCustomers();
+  }
+
   function doLogout() {
+    clearSession();
     document.getElementById('dashboard').classList.remove('active');
     document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('admin-id').value = '';
     document.getElementById('admin-pw').value = '';
     document.getElementById('login-error').style.display = 'none';
     customersCache = [];
   }
+
+  /* 새로고침해도 로그인 유지 (탭 종료 시 해제) */
+  if (loadSession()) enterDashboard();
 
   /* ════ API ════ */
   async function loadCustomers() {
@@ -467,9 +566,15 @@
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 30000);
-      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: controller.signal });
+      const q = new URLSearchParams({ t: Date.now() });
+      if (auth && auth.token) q.set('token', auth.token);
+      const res  = await fetch(SCRIPT_URL + '?' + q, { signal: controller.signal });
       clearTimeout(timer);
       const json = await res.json();
+      if (json.error === 'unauthorized') {   // 토큰 만료 → 다시 로그인
+        alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+        showLoading(false); doLogout(); return;
+      }
       customersCache = (json.data || []).map(c => {
         let docs = c.docs;
         if (typeof docs === 'string') { try { docs = JSON.parse(docs); } catch(e) { docs = null; } }
@@ -501,6 +606,7 @@
   }
 
   function apiPost(payload) {
+    if (auth && auth.token) payload = Object.assign({ token: auth.token }, payload);
     fetch(SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
@@ -606,6 +712,7 @@
   function renderOrgFilters() {
     const row = document.getElementById('org-filter-row');
     if (!row) return;
+    if (!auth || !auth.isMaster) { row.innerHTML = ''; return; }
     const orgs = [...new Set(customersCache.map(c => c.agentOrg).filter(Boolean))].sort();
     row.innerHTML = '';
     if (!orgs.length) return;
@@ -1002,6 +1109,128 @@
     navigator.clipboard.writeText(url)
       .then(() => showToast('🔗 시공서류 링크 복사 완료!'))
       .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
+  }
+
+
+  /* ════ 업체 관리 (마스터 전용) ════ */
+  function openOrgModal() {
+    document.getElementById('org-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    loadOrgs();
+  }
+  function closeOrgModal() {
+    document.getElementById('org-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function loadOrgs() {
+    const box = document.getElementById('org-list');
+    box.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa;font-size:13px;">불러오는 중...</div>';
+    const j = await api({ action: 'orgList' });
+    if (!j.ok) { box.innerHTML = '<div style="padding:20px;color:#c0392b;font-size:13px;">목록을 불러오지 못했습니다.</div>'; return; }
+    box.innerHTML = '';
+    j.data.forEach(o => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f4f8;';
+      const info = document.createElement('div');
+      info.style.cssText = 'flex:1;min-width:0;';
+      info.innerHTML = '<div style="font-size:14px;font-weight:800;color:' + (o.active ? '#0d2137' : '#bbb') + ';">'
+        + o.orgName + (o.orgId === 'tudigital' ? ' <span style="font-size:11px;color:#f0a500;">마스터</span>' : '')
+        + (o.active ? '' : ' <span style="font-size:11px;color:#c0392b;">사용중지</span>') + '</div>'
+        + '<div style="font-size:12px;color:#999;">' + o.orgId + '</div>';
+      row.appendChild(info);
+
+      if (o.orgId !== 'tudigital') {
+        const link = document.createElement('button');
+        link.className = 'btn-reupload';
+        link.textContent = '🔗 신청링크';
+        link.onclick = () => {
+          const url = 'https://www.tudigital.co.kr/agent.html?org=' + encodeURIComponent(o.orgName);
+          navigator.clipboard.writeText(url).then(() => showToast('신청 링크 복사 완료!'))
+            .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
+        };
+        row.appendChild(link);
+      }
+
+      const rst = document.createElement('button');
+      rst.className = 'btn-reupload';
+      rst.textContent = '비밀번호 재설정';
+      rst.onclick = () => resetOrgPw(o.orgId, o.orgName);
+      row.appendChild(rst);
+
+      if (o.orgId !== 'tudigital') {
+        const tog = document.createElement('button');
+        tog.className = 'btn-delete-row';
+        tog.textContent = o.active ? '사용중지' : '사용재개';
+        tog.onclick = async () => {
+          const j2 = await api({ action: 'orgToggle', orgId: o.orgId });
+          if (j2.ok) loadOrgs(); else alert('변경에 실패했습니다.');
+        };
+        row.appendChild(tog);
+      }
+      box.appendChild(row);
+    });
+  }
+
+  async function addOrg() {
+    const name = document.getElementById('new-org-name').value.trim();
+    const id   = document.getElementById('new-org-id').value.trim().toLowerCase();
+    const pw   = document.getElementById('new-org-pw').value;
+    if (!name || !id || !pw) { alert('업체명·아이디·비밀번호를 모두 입력해 주세요.'); return; }
+    if (!/^[a-z0-9_-]+$/.test(id)) { alert('아이디는 영문 소문자·숫자·-·_ 만 사용할 수 있습니다.'); return; }
+    const j = await api({ action: 'orgAdd', orgId: id, orgName: name, h: await pwHash(id, pw) });
+    if (!j.ok) {
+      alert(j.error === 'duplicate' ? '이미 있는 아이디입니다.' : '추가에 실패했습니다.');
+      return;
+    }
+    document.getElementById('new-org-name').value = '';
+    document.getElementById('new-org-id').value = '';
+    document.getElementById('new-org-pw').value = '';
+    showToast(name + ' 업체가 추가되었습니다.');
+    loadOrgs();
+  }
+
+  async function resetOrgPw(orgId, orgName) {
+    const pw = prompt(orgName + ' 의 새 비밀번호를 입력하세요.');
+    if (pw === null) return;
+    if (!pw.trim()) { alert('비밀번호를 입력해 주세요.'); return; }
+    const j = await api({ action: 'orgSetPw', orgId, h: await pwHash(orgId, pw) });
+    if (j.ok) showToast('비밀번호가 변경되었습니다.'); else alert('변경에 실패했습니다.');
+  }
+
+
+  /* ════ 비밀번호 변경 (본인) ════ */
+  function openPwModal() {
+    ['pw-old','pw-new','pw-new2'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pw-error').style.display = 'none';
+    document.getElementById('pw-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('pw-old').focus(), 100);
+  }
+  function closePwModal() {
+    document.getElementById('pw-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function submitPwChange() {
+    const oldPw = document.getElementById('pw-old').value;
+    const p1 = document.getElementById('pw-new').value;
+    const p2 = document.getElementById('pw-new2').value;
+    const err = document.getElementById('pw-error');
+    const fail = m => { err.textContent = m; err.style.display = 'block'; };
+
+    if (!oldPw || !p1 || !p2) return fail('모든 칸을 입력해 주세요.');
+    if (p1 !== p2)            return fail('새 비밀번호가 서로 다릅니다.');
+    if (p1.length < 6)        return fail('새 비밀번호는 6자 이상으로 정해 주세요.');
+    if (p1 === oldPw)         return fail('현재 비밀번호와 다르게 정해 주세요.');
+
+    const j = await api({ action: 'changePw',
+      oldH: await pwHash(auth.orgId, oldPw), newH: await pwHash(auth.orgId, p1) });
+    if (!j.ok) return fail(j.error === 'wrong_password' ? '현재 비밀번호가 올바르지 않습니다.' : '변경에 실패했습니다.');
+
+    closePwModal();
+    showToast('비밀번호가 변경되었습니다. 다시 로그인해 주세요.');
+    setTimeout(doLogout, 1200);
   }
 
   /* ════ 고객 상세 팝업 ════ */
