@@ -73,6 +73,149 @@ const STATUS = {
 
 const MIN_PHOTOS = 6;
 
+// =============================================================
+// 업체 계정 · 로그인 · 열람 범위
+// -------------------------------------------------------------
+// 티유디지털(마스터)은 전체를 보고, 업체는 자기 업체 건만 본다.
+// 거르는 일은 서버(여기)에서 한다. 화면에서만 거르면 개발자도구로 뚫린다.
+//
+// 계정은 같은 스프레드시트의 '업체계정' 시트에 둔다.
+//   orgId | orgName | pwHash | active | createdAt
+// 업체가 늘어나면 어드민 '업체 관리'에서 추가하면 되고 코드는 손대지 않는다.
+//
+// 비밀번호 원문은 서버로 오지 않는다.
+//   화면에서  clientHash = SHA256(orgId + ':' + 비밀번호)  를 만들어 보내고
+//   서버는    SHA256(clientHash + AUTH_SALT_()) 를 저장·비교한다.
+//   → 주소·실행로그 어디에도 원문이 남지 않는다.
+// =============================================================
+const ACCOUNT_SHEET = '업체계정';
+const MASTER_ID     = 'tudigital';          // 전체 열람 계정
+const TOKEN_TTL_MS  = 12 * 60 * 60 * 1000;  // 12시간
+
+// 솔트와 서명키는 코드에 두지 않는다. 이 저장소는 공개라 코드에 적으면 그대로 노출된다.
+// 스크립트 속성(프로젝트 설정 → 스크립트 속성)에 보관하고, 없으면 처음 호출될 때 만들어 저장한다.
+//   AUTH_SALT    : 비밀번호 해시용. 바뀌면 전 계정 비밀번호를 재설정해야 한다.
+//   TOKEN_SECRET : 토큰 서명용. 바뀌면 로그인 세션이 모두 끊긴다.
+function getSecret_(key) {
+  const props = PropertiesService.getScriptProperties();
+  let v = props.getProperty(key);
+  if (!v) {
+    v = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+    props.setProperty(key, v);
+  }
+  return v;
+}
+function AUTH_SALT_()    { return getSecret_('AUTH_SALT'); }
+function TOKEN_SECRET_() { return getSecret_('TOKEN_SECRET'); }
+
+function sha256hex(str) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, str, Utilities.Charset.UTF_8)
+    .map(function (b) { return ('0' + (b & 0xFF).toString(16)).slice(-2); }).join('');
+}
+
+function getAccountSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ACCOUNT_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(ACCOUNT_SHEET);
+    sh.getRange(1, 1, 1, 5).setValues([['orgId', 'orgName', 'pwHash', 'active', 'createdAt']])
+      .setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function readAccounts() {
+  const data = getAccountSheet().getDataRange().getValues();
+  return data.slice(1).filter(function (r) { return r[0] !== ''; }).map(function (r) {
+    return { orgId: String(r[0]), orgName: String(r[1]), pwHash: String(r[2]),
+             active: String(r[3]) !== 'N', createdAt: r[4] };
+  });
+}
+
+function findAccount(orgId) {
+  const list = readAccounts();
+  for (let i = 0; i < list.length; i++) if (list[i].orgId === String(orgId)) return list[i];
+  return null;
+}
+
+function updateAccountField(orgId, col, value) {
+  const sh = getAccountSheet();
+  const data = sh.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(orgId)) { sh.getRange(i + 1, col).setValue(value); return true; }
+  }
+  return false;
+}
+
+function issueToken(orgId, orgName) {
+  const b64 = Utilities.base64EncodeWebSafe(orgId + '|' + orgName + '|' + (Date.now() + TOKEN_TTL_MS));
+  return b64 + '.' + computeHmac(b64, TOKEN_SECRET_());
+}
+
+// 유효하면 { orgId, orgName, isMaster }, 아니면 null
+function verifyToken(token) {
+  if (!token || String(token).indexOf('.') === -1) return null;
+  const p = String(token).split('.');
+  if (computeHmac(p[0], TOKEN_SECRET_()) !== p[1]) return null;
+  let payload;
+  try { payload = Utilities.newBlob(Utilities.base64DecodeWebSafe(p[0])).getDataAsString(); }
+  catch (e) { return null; }
+  const seg = payload.split('|');
+  if (seg.length < 3 || Number(seg[2]) < Date.now()) return null;
+  const acc = findAccount(seg[0]);
+  if (!acc || !acc.active) return null;
+  return { orgId: acc.orgId, orgName: acc.orgName, isMaster: acc.orgId === MASTER_ID };
+}
+
+// 최초 1회 실행 — 마스터와 첫 업체 계정을 만든다.
+//
+//  [ 사용법 ]
+//   1. 아래 SETUP_PW 의 '여기에_비밀번호_입력' 을 원하는 비밀번호로 바꾼다
+//   2. 함수 목록에서 setupAccounts 를 골라 실행 ▶
+//   3. 실행이 끝나면 SETUP_PW 를 다시 '여기에_비밀번호_입력' 으로 되돌린다
+//
+//  이 저장소는 공개이므로 비밀번호를 적어둔 채로 두지 말 것.
+//  계정은 시트에 해시로만 저장되므로, 여기 값을 지워도 로그인에는 지장이 없다.
+//  비밀번호를 잊으면 마스터로 로그인해 '업체 관리 → 비밀번호 재설정' 으로 바꾸면 된다.
+//  마스터 비밀번호를 잊으면 업체계정 시트에서 tudigital 행을 지우고 다시 실행한다.
+const SETUP_PW = {
+  tudigital:   '여기에_비밀번호_입력',   // 티유디지털 (전체 열람)
+  changhohome: '여기에_비밀번호_입력'    // 창호홈
+};
+
+function setupAccounts() {
+  const sh = getAccountSheet();
+  const seed = [
+    { orgId: MASTER_ID,     orgName: '티유디지털' },
+    { orgId: 'changhohome', orgName: '창호홈'    }
+  ];
+
+  const notSet = seed.filter(function (s) {
+    const pw = SETUP_PW[s.orgId];
+    return !pw || pw === '여기에_비밀번호_입력';
+  });
+  if (notSet.length) {
+    Logger.log('■ 실행하지 않았습니다.');
+    Logger.log('  위쪽 SETUP_PW 에서 아래 계정의 비밀번호를 먼저 입력하세요:');
+    notSet.forEach(function (s) { Logger.log('   - ' + s.orgId + ' (' + s.orgName + ')'); });
+    return;
+  }
+
+  seed.forEach(function (s) {
+    if (findAccount(s.orgId)) { Logger.log('이미 있음: ' + s.orgId); return; }
+    const pw = SETUP_PW[s.orgId];
+    sh.appendRow([s.orgId, s.orgName, sha256hex(sha256hex(s.orgId + ':' + pw) + AUTH_SALT_()), 'Y',
+                  Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm')]);
+    Logger.log('생성 완료  아이디: ' + s.orgId + '  (' + s.orgName + ')');
+  });
+
+  Logger.log('');
+  Logger.log('※ 이제 SETUP_PW 값을 다시 지워 주세요.');
+  Logger.log('※ orgName 은 신청 링크의 ?org= 값과 정확히 같아야 그 업체 건이 보입니다.');
+  Logger.log('※ 업체 추가는 어드민 → 업체 관리에서 하면 됩니다.');
+}
+
 function getSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName('고객목록')
       || SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -300,10 +443,94 @@ function doGet(e) {
   }
 
 
-  // ── 기본: 전체 고객 목록 반환 ─────────────────
-  try {
+
+  // ── 로그인 ────────────────────────────────────
+  if (action === 'login') {
+    const orgId = String(e.parameter.orgId || '').trim();
+    const ch    = String(e.parameter.h || '');
+    if (!orgId || !ch) return jsonResponse({ ok: false, error: 'missing' });
+    const acc = findAccount(orgId);
+    // 아이디가 없는지 비번이 틀렸는지 구분해서 알려주지 않는다
+    if (!acc || !acc.active || sha256hex(ch + AUTH_SALT_()) !== acc.pwHash) {
+      return jsonResponse({ ok: false, error: 'invalid' });
+    }
+    return jsonResponse({ ok: true, token: issueToken(acc.orgId, acc.orgName),
+      orgId: acc.orgId, orgName: acc.orgName, isMaster: acc.orgId === MASTER_ID });
+  }
+
+  // ── 비밀번호 변경 (본인) ───────────────────────
+  if (action === 'changePw') {
+    const auth = verifyToken(e.parameter.token);
+    if (!auth) return jsonResponse({ ok: false, error: 'unauthorized' });
+    const acc = findAccount(auth.orgId);
+    if (!acc || sha256hex(String(e.parameter.oldH || '') + AUTH_SALT_()) !== acc.pwHash) {
+      return jsonResponse({ ok: false, error: 'wrong_password' });
+    }
+    updateAccountField(auth.orgId, 3, sha256hex(String(e.parameter.newH || '') + AUTH_SALT_()));
+    return jsonResponse({ ok: true });
+  }
+
+  // ── 업체 관리 (마스터 전용) ────────────────────
+  if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle') {
+    const auth = verifyToken(e.parameter.token);
+    if (!auth || !auth.isMaster) return jsonResponse({ ok: false, error: 'unauthorized' });
+
+    if (action === 'orgList') {
+      return jsonResponse({ ok: true, data: readAccounts().map(function (a) {
+        return { orgId: a.orgId, orgName: a.orgName, active: a.active, createdAt: a.createdAt };
+      }) });
+    }
+    if (action === 'orgAdd') {
+      const id = String(e.parameter.orgId || '').trim();
+      const nm = String(e.parameter.orgName || '').trim();
+      const h  = String(e.parameter.h || '');
+      if (!id || !nm || !h)          return jsonResponse({ ok: false, error: 'missing' });
+      if (!/^[a-z0-9_-]+$/.test(id)) return jsonResponse({ ok: false, error: 'bad_id' });
+      if (findAccount(id))           return jsonResponse({ ok: false, error: 'duplicate' });
+      getAccountSheet().appendRow([id, nm, sha256hex(h + AUTH_SALT_()), 'Y',
+        Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm')]);
+      return jsonResponse({ ok: true });
+    }
+    if (action === 'orgSetPw') {
+      const id = String(e.parameter.orgId || '');
+      if (!findAccount(id)) return jsonResponse({ ok: false, error: 'not_found' });
+      updateAccountField(id, 3, sha256hex(String(e.parameter.h || '') + AUTH_SALT_()));
+      return jsonResponse({ ok: true });
+    }
+    if (action === 'orgToggle') {
+      const id = String(e.parameter.orgId || '');
+      const acc = findAccount(id);
+      if (!acc) return jsonResponse({ ok: false, error: 'not_found' });
+      if (id === MASTER_ID) return jsonResponse({ ok: false, error: 'cannot_disable_master' });
+      updateAccountField(id, 4, acc.active ? 'N' : 'Y');
+      return jsonResponse({ ok: true });
+    }
+  }
+
+  // ── 단건 조회 (서류 업로드 화면용, 로그인 없음) ──
+  // 예전에는 전체 목록을 내려받아 화면에서 찾았다. 링크만 있으면 전 고객
+  // 정보가 노출됐으므로 해당 고객 한 건만 반환한다.
+  if (action === 'getCustomer') {
+    const id = String(e.parameter.id || '');
+    if (!id) return jsonResponse({ ok: false, error: 'no_id' });
     const rows = getAllCustomers();
-    return jsonResponse({ ok: true, data: rows });
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i].id) === id) return jsonResponse({ ok: true, data: rows[i] });
+    }
+    return jsonResponse({ ok: false, error: 'not_found' });
+  }
+
+  // ── 기본: 고객 목록 (로그인 필요, 업체별로 걸러서) ──
+  // 토큰이 없으면 아무것도 주지 않는다. 마스터만 전체를 본다.
+  try {
+    const auth = verifyToken(e.parameter && e.parameter.token);
+    if (!auth) return jsonResponse({ ok: false, error: 'unauthorized', data: [] });
+
+    let rows = getAllCustomers();
+    if (!auth.isMaster) {
+      rows = rows.filter(function (r) { return String(r.agentOrg || '') === auth.orgName; });
+    }
+    return jsonResponse({ ok: true, data: rows, orgName: auth.orgName, isMaster: auth.isMaster });
   } catch(err) {
     return jsonResponse({ ok: false, error: String(err), data: [] });
   }

@@ -113,10 +113,69 @@
       return json({ ok: true });
     }
 
+
+    /* 로그인 · 업체 관리 (Code.gs 와 동일 규칙, 로컬 테스트용) */
+    var ACC_KEY = 'tudigital_dev_orgs';
+    function accs() {
+      try { var a = JSON.parse(localStorage.getItem(ACC_KEY)); if (a && a.length) return a; } catch (e) {}
+      var seed = [{ orgId: 'tudigital', orgName: '티유디지털', pw: 'tud!master#2026', active: true },
+                  { orgId: 'changhohome', orgName: '창호홈',   pw: 'changho!2026',   active: true }];
+      localStorage.setItem(ACC_KEY, JSON.stringify(seed));
+      return seed;
+    }
+    function saveAccs(a) { localStorage.setItem(ACC_KEY, JSON.stringify(a)); }
+    function findAcc(id) { return accs().filter(function (a) { return a.orgId === id; })[0] || null; }
+
+    if (action === 'login') {
+      var a = findAcc(p.get('orgId') || '');
+      // 목에서는 비밀번호를 평문으로 두고 해시 대신 존재 여부만 본다
+      if (!a || !a.active) return json({ ok: false, error: 'invalid' });
+      return json({ ok: true, token: 'dev.' + a.orgId, orgId: a.orgId,
+                    orgName: a.orgName, isMaster: a.orgId === 'tudigital' });
+    }
+
+    if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle') {
+      var tk = String(p.get('token') || '');
+      if (tk !== 'dev.tudigital') return json({ ok: false, error: 'unauthorized' });
+      var list = accs();
+      if (action === 'orgList') return json({ ok: true, data: list.map(function (x) {
+        return { orgId: x.orgId, orgName: x.orgName, active: x.active, createdAt: '' }; }) });
+      if (action === 'orgAdd') {
+        if (findAcc(p.get('orgId'))) return json({ ok: false, error: 'duplicate' });
+        list.push({ orgId: p.get('orgId'), orgName: p.get('orgName'), pw: '(hash)', active: true });
+        saveAccs(list); return json({ ok: true });
+      }
+      if (action === 'orgToggle') {
+        list.forEach(function (x) { if (x.orgId === p.get('orgId')) x.active = !x.active; });
+        saveAccs(list); return json({ ok: true });
+      }
+      return json({ ok: true });
+    }
+
+    if (action === 'changePw') {
+      var tk2 = String(p.get('token') || '');
+      if (tk2.indexOf('dev.') !== 0) return json({ ok: false, error: 'unauthorized' });
+      console.log('[devMock] 비밀번호 변경 요청 — 목에서는 항상 성공 처리');
+      return json({ ok: true });
+    }
+
+    if (action === 'getCustomer') {
+      var one = load().filter(function (c) { return String(c.id) === String(p.get('id')); })[0];
+      return one ? json({ ok: true, data: one }) : json({ ok: false, error: 'not_found' });
+    }
+
     if (action === 'proxyImage') return json({ ok: false });
 
-    // 기본: 전체 고객 목록
-    return json({ data: load() });
+    // 기본: 토큰의 업체로 걸러서 반환 (Code.gs 와 동일)
+    var tok = String(p.get('token') || '');
+    if (!tok.indexOf('dev.') === 0 || !tok) return json({ ok: false, error: 'unauthorized', data: [] });
+    var me = findAcc(tok.slice(4));
+    if (!me) return json({ ok: false, error: 'unauthorized', data: [] });
+    var all = load();
+    if (me.orgId !== 'tudigital') {
+      all = all.filter(function (c) { return String(c.agentOrg || '') === me.orgName; });
+    }
+    return json({ ok: true, data: all, orgName: me.orgName, isMaster: me.orgId === 'tudigital' });
   }
 
   /* ── POST 처리 ────────────────────────────────── */
