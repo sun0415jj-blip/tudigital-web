@@ -235,9 +235,11 @@
     customerId = new URLSearchParams(location.search).get('id');
     if (!customerId) { show('error'); return; }
     try {
-      const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+      // 전체 목록이 아니라 해당 고객 한 건만 받아온다
+      const q    = new URLSearchParams({ action: 'getCustomer', id: customerId, t: Date.now() });
+      const res  = await fetch(SCRIPT_URL + '?' + q);
       const json = await res.json();
-      const c    = (json.data || []).find(c => String(c.id) === String(customerId));
+      const c    = json.ok ? json.data : null;
       if (!c) { show('error'); return; }
 
       // 4단계는 온라인 약정(3단계) 완료 후에만 진행할 수 있다

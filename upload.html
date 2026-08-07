@@ -389,10 +389,12 @@
     try {
       const ctrl  = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 10000);
-      const res   = await fetch(SCRIPT_URL + '?t=' + Date.now(), { signal: ctrl.signal });
+      // 전체 목록이 아니라 해당 고객 한 건만 받아온다
+      const q     = new URLSearchParams({ action: 'getCustomer', id: customerId, t: Date.now() });
+      const res   = await fetch(SCRIPT_URL + '?' + q, { signal: ctrl.signal });
       clearTimeout(timer);
       const json  = await res.json();
-      const c     = (json.data || []).find(c => String(c.id) === String(customerId));
+      const c     = json.ok ? json.data : null;
       if (!c) { show('error'); return; }
       customerData = c;
       renderInfo(c);
