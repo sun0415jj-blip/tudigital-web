@@ -191,10 +191,11 @@
       </div>
 
       <div id="save-success" class="hidden" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:14px;color:#2e7d32;font-weight:600;line-height:1.6;">
-        ✅ 기본정보가 저장되었습니다.<br><small style="font-weight:400;color:#388e3c;">신용조회 완료 후 아래 '다음 단계로' 버튼을 눌러 서류를 업로드해 주세요.</small>
+        ✅ 기본정보가 저장되었습니다.<br><small style="font-weight:400;color:#388e3c;">아래 버튼을 누르면 서류 업로드 화면으로 이동합니다.</small>
       </div>
       <button class="btn-next" id="btn-save" onclick="saveStep1()">저장하기</button>
-      <button class="btn-submit hidden" id="btn-goto-step2" onclick="goToStep2()" style="margin-top:10px;">다음 단계로 → (서류 업로드)</button>
+      <button class="btn-submit hidden" id="btn-goto-step2" onclick="goToStep2()" style="margin-top:10px;">📤 서류 업로드하러 가기</button>
+      <button class="btn-back hidden" id="btn-copy-link" onclick="copyUploadLink()" style="margin-top:10px;">🔗 링크 복사해서 전달하기</button>
     </div>
   </div>
 
@@ -262,6 +263,23 @@
   }
 
   /* STEP 1 저장하기 */
+  /* 업체별 전용 신청 링크 — agent.html?org=창호홈
+     링크에 업체가 들어오면 소속을 고정한다. 없으면 기존처럼 직접 입력. */
+  function urlOrg() {
+    return (new URLSearchParams(location.search).get('org') || '').trim();
+  }
+
+  function applyOrgFromUrl() {
+    const org = urlOrg();
+    const el  = document.getElementById('agent-org');
+    if (!org || !el) return;
+    el.value = org;
+    el.readOnly = true;
+    el.style.background = '#eef2f7';
+    el.style.color = '#555';
+    el.title = '전용 신청 링크로 지정된 업체입니다';
+  }
+
   function saveStep1() {
     const agentName = document.getElementById('agent-name').value.trim();
     const agentOrg  = document.getElementById('agent-org').value.trim();
@@ -297,6 +315,7 @@
       period: periodEl.value,
       debit: debitEl.value,
       status: '신용조회중', confirmed: false,
+      agentName: agentName, agentOrg: agentOrg,
       createdAt: new Date().toLocaleString('ko-KR') + ' [' + agentName + '/' + agentOrg + ']',
       docs: null
     };
@@ -309,21 +328,13 @@
     btn.style.background = '#888';
     document.getElementById('save-success').classList.remove('hidden');
     document.getElementById('btn-goto-step2').classList.remove('hidden');
+    document.getElementById('btn-copy-link').classList.remove('hidden');
   }
 
   function goToStep2() {
     if (!pendingCustomer) { alert('먼저 기본정보를 저장해 주세요.'); return; }
-    document.getElementById('s2-agent').textContent  = savedAgentName; /* 이름/소속 합친 값 */
-    document.getElementById('s2-name').textContent    = pendingCustomer.name;
-    document.getElementById('s2-birth').textContent   = pendingCustomer.birth;
-    document.getElementById('s2-phone').textContent   = pendingCustomer.phone;
-    document.getElementById('s2-product').textContent = pendingCustomer.product;
-    document.getElementById('s2-amount').textContent  = pendingCustomer.amount + '원';
-    document.getElementById('s2-period').textContent  = pendingCustomer.period;
-    document.getElementById('s2-debit').textContent   = pendingCustomer.debit;
-    document.getElementById('section-step1').classList.add('hidden');
-    document.getElementById('section-step2').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 중간 안내 화면을 거치지 않고 서류 업로드 페이지로 바로 이동한다
+    location.href = uploadPageUrl();
   }
 
   function backToStep1() {
@@ -402,6 +413,7 @@
     document.getElementById('agreePrivacy').checked = false;
     document.getElementById('save-success').classList.add('hidden');
     document.getElementById('btn-goto-step2').classList.add('hidden');
+    document.getElementById('btn-copy-link').classList.add('hidden');
     const btn = document.getElementById('btn-save');
     btn.disabled = false;
     btn.textContent = '저장하기';
@@ -411,6 +423,7 @@
     document.getElementById('section-step1').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  applyOrgFromUrl();   // 전용 링크로 들어온 경우 소속 고정
 </script>
 </body>
 </html>
