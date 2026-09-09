@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>구독신청 관리자 | 티유디지털</title>
+  <title>파트너 어드민 | 티유디지털</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <style>
@@ -140,6 +140,13 @@
     .filter-btn:hover { border-color: #0d2137; color: #0d2137; }
     .filter-btn.active { background: #0d2137; border-color: #0d2137; color: #fff; }
 
+    /* ── 사업구분 탭 (인테리어 / LG가전) ── */
+    .biz-tab-row { display: flex; gap: 10px; margin-bottom: 18px; }
+    .biz-tab-btn { padding: 10px 22px; border-radius: 10px; border: 1.5px solid #d1d9e0; background: #fff; color: #666; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .biz-tab-btn:hover { border-color: #0d2137; color: #0d2137; }
+    .biz-tab-btn.active.biz-interior { background: #0d2137; border-color: #0d2137; color: #fff; }
+    .biz-tab-btn.active.biz-lg { background: #a50034; border-color: #a50034; color: #fff; }
+
     /* ── 테이블 ── */
     .table-wrap { overflow-x: auto; }
     .customer-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
@@ -265,8 +272,8 @@
 <div class="login-screen" id="login-screen">
   <div class="login-card">
     <div class="login-logo">🔐</div>
-    <h1>관리자 로그인</h1>
-    <p>티유디지털 구독신청 관리 시스템</p>
+    <h1>파트너 로그인</h1>
+    <p>티유디지털 구독신청 파트너 어드민</p>
     <input type="text" id="admin-id" class="login-input" placeholder="아이디" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('admin-pw').focus()" />
     <input type="password" id="admin-pw" class="login-input" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
     <button class="btn-login" onclick="doLogin()">로그인</button>
@@ -274,34 +281,6 @@
   </div>
 </div>
 
-
-<!-- 업체 관리 (마스터 전용) -->
-<div class="doc-modal-overlay" id="org-modal-overlay" onclick="if(event.target===this)closeOrgModal()">
-  <div class="doc-modal" style="max-width:620px;">
-    <div class="doc-modal-header">
-      <h3>업체 관리</h3>
-      <button class="doc-modal-close" onclick="closeOrgModal()">✕</button>
-    </div>
-    <div style="padding:20px 24px 24px;">
-
-      <div style="background:#f5f7fa;border-radius:12px;padding:16px 18px;margin-bottom:20px;">
-        <div style="font-size:14px;font-weight:800;color:#0d2137;margin-bottom:12px;">업체 추가</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <input id="new-org-name" class="login-input" style="margin:0;" placeholder="업체명 (예: 청암홈윈도우)" />
-          <input id="new-org-id"   class="login-input" style="margin:0;" placeholder="아이디 (영문소문자·숫자)" />
-        </div>
-        <input id="new-org-pw" type="text" class="login-input" style="margin:0 0 10px;" placeholder="초기 비밀번호" />
-        <button class="btn-login" style="padding:11px;" onclick="addOrg()">업체 추가</button>
-        <p style="font-size:12px;color:#888;margin-top:10px;line-height:1.6;">
-          업체명은 <b>신청 링크의 ?org= 값과 정확히 같아야</b> 그 업체 건이 보입니다.<br>
-          추가 후 아래 목록에서 전용 신청 링크를 복사해 전달하세요.
-        </p>
-      </div>
-
-      <div id="org-list"></div>
-    </div>
-  </div>
-</div>
 
 
 <!-- 비밀번호 변경 -->
@@ -322,17 +301,32 @@
   </div>
 </div>
 
+<!-- 신규 신청서 작성 -->
+<div class="doc-modal-overlay" id="new-apply-overlay" onclick="if(event.target===this)closeNewApplyModal()">
+  <div class="doc-modal" style="max-width:420px;">
+    <div class="doc-modal-header">
+      <h3>신규 신청서 작성</h3>
+      <button class="doc-modal-close" onclick="closeNewApplyModal()">✕</button>
+    </div>
+    <div style="padding:8px 24px 26px;display:flex;flex-direction:column;gap:12px;">
+      <p style="font-size:13px;color:#888;margin:0 0 4px;">소속(업체)은 로그인 계정 기준으로 자동 입력됩니다. 새 탭에서 1단계 기본정보 입력 화면이 열립니다.</p>
+      <button class="btn-login" style="padding:14px;" onclick="goNewApply('interior')">🏠 인테리어 구독 신청서</button>
+      <button class="btn-login" style="padding:14px;background:#a50034;" onclick="goNewApply('lg')">📺 LG가전 구독 신청서</button>
+    </div>
+  </div>
+</div>
+
 <!-- 대시보드 -->
 <div class="dashboard" id="dashboard">
 
   <header class="dash-header">
     <div class="dash-header-left">
       <span class="dash-logo">티유디지털</span>
-      <span class="dash-badge">관리자</span>
+      <span class="dash-badge">파트너</span>
     </div>
     <div class="dash-header-right">
       <span id="who-am-i" style="color:rgba(255,255,255,.85);font-size:13px;font-weight:700;margin-right:4px;"></span>
-      <button class="btn-logout" id="btn-org-manage" onclick="openOrgModal()" style="display:none;">업체 관리</button>
+      <button class="btn-logout" style="background:#f0a500;border-color:#f0a500;" onclick="openNewApplyModal()">📝 신규 신청서 작성</button>
       <button class="btn-logout" onclick="openPwModal()">비밀번호 변경</button>
       <button class="btn-refresh" onclick="reloadData()">
         <span id="refresh-icon">🔄</span> 새로고침
@@ -343,8 +337,14 @@
 
   <div class="dash-body">
 
-    <!-- 통계 -->
-    <div class="stat-row">
+    <!-- 사업구분 탭 -->
+    <div class="biz-tab-row">
+      <button class="biz-tab-btn biz-interior active" onclick="setBizFilter(this,'인테리어')">🏠 인테리어 구독</button>
+      <button class="biz-tab-btn biz-lg" onclick="setBizFilter(this,'LG가전')">📺 LG가전 구독</button>
+    </div>
+
+    <!-- 통계 : 인테리어 -->
+    <div class="stat-row" id="stat-row-interior">
       <div class="stat-card">
         <div class="stat-num" id="stat-total">-</div>
         <div class="stat-label">전체 신청</div>
@@ -379,6 +379,34 @@
       </div>
     </div>
 
+    <!-- 통계 : LG가전 -->
+    <div class="stat-row hidden" id="stat-row-lg">
+      <div class="stat-card">
+        <div class="stat-num" id="lg-stat-total">-</div>
+        <div class="stat-label">전체 신청</div>
+      </div>
+      <div class="stat-card c-wait">
+        <div class="stat-num" id="lg-stat-wait">-</div>
+        <div class="stat-label">신청접수</div>
+      </div>
+      <div class="stat-card c-submit">
+        <div class="stat-num" id="lg-stat-submit">-</div>
+        <div class="stat-label">서류제출</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="lg-stat-confirm">-</div>
+        <div class="stat-label">접수확인</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="lg-stat-installed">-</div>
+        <div class="stat-label">배송·설치완료</div>
+      </div>
+      <div class="stat-card c-done">
+        <div class="stat-num" id="lg-stat-active">-</div>
+        <div class="stat-label">구독개시</div>
+      </div>
+    </div>
+
     <!-- 고객 목록 -->
     <div class="manage-card">
       <div class="manage-card-header">
@@ -392,7 +420,7 @@
           <input type="text" id="search-input" class="search-input" placeholder="이름, 연락처, 생년월일, 상태로 검색..." oninput="filterList(this.value)" />
           <button class="search-clear" id="search-clear" onclick="clearSearch()" title="초기화">✕</button>
         </div>
-        <div class="search-filter-row">
+        <div class="search-filter-row" id="biz-filter-interior">
           <button class="filter-btn active" onclick="setFilter(this,'all')">전체</button>
           <button class="filter-btn" onclick="setFilter(this,'서류대기')">서류대기</button>
           <button class="filter-btn" onclick="setFilter(this,'서류제출')">서류제출</button>
@@ -402,6 +430,14 @@
           <button class="filter-btn" onclick="setFilter(this,'녹취완료')">녹취완료</button>
           <button class="filter-btn" onclick="setFilter(this,'입금완료')">입금완료</button>
           <button class="filter-btn" style="border-color:#e53e3e;color:#c0392b;" onclick="setFilter(this,'독촉대상')">⚠ 독촉대상</button>
+        </div>
+        <div class="search-filter-row hidden" id="biz-filter-lg">
+          <button class="filter-btn active" onclick="setFilter(this,'all')">전체</button>
+          <button class="filter-btn" onclick="setFilter(this,'신청접수')">신청접수</button>
+          <button class="filter-btn" onclick="setFilter(this,'서류제출')">서류제출</button>
+          <button class="filter-btn" onclick="setFilter(this,'접수확인')">접수확인</button>
+          <button class="filter-btn" onclick="setFilter(this,'배송·설치완료')">배송·설치완료</button>
+          <button class="filter-btn" onclick="setFilter(this,'구독개시')">구독개시</button>
         </div>
         <div class="search-filter-row" id="org-filter-row" style="margin-top:8px;"></div>
       </div>
@@ -484,6 +520,32 @@
   let customersCache = [];
   let searchQuery = '';
   let statusFilter = 'all';
+  let bizFilter = '인테리어';   // '인테리어' | 'LG가전'
+
+  /* 인테리어 = bizType 미기재(기존 창호 건) 또는 '인테리어' */
+  function matchBiz(c) {
+    return bizFilter === 'LG가전' ? c.bizType === 'LG가전' : (!c.bizType || c.bizType === '인테리어');
+  }
+
+  function setBizFilter(btn, biz) {
+    bizFilter = biz;
+    statusFilter = 'all';
+    document.querySelectorAll('.biz-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const isLg = biz === 'LG가전';
+    document.getElementById('stat-row-interior').classList.toggle('hidden', isLg);
+    document.getElementById('stat-row-lg').classList.toggle('hidden', !isLg);
+    document.getElementById('biz-filter-interior').classList.toggle('hidden', isLg);
+    document.getElementById('biz-filter-lg').classList.toggle('hidden', !isLg);
+    // 새로 보이는 필터 행의 '전체' 버튼을 활성으로 되돌린다
+    const row = document.getElementById(isLg ? 'biz-filter-lg' : 'biz-filter-interior');
+    row.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    row.querySelector('.filter-btn').classList.add('active');
+
+    updateStats();
+    renderCustomerList();
+  }
   const sessionFileStore = {};
   let uploadTargetId = null;
 
@@ -526,10 +588,13 @@
       const j = await fetch(SCRIPT_URL + '?' + new URLSearchParams({ action: 'login', orgId: id, h, t: Date.now() }))
                       .then(r => r.json());
       if (!j.ok) throw new Error('invalid');
+      if (j.isMaster) throw new Error('master_not_allowed');
       saveSession({ token: j.token, orgId: j.orgId, orgName: j.orgName, isMaster: j.isMaster });
       enterDashboard();
     } catch (e) {
-      err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
+      err.textContent = e.message === 'master_not_allowed'
+        ? '이 페이지는 협력사 전용입니다. 관리자 계정은 admin.html을 이용해 주세요.'
+        : '아이디 또는 비밀번호가 올바르지 않습니다.';
       err.style.display = 'block';
       document.getElementById('admin-pw').value = '';
       document.getElementById('admin-pw').focus();
@@ -541,10 +606,27 @@
   function enterDashboard() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').classList.add('active');
-    document.getElementById('who-am-i').textContent =
-      auth.orgName + (auth.isMaster ? ' (전체)' : '');
-    document.getElementById('btn-org-manage').style.display = auth.isMaster ? '' : 'none';
+    document.getElementById('who-am-i').textContent = auth.orgName;
     loadCustomers();
+  }
+
+  /* ════ 신규 신청서 작성 (자기 소속으로 자동 고정된 링크를 새 탭으로) ════ */
+  function openNewApplyModal() {
+    document.getElementById('new-apply-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNewApplyModal() {
+    document.getElementById('new-apply-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function goNewApply(kind) {
+    const h = location.hostname;
+    const base = (h === 'localhost' || h === '127.0.0.1') ? location.origin
+               : location.protocol === 'file:' ? location.href.replace(/[^/]*$/, '').replace(/\/$/, '')
+               : 'https://www.tudigital.co.kr';
+    const page = kind === 'lg' ? 'lg-agent.html' : 'agent.html';
+    window.open(base + '/' + page + '?org=' + encodeURIComponent(auth.orgName), '_blank');
+    closeNewApplyModal();
   }
 
   function doLogout() {
@@ -557,8 +639,14 @@
     customersCache = [];
   }
 
-  /* 새로고침해도 로그인 유지 (탭 종료 시 해제) */
-  if (loadSession()) enterDashboard();
+  /* 새로고침해도 로그인 유지 (탭 종료 시 해제)
+     같은 탭에서 admin.html로 마스터 로그인한 세션이 남아있을 수 있어
+     (sessionStorage는 오리진 기준이라 페이지 간에 공유된다), 마스터 세션이면
+     자동 로그인시키지 않고 즉시 지운다. */
+  if (loadSession()) {
+    if (auth.isMaster) clearSession();
+    else enterDashboard();
+  }
 
   /* ════ API ════ */
   async function loadCustomers() {
@@ -628,15 +716,23 @@
 
   /* ════ 통계 업데이트 ════ */
   function updateStats() {
-    const all = customersCache;
-    document.getElementById('stat-total').textContent  = all.length;
-    document.getElementById('stat-wait').textContent   = all.filter(c => c.status === '서류대기').length;
-    document.getElementById('stat-submit').textContent = all.filter(c => c.status === '서류제출').length;
-    document.getElementById('stat-done').textContent   = all.filter(c => c.status === '확인완료').length;
-    document.getElementById('stat-agree').textContent  = all.filter(c => c.status === '약정완료').length;
-    document.getElementById('stat-built').textContent  = all.filter(c => c.status === '시공완료').length;
-    document.getElementById('stat-paid').textContent   = all.filter(c => c.status === '입금완료').length;
-    document.getElementById('stat-overdue').textContent = all.filter(isOverdue).length;
+    const interior = customersCache.filter(c => !c.bizType || c.bizType === '인테리어');
+    document.getElementById('stat-total').textContent  = interior.length;
+    document.getElementById('stat-wait').textContent   = interior.filter(c => c.status === '서류대기').length;
+    document.getElementById('stat-submit').textContent = interior.filter(c => c.status === '서류제출').length;
+    document.getElementById('stat-done').textContent   = interior.filter(c => c.status === '확인완료').length;
+    document.getElementById('stat-agree').textContent  = interior.filter(c => c.status === '약정완료').length;
+    document.getElementById('stat-built').textContent  = interior.filter(c => c.status === '시공완료').length;
+    document.getElementById('stat-paid').textContent   = interior.filter(c => c.status === '입금완료').length;
+    document.getElementById('stat-overdue').textContent = interior.filter(isOverdue).length;
+
+    const lg = customersCache.filter(c => c.bizType === 'LG가전');
+    document.getElementById('lg-stat-total').textContent     = lg.length;
+    document.getElementById('lg-stat-wait').textContent      = lg.filter(c => c.status === '신청접수').length;
+    document.getElementById('lg-stat-submit').textContent    = lg.filter(c => c.status === '서류제출').length;
+    document.getElementById('lg-stat-confirm').textContent   = lg.filter(c => c.status === '접수확인').length;
+    document.getElementById('lg-stat-installed').textContent = lg.filter(c => c.status === '배송·설치완료').length;
+    document.getElementById('lg-stat-active').textContent    = lg.filter(c => c.status === '구독개시').length;
   }
 
   /* ════ 검색 / 필터 ════ */
@@ -713,7 +809,8 @@
     const row = document.getElementById('org-filter-row');
     if (!row) return;
     if (!auth || !auth.isMaster) { row.innerHTML = ''; return; }
-    const orgs = [...new Set(customersCache.map(c => c.agentOrg).filter(Boolean))].sort();
+    const bizScoped = customersCache.filter(matchBiz);
+    const orgs = [...new Set(bizScoped.map(c => c.agentOrg).filter(Boolean))].sort();
     row.innerHTML = '';
     if (!orgs.length) return;
 
@@ -731,7 +828,7 @@
     };
 
     mkBtn('전체', 'all');
-    orgs.forEach(o => mkBtn(o, o, customersCache.filter(c => c.agentOrg === o).length));
+    orgs.forEach(o => mkBtn(o, o, bizScoped.filter(c => c.agentOrg === o).length));
   }
 
 
@@ -740,7 +837,7 @@
     renderOrgFilters();
     const wrap    = document.getElementById('customer-table-body');
     const countEl = document.getElementById('list-count');
-    const all     = customersCache;
+    const all     = customersCache.filter(matchBiz);
 
     const q    = searchQuery.toLowerCase();
     const list = all.filter(c => {
@@ -769,6 +866,8 @@
       wrap.innerHTML = '<div class="search-empty"><div class="search-empty-icon">🔍</div>검색 결과가 없습니다.</div>';
       return;
     }
+
+    if (bizFilter === 'LG가전') { renderLgTable(wrap, list); return; }
 
     const DONE_SET = ['확인완료', '약정완료', '시공완료', '녹취완료', '입금완료'];
     const statusClass = s => DONE_SET.indexOf(s) !== -1 ? 'status-done'
@@ -857,6 +956,72 @@
       + '</table>';
   }
 
+  /* ════ LG가전 구독 목록 렌더링 ════
+     창호와 진행단계가 달라(시공 없음, 배송·설치 중심) 별도 테이블로 그린다. */
+  function renderLgTable(wrap, list) {
+    const DONE_SET = ['접수확인', '배송·설치완료', '구독개시'];
+    const statusClass = s => DONE_SET.indexOf(s) !== -1 ? 'status-done'
+                           : (s === '서류제출' ? 'status-submit' : 'status-pending');
+
+    const rows = list.map(c => {
+      let docsCell, actionCell;
+      const docs = c.docs || {};
+      const lgConfirmed = docs.lgConfirmed === 'done';
+      const lgInstalled = docs.lgInstalled === 'done';
+      const lgActive    = docs.lgActive === 'done';
+
+      if (!c.docs) {
+        docsCell   = '<span style="color:#bbb;font-size:12px;">미첨부</span>';
+        actionCell = '<button class="btn-upload-docs" onclick="openUploadPanel(' + c.id + ')">서류 업로드</button>'
+          + '<button class="btn-link-send" onclick="copyUploadLink(' + c.id + ')">🔗 링크 전송</button>'
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      } else {
+        docsCell   = '<button class="btn-view-docs" onclick="viewDocs(' + c.id + ')">📄 서류 보기</button>';
+        actionCell = '<button class="btn-reupload" onclick="openUploadPanel(' + c.id + ')">재업로드</button>'
+          + '<label class="confirm-label">'
+          + '<input type="checkbox" ' + (lgConfirmed ? 'checked' : '') + ' onchange="toggleLgConfirmed(' + c.id + ',this.checked)" />'
+          + '접수확인</label>'
+          + (lgConfirmed
+              ? '<label class="confirm-label">'
+                + '<input type="checkbox" ' + (lgInstalled ? 'checked' : '') + ' onchange="toggleLgInstalled(' + c.id + ',this.checked)" />'
+                + '배송·설치완료</label>'
+              : '')
+          + (lgInstalled
+              ? '<label class="confirm-label">'
+                + '<input type="checkbox" ' + (lgActive ? 'checked' : '') + ' onchange="toggleLgActive(' + c.id + ',this.checked)" />'
+                + '구독개시</label>'
+              : '')
+          + '<button class="btn-delete-row" onclick="deleteCustomer(' + c.id + ')">삭제</button>';
+      }
+
+      return '<tr id="row-' + c.id + '">'
+        + '<td style="cursor:pointer;" onclick="openDetail(' + c.id + ')"><strong style="color:#0d2137;text-decoration:underline;text-underline-offset:2px;">' + c.name + '</strong></td>'
+        + '<td style="white-space:nowrap;">'
+          + (c.agentOrg
+              ? '<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#fdeef3;color:#a50034;font-size:12px;font-weight:800;">' + c.agentOrg + '</span>'
+              : '<span style="color:#ccc;font-size:12px;">-</span>')
+          + (c.agentName ? '<div style="font-size:11px;color:#999;margin-top:3px;">' + c.agentName + '</div>' : '')
+        + '</td>'
+        + '<td>' + c.birth + '</td>'
+        + '<td>' + fmtPhone(c.phone) + '</td>'
+        + '<td>' + (c.product || '-') + '</td>'
+        + '<td>' + fmtAmount(c.amount) + '</td>'
+        + '<td><span class="status-badge ' + statusClass(c.status) + '">' + c.status + '</span></td>'
+        + '<td style="text-align:center;">' + docsCell + '</td>'
+        + '<td>' + (c.period || '-') + '</td>'
+        + '<td style="white-space:nowrap;">' + actionCell + '</td>'
+        + '</tr>'
+        + '<tr id="panel-' + c.id + '" style="display:none;"><td colspan="10" style="padding:0 10px 16px;"></td></tr>';
+    }).join('');
+
+    wrap.innerHTML = '<table class="customer-table">'
+      + '<thead><tr>'
+      + '<th>이름</th><th>업체</th><th>생년월일</th><th>연락처</th><th>제품군</th><th>월 구독료</th><th>상태</th><th>첨부서류</th><th>구독개월수</th><th style="min-width:200px;">관리</th>'
+      + '</tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '</table>';
+  }
+
   /* ════ 서류 업로드 패널 ════ */
   function openUploadPanel(id) {
     /* 다른 패널 닫기 */
@@ -870,6 +1035,38 @@
 
     if (panelRow.style.display !== 'none') {
       panelRow.style.display = 'none';
+      return;
+    }
+
+    const targetC = customersCache.find(c => c.id === id);
+    if (targetC && targetC.bizType === 'LG가전') {
+      panelRow.querySelector('td').innerHTML = `
+      <div class="upload-panel">
+        <h4>LG가전 구독 서류 업로드</h4>
+        <div class="upload-group">
+          <span class="upload-label">신분증 사본 <span class="req">*</span></span>
+          <input type="file" id="p-ldoc1" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-ldoc1','pn-ldoc1','pr-ldoc1')" />
+          <div class="upload-row">
+            <label for="p-ldoc1" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-ldoc1">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-ldoc1" onclick="removeFile('p-ldoc1','pn-ldoc1','pr-ldoc1')">✕</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <span class="upload-label">통장 사본 (자동이체 계좌) <span class="req">*</span></span>
+          <input type="file" id="p-ldoc2" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile('p-ldoc2','pn-ldoc2','pr-ldoc2')" />
+          <div class="upload-row">
+            <label for="p-ldoc2" class="btn-file-upload">📂 파일 선택</label>
+            <span class="file-name-display" id="pn-ldoc2">선택된 파일 없음</span>
+            <button type="button" class="btn-file-remove" id="pr-ldoc2" onclick="removeFile('p-ldoc2','pn-ldoc2','pr-ldoc2')">✕</button>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-panel-cancel" onclick="closeUploadPanel()">취소</button>
+          <button class="btn-panel-submit" onclick="submitUploadLg()">제출하기</button>
+        </div>
+      </div>`;
+      panelRow.style.display = 'table-row';
       return;
     }
 
@@ -1020,6 +1217,57 @@
     }
   }
 
+  /* ════ LG가전 서류 업로드 (관리자 대신 업로드) ════ */
+  async function submitUploadLg() {
+    const picked = {
+      ldoc1: document.getElementById('p-ldoc1')?.files[0] || null,
+      ldoc2: document.getElementById('p-ldoc2')?.files[0] || null
+    };
+    const REQ = { ldoc1: '신분증 사본', ldoc2: '통장 사본' };
+    for (const k of Object.keys(REQ)) {
+      if (!picked[k]) { alert(REQ[k] + '를 업로드해 주세요.'); return; }
+    }
+
+    const submitBtn = document.querySelector('#panel-' + uploadTargetId + ' .btn-panel-submit');
+    const setMsg = m => { if (submitBtn) submitBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;border-top-color:#fff;"></span>' + m; };
+
+    if (submitBtn) { submitBtn.disabled = true; setMsg('업로드 중...'); }
+
+    const targetId = uploadTargetId;
+
+    try {
+      setMsg('서류 업로드 중...');
+      const urls = await Promise.all(['ldoc1', 'ldoc2'].map(k => uploadFileToImgbb(picked[k])));
+
+      setMsg('저장 중...');
+      const params = new URLSearchParams({
+        action: 'saveLgDocUrls',
+        customerId: targetId,
+        ldoc1: urls[0],
+        ldoc2: urls[1],
+        t: Date.now()
+      });
+      const saveRes  = await fetch(SCRIPT_URL + '?' + params);
+      const saveJson = await saveRes.json();
+      if (!saveJson.ok) throw new Error('저장 실패');
+
+      const idx = customersCache.findIndex(c => c.id === targetId);
+      if (idx !== -1) {
+        customersCache[idx].docs   = Object.assign({}, customersCache[idx].docs, { ldoc1: urls[0], ldoc2: urls[1] });
+        customersCache[idx].status = '서류제출';
+      }
+
+      closeUploadPanel();
+      updateStats();
+      renderCustomerList();
+      showToast('서류 업로드 완료!');
+    } catch(e) {
+      console.error(e);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '제출하기'; }
+      alert('업로드 실패: ' + e.message);
+    }
+  }
+
   /* ════ 삭제 ════ */
   function deleteCustomer(id) {
     if (!confirm('해당 고객 정보를 삭제하시겠습니까?')) return;
@@ -1099,6 +1347,48 @@
     renderCustomerList();
   }
 
+  /* ════ LG가전 : 접수확인 → 배송·설치완료 → 구독개시 체크박스 ════
+     창호의 toggleAgreement/toggleRecording/togglePayment 와 동일한 패턴. */
+  function toggleLgConfirmed(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.docs.lgConfirmed = checked ? 'done' : '';
+    if (!checked) {
+      c.docs.lgInstalled = ''; c.docs.lgActive = '';
+    }
+    c.status = checked ? '접수확인' : '서류제출';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
+  function toggleLgInstalled(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.docs.lgInstalled = checked ? 'done' : '';
+    if (!checked) c.docs.lgActive = '';
+    c.status = checked ? '배송·설치완료' : '접수확인';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
+  function toggleLgActive(id, checked) {
+    const idx = customersCache.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const c = customersCache[idx];
+    if (!c.docs) c.docs = {};
+    c.docs.lgActive = checked ? 'done' : '';
+    c.status = checked ? '구독개시' : '배송·설치완료';
+    apiPost({ action: 'update', customer: c });
+    updateStats();
+    renderCustomerList();
+  }
+
   /* 4단계 시공완료 서류 제출 링크 복사 */
   function copyConstructionLink(id) {
     const h = location.hostname;
@@ -1109,120 +1399,6 @@
     navigator.clipboard.writeText(url)
       .then(() => showToast('🔗 시공서류 링크 복사 완료!'))
       .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
-  }
-
-
-  /* ════ 업체 관리 (마스터 전용) ════ */
-  function openOrgModal() {
-    document.getElementById('org-modal-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    loadOrgs();
-  }
-  function closeOrgModal() {
-    document.getElementById('org-modal-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  async function loadOrgs() {
-    const box = document.getElementById('org-list');
-    box.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa;font-size:13px;">불러오는 중...</div>';
-    const j = await api({ action: 'orgList' });
-    if (!j.ok) { box.innerHTML = '<div style="padding:20px;color:#c0392b;font-size:13px;">목록을 불러오지 못했습니다.</div>'; return; }
-    box.innerHTML = '';
-    j.data.forEach(o => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f4f8;';
-      const info = document.createElement('div');
-      info.style.cssText = 'flex:1;min-width:0;';
-      info.innerHTML = '<div style="font-size:14px;font-weight:800;color:' + (o.active ? '#0d2137' : '#bbb') + ';">'
-        + o.orgName + (o.orgId === 'tudigital' ? ' <span style="font-size:11px;color:#f0a500;">마스터</span>' : '')
-        + (o.active ? '' : ' <span style="font-size:11px;color:#c0392b;">사용중지</span>') + '</div>'
-        + '<div style="font-size:12px;color:#999;">' + o.orgId + '</div>';
-      row.appendChild(info);
-
-      if (o.orgId !== 'tudigital') {
-        const link = document.createElement('button');
-        link.className = 'btn-reupload';
-        link.textContent = '🔗 신청링크';
-        link.onclick = () => {
-          const url = 'https://www.tudigital.co.kr/agent.html?org=' + encodeURIComponent(o.orgName);
-          navigator.clipboard.writeText(url).then(() => showToast('신청 링크 복사 완료!'))
-            .catch(() => prompt('아래 링크를 복사해 전달해 주세요:', url));
-        };
-        row.appendChild(link);
-      }
-
-      const rst = document.createElement('button');
-      rst.className = 'btn-reupload';
-      rst.textContent = '비밀번호 재설정';
-      rst.onclick = () => resetOrgPw(o.orgId, o.orgName);
-      row.appendChild(rst);
-
-      if (o.orgId !== 'tudigital') {
-        const ren = document.createElement('button');
-        ren.className = 'btn-reupload';
-        ren.textContent = '✏️ 이름변경';
-        ren.onclick = () => renameOrg(o.orgId, o.orgName);
-        row.appendChild(ren);
-      }
-
-      if (o.orgId !== 'tudigital') {
-        const tog = document.createElement('button');
-        tog.className = 'btn-delete-row';
-        tog.textContent = o.active ? '사용중지' : '사용재개';
-        tog.onclick = async () => {
-          const j2 = await api({ action: 'orgToggle', orgId: o.orgId });
-          if (j2.ok) loadOrgs(); else alert('변경에 실패했습니다.');
-        };
-        row.appendChild(tog);
-      }
-      box.appendChild(row);
-    });
-  }
-
-  async function addOrg() {
-    const name = document.getElementById('new-org-name').value.trim();
-    const id   = document.getElementById('new-org-id').value.trim().toLowerCase();
-    const pw   = document.getElementById('new-org-pw').value;
-    if (!name || !id || !pw) { alert('업체명·아이디·비밀번호를 모두 입력해 주세요.'); return; }
-    if (!/^[a-z0-9_-]+$/.test(id)) { alert('아이디는 영문 소문자·숫자·-·_ 만 사용할 수 있습니다.'); return; }
-    const j = await api({ action: 'orgAdd', orgId: id, orgName: name, h: await pwHash(id, pw) });
-    if (!j.ok) {
-      alert(j.error === 'duplicate' ? '이미 있는 아이디입니다.' : '추가에 실패했습니다.');
-      return;
-    }
-    document.getElementById('new-org-name').value = '';
-    document.getElementById('new-org-id').value = '';
-    document.getElementById('new-org-pw').value = '';
-    showToast(name + ' 업체가 추가되었습니다.');
-    loadOrgs();
-  }
-
-  async function resetOrgPw(orgId, orgName) {
-    const pw = prompt(orgName + ' 의 새 비밀번호를 입력하세요.');
-    if (pw === null) return;
-    if (!pw.trim()) { alert('비밀번호를 입력해 주세요.'); return; }
-    const j = await api({ action: 'orgSetPw', orgId, h: await pwHash(orgId, pw) });
-    if (j.ok) showToast('비밀번호가 변경되었습니다.'); else alert('변경에 실패했습니다.');
-  }
-
-  // 업체명은 신청 링크(?org=)와 기존 고객 데이터의 소속을 잇는 기준이라,
-  // 계정 이름만 바꾸면 예전 이름으로 저장된 기존 고객 건이 안 보이게 된다.
-  // 서버(orgRename)가 계정과 기존 고객행의 소속을 함께 바꿔준다.
-  async function renameOrg(orgId, orgName) {
-    const nm = prompt(orgName + ' 의 새 업체명을 입력하세요.\n(신청 링크의 ?org= 값도 이 이름으로 바뀝니다)', orgName);
-    if (nm === null) return;
-    const trimmed = nm.trim();
-    if (!trimmed) { alert('업체명을 입력해 주세요.'); return; }
-    if (trimmed === orgName) return;
-    const j = await api({ action: 'orgRename', orgId, orgName: trimmed });
-    if (!j.ok) {
-      alert(j.error === 'duplicate_name' ? '이미 사용 중인 업체명입니다.' : '변경에 실패했습니다.');
-      return;
-    }
-    showToast(orgName + ' → ' + trimmed + ' 로 변경 완료! (기존 고객 ' + (j.renamed || 0) + '건 함께 이동)');
-    loadOrgs();
-    loadCustomers();
   }
 
 
@@ -1283,7 +1459,14 @@
     dEl.textContent = due ? (due + (od ? '  (' + od + '일 경과)' : '')) : '-';
     dEl.style.color = od ? '#c0392b' : '';
 
-    const steps = [
+    const isLg = c.bizType === 'LG가전';
+    const steps = isLg ? [
+      { key: '신청접수',      sub: '기본정보 제출 완료'            },
+      { key: '서류제출',      sub: '신분증 · 통장 사본 업로드 완료' },
+      { key: '접수확인',      sub: '서류 검토 완료'                },
+      { key: '배송·설치완료', sub: '제품 배송 및 설치 완료'        },
+      { key: '구독개시',      sub: '자동이체 청구 시작'            },
+    ] : [
       { key: '신청접수',    sub: '기본정보 제출 완료'                 },
       { key: '신용조회중',  sub: '담당자 신용조회 진행 중'             },
       { key: '서류제출',    sub: '서류 업로드 완료'                    },
@@ -1294,13 +1477,16 @@
       { key: '입금완료',    sub: '한국캐피탈 → 판매점 (녹취 후 1~2일)' },
     ];
 
-    // 현재 진행 단계 인덱스 (0~7), 8=전체완료
-    const stepIdx = c.payment === 'done'   ? 8
-                  : c.recording === 'done' ? 7
-                  : c.built                ? 6
-                  : c.agreement === 'done' ? 5
-                  : c.confirmed            ? 4
-                  : c.docs                 ? 3 : 1;
+    // 현재 진행 단계 인덱스
+    const d = c.docs || {};
+    const stepIdx = isLg
+      ? (d.lgActive === 'done' ? 5 : d.lgInstalled === 'done' ? 4 : d.lgConfirmed === 'done' ? 3 : c.docs ? 2 : 1)
+      : c.payment === 'done'   ? 8
+      : c.recording === 'done' ? 7
+      : c.built                ? 6
+      : c.agreement === 'done' ? 5
+      : c.confirmed            ? 4
+      : c.docs                 ? 3 : 1;
 
     document.getElementById('d-timeline').innerHTML = steps.map((s, i) => {
       const isDone    = i < stepIdx;
@@ -1353,16 +1539,21 @@
       if (raw) storedFiles = JSON.parse(raw);
     } catch(e) {}
 
+    const isLg = c.bizType === 'LG가전';
     // 가족 명의 거주주택이면 가족관계증명서가 추가된다.
     // ①번은 '거주 중이면 등기부등본 / 이사 예정이면 매매계약서'라 소유형태와 무관하다.
     const isFamily = (c.docs || {}).ownership === 'family';
-    const labels  = ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본', '견적서']
-                    .concat(isFamily ? ['가족관계증명서'] : []);
-    const keys    = ['doc1', 'doc2', 'doc3', 'doc4'].concat(isFamily ? ['doc5'] : []);
+    const labels  = isLg
+      ? ['신분증 사본', '통장 사본']
+      : ['등기부등본 / 매매계약서', '신분증 사본', '통장 사본', '견적서'].concat(isFamily ? ['가족관계증명서'] : []);
+    const keys    = isLg
+      ? ['ldoc1', 'ldoc2']
+      : ['doc1', 'doc2', 'doc3', 'doc4'].concat(isFamily ? ['doc5'] : []);
     const dlStyle = 'display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#0d2137;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;';
 
-    document.getElementById('doc-modal-title').textContent =
-      c.name + ' 고객 서류 (' + (isFamily ? '가족 소유' : '본인 소유') + ')';
+    document.getElementById('doc-modal-title').textContent = isLg
+      ? c.name + ' 고객 서류 (LG가전 구독)'
+      : c.name + ' 고객 서류 (' + (isFamily ? '가족 소유' : '본인 소유') + ')';
 
     document.getElementById('doc-preview-grid').innerHTML = keys.map((key, i) => {
       const docVal      = c.docs[key] || '';
@@ -1409,7 +1600,7 @@
         + '</div>'
         + '<div class="doc-preview-body">' + previewHtml + '</div>'
         + '</div>';
-    }).join('') + buildConstructionSection(c, dlStyle);
+    }).join('') + (isLg ? '' : buildConstructionSection(c, dlStyle));
 
     document.getElementById('doc-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1474,7 +1665,9 @@
     const base = (h === 'localhost' || h === '127.0.0.1') ? location.origin
                : location.protocol === 'file:' ? location.href.replace(/[^/]*$/, '').replace(/\/$/, '')
                : 'https://www.tudigital.co.kr';
-    const url = base + '/upload.html?id=' + id;
+    const c = customersCache.find(c => c.id === id);
+    const page = (c && c.bizType === 'LG가전') ? 'lg-upload.html' : 'upload.html';
+    const url = base + '/' + page + '?id=' + id;
     navigator.clipboard.writeText(url).then(() => {
       showToast('📋 링크 복사 완료! 카톡으로 붙여넣기 해주세요');
     }).catch(() => {

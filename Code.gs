@@ -181,14 +181,14 @@ function verifyToken(token) {
 //  마스터 비밀번호를 잊으면 업체계정 시트에서 tudigital 행을 지우고 다시 실행한다.
 const SETUP_PW = {
   tudigital:   '여기에_비밀번호_입력',   // 티유디지털 (전체 열람)
-  changhohome: '여기에_비밀번호_입력'    // 창호홈
+  changhohome: '여기에_비밀번호_입력'    // 청암홈윈도우
 };
 
 function setupAccounts() {
   const sh = getAccountSheet();
   const seed = [
     { orgId: MASTER_ID,     orgName: '티유디지털' },
-    { orgId: 'changhohome', orgName: '창호홈'    }
+    { orgId: 'changhohome', orgName: '청암홈윈도우' }
   ];
 
   const notSet = seed.filter(function (s) {
@@ -471,7 +471,7 @@ function doGet(e) {
   }
 
   // ── 업체 관리 (마스터 전용) ────────────────────
-  if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle') {
+  if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle' || action === 'orgRename') {
     const auth = verifyToken(e.parameter.token);
     if (!auth || !auth.isMaster) return jsonResponse({ ok: false, error: 'unauthorized' });
 
@@ -504,6 +504,38 @@ function doGet(e) {
       if (id === MASTER_ID) return jsonResponse({ ok: false, error: 'cannot_disable_master' });
       updateAccountField(id, 4, acc.active ? 'N' : 'Y');
       return jsonResponse({ ok: true });
+    }
+    // orgName은 신청 링크(?org=)와 기존 고객 데이터(agentOrg)를 잇는 필터 기준이라,
+    // 계정만 바꾸면 그 이름으로 저장된 기존 고객 건이 안 보이게 된다.
+    // 그래서 계정 이름과 기존 고객행의 agentOrg를 함께 바꾼다.
+    if (action === 'orgRename') {
+      const id = String(e.parameter.orgId || '');
+      const nm = String(e.parameter.orgName || '').trim();
+      const acc = findAccount(id);
+      if (!acc) return jsonResponse({ ok: false, error: 'not_found' });
+      if (!nm)  return jsonResponse({ ok: false, error: 'missing' });
+      const dupe = readAccounts().some(function (a) { return a.orgId !== id && a.orgName === nm; });
+      if (dupe) return jsonResponse({ ok: false, error: 'duplicate_name' });
+
+      const oldName = acc.orgName;
+      updateAccountField(id, 2, nm);
+
+      let renamed = 0;
+      if (oldName !== nm) {
+        const sh = getSheet();
+        const data = sh.getDataRange().getValues();
+        const col = data[0].indexOf('agentOrg');
+        if (col !== -1) {
+          for (let i = 1; i < data.length; i++) {
+            if (String(data[i][col]) === oldName) {
+              sh.getRange(i + 1, col + 1).setValue(nm);
+              renamed++;
+            }
+          }
+        }
+        invalidateCache();
+      }
+      return jsonResponse({ ok: true, renamed: renamed });
     }
   }
 

@@ -134,7 +134,7 @@
                     orgName: a.orgName, isMaster: a.orgId === 'tudigital' });
     }
 
-    if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle') {
+    if (action === 'orgList' || action === 'orgAdd' || action === 'orgSetPw' || action === 'orgToggle' || action === 'orgRename') {
       var tk = String(p.get('token') || '');
       if (tk !== 'dev.tudigital') return json({ ok: false, error: 'unauthorized' });
       var list = accs();
@@ -148,6 +148,26 @@
       if (action === 'orgToggle') {
         list.forEach(function (x) { if (x.orgId === p.get('orgId')) x.active = !x.active; });
         saveAccs(list); return json({ ok: true });
+      }
+      if (action === 'orgRename') {
+        var id = p.get('orgId'), nm = String(p.get('orgName') || '').trim();
+        var acc = findAcc(id);
+        if (!acc) return json({ ok: false, error: 'not_found' });
+        if (!nm) return json({ ok: false, error: 'missing' });
+        if (list.some(function (a) { return a.orgId !== id && a.orgName === nm; })) {
+          return json({ ok: false, error: 'duplicate_name' });
+        }
+        var oldName = acc.orgName;
+        list.forEach(function (x) { if (x.orgId === id) x.orgName = nm; });
+        saveAccs(list);
+        var renamed = 0;
+        if (oldName !== nm) {
+          var custs = load();
+          custs.forEach(function (c) { if (String(c.agentOrg || '') === oldName) { c.agentOrg = nm; renamed++; } });
+          save(custs);
+        }
+        console.log('[devMock] 업체명 변경: ' + oldName + ' → ' + nm + ' (고객 ' + renamed + '건 함께 이동)');
+        return json({ ok: true, renamed: renamed });
       }
       return json({ ok: true });
     }
