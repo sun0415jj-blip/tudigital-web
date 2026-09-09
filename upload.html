@@ -158,38 +158,6 @@
         </div>
       </div>
 
-      <!-- 직업군 -->
-      <div class="form-group">
-        <label class="form-label">직업군 <span class="req">*</span></label>
-        <select id="job-type" class="form-select" onchange="updateUI()">
-          <option value="">-- 직업군을 선택해 주세요 --</option>
-          <option>건설관련직</option>
-          <option>기계관련직</option>
-          <option>재료관련직</option>
-          <option>전기·전자관련직</option>
-          <option>정보통신관련직</option>
-          <option>화학관련직</option>
-          <option>환경·인쇄·목재·가구·공예및생산단순직</option>
-          <option>경영·회계·사무관련직</option>
-          <option>금융·보험관련직</option>
-          <option>관리직</option>
-          <option>군인</option>
-          <option>농림어업관련직</option>
-          <option>교육및자연과학·사회과학연구관련직</option>
-          <option>문화·예술·디자인·방송관련직</option>
-          <option>법률·경찰·소방·교도관련직</option>
-          <option>보건·의료관련직</option>
-          <option>사회복지및종교관련직</option>
-          <option>경비및청소관련직</option>
-          <option>미용·숙박·여행·오락·스포츠관련직</option>
-          <option>영업및판매관련직</option>
-          <option>운전및운송관련직</option>
-          <option>음식서비스관련직</option>
-          <option>주부</option>
-          <option>무직</option>
-        </select>
-      </div>
-
       <!-- 시공예정일 (계약서 기재 기준) -->
       <div class="form-group">
         <label class="form-label" for="scheduled-at">시공예정일 <span class="req">*</span></label>
@@ -306,7 +274,7 @@
       <div class="divider"></div>
 
       <button class="btn-submit" id="btn-submit" onclick="submitDocs()" disabled>
-        직업군과 서류를 모두 선택해 주세요
+        시공예정일과 서류를 모두 선택해 주세요
       </button>
 
     </div>
@@ -426,13 +394,6 @@
 
   function renderExistingDocs(c) {
     const docs = c.docs || {};
-    // 기존에 저장된 직업군 자동 선택
-    if (docs.jobType) {
-      const sel = document.getElementById('job-type');
-      for (let i = 0; i < sel.options.length; i++) {
-        if (sel.options[i].value === docs.jobType) { sel.selectedIndex = i; break; }
-      }
-    }
     // 기존에 저장된 시공예정일 복원
     if (docs.scheduledAt) document.getElementById('scheduled-at').value = docs.scheduledAt;
 
@@ -463,14 +424,11 @@
   function updateUI() {
     const req       = requiredDocs();
     const cnt       = req.filter(n => files[n - 1]).length;
-    const jobType   = document.getElementById('job-type').value;
     const scheduled = document.getElementById('scheduled-at').value;
     const btn       = document.getElementById('btn-submit');
-    const ready     = cnt === req.length && jobType !== '' && scheduled !== '';
+    const ready     = cnt === req.length && scheduled !== '';
     btn.disabled    = !ready;
-    if (!jobType) {
-      btn.textContent = '직업군을 선택해 주세요';
-    } else if (!scheduled) {
+    if (!scheduled) {
       btn.textContent = '시공예정일을 입력해 주세요';
     } else if (cnt < req.length) {
       btn.textContent = cnt + '/' + req.length + ' 서류 선택됨 — 모두 선택해 주세요';
@@ -570,9 +528,7 @@
   }
 
   async function submitDocs() {
-    const jobType   = document.getElementById('job-type').value;
     const scheduled = document.getElementById('scheduled-at').value;
-    if (!jobType)   { alert('직업군을 선택해 주세요.'); return; }
     if (!scheduled) { alert('시공예정일을 입력해 주세요.'); document.getElementById('scheduled-at').focus(); return; }
 
     const btn = document.getElementById('btn-submit');
@@ -587,7 +543,6 @@
       const params = new URLSearchParams({
         action: 'saveAllDocUrls',
         customerId,
-        jobType,
         ownership,
         scheduledAt: scheduled,
         t: Date.now()
