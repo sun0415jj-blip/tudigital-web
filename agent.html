@@ -234,9 +234,9 @@
       <div class="form-group">
         <label>상품명 <span class="req">*</span></label>
         <div class="radio-group">
-          <input type="checkbox" id="prod-changhome" value="청암홈윈도우" /><label for="prod-changhome">청암홈윈도우</label>
-          <input type="checkbox" id="prod-lx" value="LX창호" /><label for="prod-lx">LX창호</label>
-          <input type="checkbox" id="prod-kcc" value="KCC창호" /><label for="prod-kcc">KCC창호</label>
+          <input type="radio" name="product" id="prod-changhome" value="청암홈윈도우" /><label for="prod-changhome">청암홈윈도우</label>
+          <input type="radio" name="product" id="prod-lx" value="LX창호" /><label for="prod-lx">LX창호</label>
+          <input type="radio" name="product" id="prod-kcc" value="KCC창호" /><label for="prod-kcc">KCC창호</label>
         </div>
       </div>
       <div class="form-group">
@@ -372,11 +372,8 @@
     const debitEl  = document.querySelector('input[name="debit"]:checked');
     const agreed   = document.getElementById('agreePrivacy').checked;
 
-    const productArr = [];
-    if (document.getElementById('prod-changhome').checked) productArr.push('청암홈윈도우');
-    if (document.getElementById('prod-lx').checked)        productArr.push('LX창호');
-    if (document.getElementById('prod-kcc').checked)       productArr.push('KCC창호');
-    const product = productArr.join('+');
+    const productEl = document.querySelector('input[name="product"]:checked');
+    const product = productEl ? productEl.value : '';
 
     if (!agentName){ alert('담당자명을 입력해 주세요.'); document.getElementById('agent-name').focus(); return; }
     if (!agentOrg) { alert('소속을 입력해 주세요.'); document.getElementById('agent-org').focus(); return; }
@@ -488,9 +485,7 @@
     document.getElementById('birth').value = '';
     document.getElementById('phone').value = '';
     document.getElementById('amount').value = '';
-    document.getElementById('prod-changhome').checked = false;
-    document.getElementById('prod-lx').checked = false;
-    document.getElementById('prod-kcc').checked = false;
+    document.querySelectorAll('input[name="product"]').forEach(r => r.checked = false);
     document.querySelectorAll('input[name="period"]').forEach(r => r.checked = false);
     document.getElementById('p60').checked = true;
     document.querySelectorAll('input[name="debit"]').forEach(r => r.checked = false);
